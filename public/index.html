@@ -18,25 +18,25 @@
     <div class="page">
       <div class="card">
         <div class="card-title">什么是「时光胶囊」？</div>
-        <p style="font-size:14px;color:var(--text-light);line-height:1.8;">
+        <p style="font-size:14px;color:var(--text-light);line-height:1.85;">
           你可以写下一段文字、录制一段声音、或上传一张照片，设定一个未来的时间点和收件人。
-          到了那一刻，系统会自动将你的内容通过邮件送达对方。
+          到了那一刻，系统会自动将你的内容通过邮件送达对方——<em>由我们主动送达，而非对方来领</em>。
         </p>
       </div>
 
       <div class="card">
         <div class="card-title">三步完成投递</div>
-        <div style="display:flex;gap:12px;margin-bottom:12px;">
+        <div style="display:flex;gap:12px;margin-bottom:4px;">
           <div style="flex:1;text-align:center;">
-            <div style="font-size:28px;margin-bottom:4px;">1</div>
+            <div style="font-family:var(--serif);font-size:30px;color:var(--primary);">1</div>
             <div style="font-size:13px;color:var(--text-light);">创建内容</div>
           </div>
           <div style="flex:1;text-align:center;">
-            <div style="font-size:28px;margin-bottom:4px;">2</div>
+            <div style="font-family:var(--serif);font-size:30px;color:var(--primary);">2</div>
             <div style="font-size:13px;color:var(--text-light);">设置投递</div>
           </div>
           <div style="flex:1;text-align:center;">
-            <div style="font-size:28px;margin-bottom:4px;">3</div>
+            <div style="font-family:var(--serif);font-size:30px;color:var(--primary);">3</div>
             <div style="font-size:13px;color:var(--text-light);">等待送达</div>
           </div>
         </div>
@@ -45,26 +45,26 @@
       <div class="card">
         <div class="card-title">支持的内容类型</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <span class="type-tag" style="padding:6px 14px;font-size:13px;">文字 (5000字以内)</span>
-          <span class="type-tag" style="padding:6px 14px;font-size:13px;">录音 (30分钟以内)</span>
-          <span class="type-tag" style="padding:6px 14px;font-size:13px;">图片/视频 (100MB以内)</span>
+          <span class="type-tag">文字（5000 字以内）</span>
+          <span class="type-tag">录音（30 分钟以内）</span>
+          <span class="type-tag">图片 / 视频（100MB 以内）</span>
         </div>
       </div>
 
-      <div class="card" style="display:flex;align-items:center;justify-content:space-between;">
+      <div class="card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
         <div>
-          <div class="card-title">了解长夜余火 🔥</div>
-          <p style="font-size:13px;color:var(--text-light);margin:6px 0 0;">我们的理念、设计与背后故事，都在这里。</p>
+          <div class="card-title" style="margin-bottom:6px;">了解长夜余火 🔥</div>
+          <p style="font-size:13px;color:var(--text-light);margin:0;max-width:220px;">我们的理念、设计与背后故事，都在这里。</p>
         </div>
-        <a href="/intro.html" class="btn" style="white-space:nowrap;margin-left:12px;">查看介绍</a>
+        <a href="/intro.html" class="btn btn-outline" style="white-space:nowrap;">查看介绍</a>
       </div>
 
-      <div class="card" style="display:flex;align-items:center;justify-content:space-between;">
+      <div class="card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
         <div>
-          <div class="card-title">支持长夜余火 💛</div>
-          <p style="font-size:13px;color:var(--text-light);margin:6px 0 0;">如果你也被这个念头打动，欢迎自愿赞赏，陪我们走得更远。</p>
+          <div class="card-title" style="margin-bottom:6px;">支持长夜余火 💛</div>
+          <p style="font-size:13px;color:var(--text-light);margin:0;max-width:220px;">如果你也被这个念头打动，欢迎自愿赞赏，陪我们走得更远。</p>
         </div>
-        <a href="/support.html" class="btn btn-outline" style="border-color:#c99a5b;color:#9a6b35;white-space:nowrap;margin-left:12px;">去支持</a>
+        <a href="/support.html" class="btn btn-outline" style="white-space:nowrap;">去支持</a>
       </div>
     </div>
 
@@ -79,11 +79,11 @@
       </a>
       <a href="/capsules.html">
         <span class="nav-icon">📦</span>
-        我的
+        我的胶囊
       </a>
       <a href="/profile.html">
         <span class="nav-icon">👤</span>
-        我的
+        账户
       </a>
     </div>
   </div>
@@ -91,15 +91,15 @@
   <script src="/js/api.js"></script>
   <script>
     const actions = document.getElementById('hero-actions');
-    if (isLoggedIn()) {
+    if (typeof isLoggedIn === 'function' && isLoggedIn()) {
       actions.innerHTML = `
-        <a href="/create.html" class="btn" style="margin-right:8px;">创建胶囊</a>
-        <a href="/capsules.html" class="btn btn-outline" style="border-color:#fff;color:#fff;">我的胶囊</a>
+        <a href="/create.html" class="btn btn-primary" style="margin-right:8px;">创建胶囊</a>
+        <a href="/capsules.html" class="btn btn-outline">我的胶囊</a>
       `;
     } else {
       actions.innerHTML = `
-        <a href="/register.html" class="btn" style="margin-right:8px;">立即开始</a>
-        <a href="/login.html" class="btn btn-outline" style="border-color:#fff;color:#fff;">登录</a>
+        <a href="/register.html" class="btn btn-primary" style="margin-right:8px;">立即开始</a>
+        <a href="/login.html" class="btn btn-outline">登录</a>
       `;
     }
   </script>

@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>长夜余火（余火·留声）— 项目介绍</title>
+  <title>长夜余火（余火·留声）— 用现在，去设定一个未来</title>
+  <meta name="description" content="长夜余火（余火·留声）：一个数字遗产时光胶囊平台。表达与交还，不是信托；主动送达像快递；在指定的未来时刻，把此刻的声音安静交还。">
+  <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/nightfire.css">
 </head>
 <body>
@@ -30,7 +32,7 @@
   <div class="nf-wrap">
 
     <!-- 我们想做什么 -->
-    <section class="nf-card">
+    <section class="card reveal">
       <h2 class="nf-title">我们想做什么</h2>
       <p class="nf-desc">
         我们想做一个地方，让人在此刻留下想说的话、想留的物——文字、录音、影像、照片，甚至一封手写的信、一件随身的小物件。
@@ -42,8 +44,10 @@
       </p>
     </section>
 
+    <div class="nf-divider"><span></span><span class="spark">✦</span><span></span></div>
+
     <!-- 一句话理念 -->
-    <section class="nf-card">
+    <section class="card reveal">
       <h2 class="nf-title">一句话理念</h2>
       <p class="nf-desc">
         我们做的不是信托，也不是银行，而是<b>表达与交还</b>——专注语言和故事，不碰财产，只走叙事。
@@ -51,8 +55,10 @@
       </p>
     </section>
 
+    <div class="nf-divider"><span></span><span class="spark">✦</span><span></span></div>
+
     <!-- 六个核心设计 -->
-    <section class="nf-card">
+    <section class="card reveal">
       <h2 class="nf-title">六个核心设计</h2>
       <div class="nf-design-grid">
         <div class="nf-design">
@@ -88,8 +94,10 @@
       </div>
     </section>
 
+    <div class="nf-divider"><span></span><span class="spark">✦</span><span></span></div>
+
     <!-- 产品愿景时间线 -->
-    <section class="nf-card">
+    <section class="card reveal">
       <h2 class="nf-title">产品愿景时间线</h2>
       <p class="nf-desc" style="margin-bottom:18px;">
         我们不想一次做满，而想沿着"轻量化、走叙事"的路线，一步步把"用现在设定未来"这件事做实。下面是从此刻到远期的五段路。
@@ -176,8 +184,10 @@
       </div>
     </section>
 
+    <div class="nf-divider"><span></span><span class="spark">✦</span><span></span></div>
+
     <!-- 合规与电子签名（搭配 e签宝） -->
-    <section class="nf-card nf-compliance">
+    <section class="card nf-compliance reveal">
       <h2 class="nf-title">合规与电子签名（搭配 e签宝）</h2>
       <p class="nf-desc">
         我们做的只是<em>保管与交还</em>，不是创造、也不是宣发，法律风险本身很低。但我们要把过程做规范——下面这些合规设计，正是为对接 <b>e签宝</b> 这类合规第三方电子签名 / 存证服务而准备：
@@ -196,8 +206,10 @@
       </p>
     </section>
 
+    <div class="nf-divider"><span></span><span class="spark">✦</span><span></span></div>
+
     <!-- 原话摘录 -->
-    <section class="nf-card">
+    <section class="card reveal">
       <h2 class="nf-title">创始人的原话</h2>
       <div class="nf-quote">
         当我的客户只要发生死亡的迹象或者结果，触发这个条件，那我就可以去执行我的动作——我向客户指定的目标对象发送一段讯息。
@@ -221,8 +233,10 @@
       </div>
     </section>
 
+    <div class="nf-divider"><span></span><span class="spark">✦</span><span></span></div>
+
     <!-- 支持我们 -->
-    <section class="nf-card nf-support">
+    <section class="card nf-support reveal">
       <h2 class="nf-title" style="justify-content:center;">陪我们走下去</h2>
       <p class="nf-desc">
         长夜余火正处在验证想法的早期，产品免费使用。如果你也被这个念头打动，
@@ -232,7 +246,7 @@
     </section>
 
     <!-- 用户填信息板块 -->
-    <section class="nf-card nf-lead" id="lead">
+    <section class="card nf-lead reveal" id="lead">
       <h2 class="nf-title">登记早期体验意向</h2>
       <p class="nf-desc">
         我们想先认识你，也请你告诉我们：你最想留下的是什么？留下方式不影响任何事，
@@ -283,14 +297,14 @@
     (function () {
       const stars = document.getElementById('stars');
       if (stars) {
-        for (let i = 0; i < 70; i++) {
+        for (let i = 0; i < 80; i++) {
           const s = document.createElement('span');
           const size = Math.random() * 2 + 0.5;
           s.style.cssText = `position:absolute;left:${Math.random()*100}%;top:${Math.random()*100}%;width:${size}px;height:${size}px;border-radius:50%;background:#fff;opacity:${Math.random()*0.5+0.15};`;
           stars.appendChild(s);
         }
       }
-      const emberCount = 18;
+      const emberCount = 20;
       for (let i = 0; i < emberCount; i++) {
         const e = document.createElement('span');
         e.className = 'nf-ember';
@@ -305,9 +319,25 @@
       }
     })();
 
-    // 意向登记提交
+    // 滚动揭示
+    (function () {
+      const items = document.querySelectorAll('.reveal');
+      if (!('IntersectionObserver' in window)) {
+        items.forEach(el => el.classList.add('in'));
+        return;
+      }
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+      items.forEach(el => io.observe(el));
+    })();
+
+    // 意向登记提交（含静态环境邮件降级）
     const form = document.getElementById('lead-form');
     const msg = document.getElementById('lead-msg');
+    const WORK_MAIL = 'changyeyuhuo2026@163.com';
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       msg.className = 'nf-lead-msg';
@@ -323,24 +353,43 @@
         message: document.getElementById('message').value,
         source: 'intro',
       };
+      // 至少填一个称呼
+      if (!payload.name.trim() && !payload.phone.trim() && !payload.email.trim()) {
+        msg.className = 'nf-lead-msg err';
+        msg.textContent = '至少留一个称呼或联系方式，方便我们找到你 🙂';
+        return;
+      }
       try {
         const res = await fetch('/api/leads', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
-        const data = await res.json();
-        if (!res.ok) {
-          msg.className = 'nf-lead-msg err';
-          msg.textContent = data.error || '提交失败，请稍后再试';
+        if (res.ok) {
+          const data = await res.json().catch(() => ({}));
+          msg.className = 'nf-lead-msg ok';
+          msg.textContent = data.message || '登记成功，谢谢你的信任 🔥';
+          form.reset();
           return;
         }
-        msg.className = 'nf-lead-msg ok';
-        msg.textContent = data.message || '登记成功，谢谢你的信任 🔥';
-        form.reset();
+        throw new Error('backend-unavailable');
       } catch (err) {
+        // 后端不可用（如静态部署）：降级为邮件登记，保证页面真实可用
+        const lines = [
+          '【长夜余火 · 早期体验意向登记】',
+          '称呼：' + (payload.name || '（未填）'),
+          '手机：' + (payload.phone || '（未填）'),
+          '邮箱：' + (payload.email || '（未填）'),
+          '想留下的内容：' + (ctypes.join('、') || '（未选）'),
+          '是否愿意早期体验：' + (early === '1' ? '愿意' : '先了解'),
+          '留言：' + (payload.message || '（无）'),
+        ];
+        const href = 'mailto:' + WORK_MAIL + '?subject=' +
+          encodeURIComponent('长夜余火 · 早期体验意向登记') + '&body=' +
+          encodeURIComponent(lines.join('\n'));
         msg.className = 'nf-lead-msg err';
-        msg.textContent = '网络异常，请稍后再试';
+        msg.innerHTML = '当前为演示页，后台暂未部署，登记请 ' +
+          '<a href="' + href + '">通过邮件发送给我们 💌</a>（已帮你预填好内容）。';
       }
     });
   </script>
