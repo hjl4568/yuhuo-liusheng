@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>长夜余火（余火·留声）— 让此刻的声音，抵达未来</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <div class="hero">
+      <h2>长夜余火</h2>
+      <p style="opacity:.9;font-size:13px;letter-spacing:2px;margin-top:4px;">余火 · 留声</p>
+      <p>让此刻的声音，抵达未来<br>写下、录下、留下 — 在指定时刻，送达你想说的话</p>
+      <div id="hero-actions"></div>
+    </div>
+
+    <div class="page">
+      <div class="card">
+        <div class="card-title">什么是「时光胶囊」？</div>
+        <p style="font-size:14px;color:var(--text-light);line-height:1.8;">
+          你可以写下一段文字、录制一段声音、或上传一张照片，设定一个未来的时间点和收件人。
+          到了那一刻，系统会自动将你的内容通过邮件送达对方。
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">三步完成投递</div>
+        <div style="display:flex;gap:12px;margin-bottom:12px;">
+          <div style="flex:1;text-align:center;">
+            <div style="font-size:28px;margin-bottom:4px;">1</div>
+            <div style="font-size:13px;color:var(--text-light);">创建内容</div>
+          </div>
+          <div style="flex:1;text-align:center;">
+            <div style="font-size:28px;margin-bottom:4px;">2</div>
+            <div style="font-size:13px;color:var(--text-light);">设置投递</div>
+          </div>
+          <div style="flex:1;text-align:center;">
+            <div style="font-size:28px;margin-bottom:4px;">3</div>
+            <div style="font-size:13px;color:var(--text-light);">等待送达</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">支持的内容类型</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <span class="type-tag" style="padding:6px 14px;font-size:13px;">文字 (5000字以内)</span>
+          <span class="type-tag" style="padding:6px 14px;font-size:13px;">录音 (30分钟以内)</span>
+          <span class="type-tag" style="padding:6px 14px;font-size:13px;">图片/视频 (100MB以内)</span>
+        </div>
+      </div>
+
+      <div class="card" style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div class="card-title">了解长夜余火 🔥</div>
+          <p style="font-size:13px;color:var(--text-light);margin:6px 0 0;">我们的理念、设计与背后故事，都在这里。</p>
+        </div>
+        <a href="/intro.html" class="btn" style="white-space:nowrap;margin-left:12px;">查看介绍</a>
+      </div>
+
+      <div class="card" style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div class="card-title">支持长夜余火 💛</div>
+          <p style="font-size:13px;color:var(--text-light);margin:6px 0 0;">如果你也被这个念头打动，欢迎自愿赞赏，陪我们走得更远。</p>
+        </div>
+        <a href="/support.html" class="btn btn-outline" style="border-color:#c99a5b;color:#9a6b35;white-space:nowrap;margin-left:12px;">去支持</a>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <a href="/index.html" class="active">
+        <span class="nav-icon">🏠</span>
+        首页
+      </a>
+      <a href="/create.html">
+        <span class="nav-icon">✏️</span>
+        创建
+      </a>
+      <a href="/capsules.html">
+        <span class="nav-icon">📦</span>
+        我的
+      </a>
+      <a href="/profile.html">
+        <span class="nav-icon">👤</span>
+        我的
+      </a>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    const actions = document.getElementById('hero-actions');
+    if (isLoggedIn()) {
+      actions.innerHTML = `
+        <a href="/create.html" class="btn" style="margin-right:8px;">创建胶囊</a>
+        <a href="/capsules.html" class="btn btn-outline" style="border-color:#fff;color:#fff;">我的胶囊</a>
+      `;
+    } else {
+      actions.innerHTML = `
+        <a href="/register.html" class="btn" style="margin-right:8px;">立即开始</a>
+        <a href="/login.html" class="btn btn-outline" style="border-color:#fff;color:#fff;">登录</a>
+      `;
+    }
+  </script>
+</body>
+</html>

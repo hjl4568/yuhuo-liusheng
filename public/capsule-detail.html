@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>胶囊详情 — 余火·留声</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <div class="navbar">
+      <span class="nav-back" onclick="history.back()">← 返回</span>
+      <h1>胶囊详情</h1>
+      <span style="width:40px;"></span>
+    </div>
+
+    <div class="page" id="detail-page">
+      <div class="empty-state"><div class="empty-icon">⏳</div><p>加载中...</p></div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    if (!requireAuth()) throw new Error('redirect');
+
+    const params = new URLSearchParams(window.location.search);
+    const capsuleId = params.get('id');
+
+    if (!capsuleId) {
+      window.location.href = '/capsules.html';
+    }
+
+    async function loadDetail() {
+      try {
+        const data = await request(`/capsules/${capsuleId}`);
+        const c = data.capsule;
+        const page = document.getElementById('detail-page');
+
+        let triggerInfo = '';
+        if (c.trigger_type === 'immediate') {
+          triggerInfo = '立即发送';
+        } else if (c.trigger_type === 'scheduled' && c.trigger_date) {
+          triggerInfo = new Date(c.trigger_date).toLocaleString('zh-CN');
+        } else {
+          triggerInfo = '手动触发';
+        }
+
+        let actions = '';
+        if (c.status !== 'delivered' && c.status !== 'cancelled') {
+          if (c.trigger_type === 'manual' || c.trigger_type === 'scheduled') {
+            actions += `<button class="btn btn-primary" style="margin-right:8px;" onclick="triggerNow()">立即触发发送</button>`;
+          }
+          actions += `<button class="btn btn-outline" onclick="editCapsule()">修改</button>`;
+          actions += `<button class="btn btn-danger" style="margin-left:8px;" onclick="deleteCapsule()">删除</button>`;
+        }
+
+        page.innerHTML = `
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+              <h2 style="font-size:20px;">${c.title}</h2>
+              ${statusTag(c.status)}
+            </div>
+            <div style="margin-bottom:8px;">${typeTag(c.content_type)}</div>
+          </div>
+
+          ${c.text_content ? `
+          <div class="card">
+            <div class="card-title">内容</div>
+            <div style="white-space:pre-wrap;font-size:15px;line-height:1.8;color:var(--secondary);">${c.text_content}</div>
+          </div>` : ''}
+
+          ${c.file_name ? `
+          <div class="card">
+            <div class="card-title">附件</div>
+            <div style="font-size:14px;color:var(--text-light);">
+              📎 ${c.file_name}
+              ${c.file_size ? `(${(c.file_size / 1024 / 1024).toFixed(2)}MB)` : ''}
+              <br><span style="font-size:12px;">（已加密存储，投递时收件人可下载）</span>
+            </div>
+          </div>` : ''}
+
+          <div class="card">
+            <div class="card-title">投递信息</div>
+            <div style="font-size:14px;line-height:2;">
+              <div>收件人：<strong>${c.recipient_name}</strong></div>
+              <div>邮箱：${c.recipient_email}</div>
+              ${c.recipient_relation ? `<div>关系：${c.recipient_relation}</div>` : ''}
+              <div>触发方式：${triggerInfo}</div>
+              <div>公开授权：${c.public_authorized ? '✅ 已授权匿名公开展示' : '❌ 未授权'}</div>
+              <div>胶囊编号：${c.capsule_code}</div>
+              <div>创建时间：${new Date(c.created_at).toLocaleString('zh-CN')}</div>
+            </div>
+          </div>
+
+          ${actions ? `<div class="card" style="text-align:center;">${actions}</div>` : ''}
+
+          ${c.status === 'delivered' ? `
+          <div class="card" style="text-align:center;color:var(--success);">
+            <div style="font-size:36px;margin-bottom:8px;">✅</div>
+            <p>此胶囊已成功送达</p>
+          </div>` : ''}
+        `;
+      } catch (err) {
+        document.getElementById('detail-page').innerHTML = `<p style="text-align:center;color:var(--danger);">${err.message}</p>`;
+      }
+    }
+
+    window.triggerNow = async function() {
+      if (!confirm('确定要立即触发发送吗？此操作不可撤销。')) return;
+      try {
+        const data = await request(`/capsules/${capsuleId}/trigger`, { method: 'POST' });
+        showToast(data.message);
+        if (data.previewUrl) {
+          setTimeout(() => {
+            alert('测试邮件已发送！\n\n查看邮件预览：\n' + data.previewUrl);
+            window.open(data.previewUrl, '_blank');
+          }, 1500);
+        }
+        setTimeout(() => location.reload(), 3000);
+      } catch (err) {
+        showToast(err.message);
+      }
+    };
+
+    window.editCapsule = function() {
+      window.location.href = `/create.html?edit=${capsuleId}`;
+    };
+
+    window.deleteCapsule = async function() {
+      if (!confirm('确定要删除这个胶囊吗？删除后无法恢复。')) return;
+      try {
+        await request(`/capsules/${capsuleId}`, { method: 'DELETE' });
+        showToast('已删除');
+        setTimeout(() => { window.location.href = '/capsules.html'; }, 1500);
+      } catch (err) {
+        showToast(err.message);
+      }
+    };
+
+    loadDetail();
+  </script>
+</body>
+</html>

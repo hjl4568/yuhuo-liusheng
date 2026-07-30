@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>后台管理 — 余火·留声</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .admin-container { max-width: 900px; margin: 0 auto; padding: 20px; }
+    .admin-tabs { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; }
+    .admin-tabs button { white-space: nowrap; padding: 8px 16px; border: 1px solid var(--border); background: #fff; border-radius: 8px; cursor: pointer; font-size: 14px; }
+    .admin-tabs button.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .table-wrapper { overflow-x: auto; background: #fff; border-radius: 12px; box-shadow: var(--shadow); }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <div class="navbar" style="border-radius:12px;margin-bottom:16px;position:relative;">
+      <h1>余火·留声 — 后台管理</h1>
+      <span id="admin-actions"></span>
+    </div>
+
+    <div id="login-section">
+      <div class="card">
+        <div class="card-title">管理员登录</div>
+        <form id="admin-login-form">
+          <div class="form-group">
+            <label class="form-label">用户名</label>
+            <input type="text" class="form-input" id="admin_username" value="admin" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">密码</label>
+            <input type="password" class="form-input" id="admin_password" value="admin123456" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">登录</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="admin-section" style="display:none;">
+      <div class="stat-grid" id="stats"></div>
+
+      <div class="admin-tabs">
+        <button class="active" onclick="switchTab('capsules')">胶囊管理</button>
+        <button onclick="switchTab('users')">用户管理</button>
+        <button onclick="switchTab('logs')">发送日志</button>
+        <button onclick="switchTab('leads')">意向登记</button>
+      </div>
+
+      <div id="tab-content"></div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    function getAdminToken() { return localStorage.getItem('adminToken') || ''; }
+    function setAdminToken(t) { localStorage.setItem('adminToken', t); }
+
+    async function adminRequest(url, options = {}) {
+      const headers = { 'Content-Type': 'application/json', ...options.headers };
+      if (getAdminToken()) headers['Authorization'] = `Bearer ${getAdminToken()}`;
+      const res = await fetch(`/api/admin${url}`, { ...options, headers });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || '请求失败');
+      return data;
+    }
+
+    if (getAdminToken()) {
+      document.getElementById('login-section').style.display = 'none';
+      document.getElementById('admin-section').style.display = '';
+      document.getElementById('admin-actions').innerHTML = '<span class="nav-action" onclick="adminLogout()" style="cursor:pointer;">退出</span>';
+      loadDashboard();
+    }
+
+    document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('admin_username').value;
+      const password = document.getElementById('admin_password').value;
+      try {
+        const res = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        setAdminToken(data.token);
+        document.getElementById('login-section').style.display = 'none';
+        document.getElementById('admin-section').style.display = '';
+        document.getElementById('admin-actions').innerHTML = '<span class="nav-action" onclick="adminLogout()" style="cursor:pointer;">退出</span>';
+        loadDashboard();
+      } catch (err) {
+        showToast(err.message);
+      }
+    });
+
+    window.adminLogout = function() {
+      localStorage.removeItem('adminToken');
+      location.reload();
+    };
+
+    let currentTab = 'capsules';
+    let currentPage = 1;
+
+    async function loadDashboard() {
+      try {
+        const data = await adminRequest('/dashboard');
+        const s = data.stats;
+        document.getElementById('stats').innerHTML = `
+          <div class="stat-card"><div class="stat-num">${s.totalUsers}</div><div class="stat-label">总用户</div></div>
+          <div class="stat-card"><div class="stat-num">${s.totalCapsules}</div><div class="stat-label">总胶囊</div></div>
+          <div class="stat-card"><div class="stat-num">${s.pendingCapsules}</div><div class="stat-label">待发送</div></div>
+          <div class="stat-card"><div class="stat-num">${s.deliveredCapsules}</div><div class="stat-label">已送达</div></div>
+          <div class="stat-card"><div class="stat-num">${s.successLogs}</div><div class="stat-label">成功发送</div></div>
+          <div class="stat-card"><div class="stat-num">${s.totalLogs}</div><div class="stat-label">总发送记录</div></div>
+          <div class="stat-card"><div class="stat-num">${s.totalLeads}</div><div class="stat-label">意向登记</div></div>
+        `;
+        loadTab();
+      } catch (err) {
+        showToast(err.message);
+      }
+    }
+
+    window.switchTab = function(tab) {
+      currentTab = tab;
+      currentPage = 1;
+      document.querySelectorAll('.admin-tabs button').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      loadTab();
+    };
+
+    async function loadTab() {
+      const content = document.getElementById('tab-content');
+      content.innerHTML = '<p style="text-align:center;color:var(--text-light);">加载中...</p>';
+
+      try {
+        if (currentTab === 'capsules') {
+          const data = await adminRequest(`/capsules?page=${currentPage}`);
+          let html = '<div class="table-wrapper"><table class="admin-table"><thead><tr><th>ID</th><th>标题</th><th>用户</th><th>收件人</th><th>类型</th><th>状态</th><th>触发方式</th><th>操作</th></tr></thead><tbody>';
+          for (const c of data.capsules) {
+            const trigger = c.trigger_type === 'immediate' ? '立即' : c.trigger_type === 'scheduled' ? (c.trigger_date ? new Date(c.trigger_date).toLocaleString('zh-CN').slice(5,16) : '未设置') : '手动';
+            html += `<tr>
+              <td>${c.id}</td>
+              <td>${c.title}</td>
+              <td>${c.user_name || c.user_phone}</td>
+              <td>${c.recipient_name}<br><span style="font-size:11px;color:var(--text-light);">${c.recipient_email}</span></td>
+              <td>${TYPE_MAP[c.content_type] || c.content_type}</td>
+              <td>${statusTag(c.status)}</td>
+              <td style="font-size:12px;">${trigger}</td>
+              <td>${c.status !== 'delivered' && c.status !== 'cancelled' ? `<button class="btn btn-primary" style="padding:4px 10px;font-size:12px;" onclick="adminTrigger(${c.id})">触发</button>` : '-'}</td>
+            </tr>`;
+          }
+          html += '</tbody></table></div>';
+          html += renderPagination(data.totalPages, data.page);
+          content.innerHTML = html;
+        } else if (currentTab === 'users') {
+          const data = await adminRequest(`/users?page=${currentPage}`);
+          let html = '<div class="table-wrapper"><table class="admin-table"><thead><tr><th>ID</th><th>手机号</th><th>姓名</th><th>邮箱</th><th>紧急联系人</th><th>注册时间</th></tr></thead><tbody>';
+          for (const u of data.users) {
+            html += `<tr>
+              <td>${u.id}</td>
+              <td>${u.phone}</td>
+              <td>${u.name || '-'}</td>
+              <td>${u.email || '-'}</td>
+              <td>${u.emergency_contact || '-'} ${u.emergency_phone || ''}</td>
+              <td style="font-size:12px;">${new Date(u.created_at).toLocaleString('zh-CN')}</td>
+            </tr>`;
+          }
+          html += '</tbody></table></div>';
+          html += renderPagination(data.totalPages, data.page);
+          content.innerHTML = html;
+        } else if (currentTab === 'logs') {
+          const data = await adminRequest(`/logs?page=${currentPage}`);
+          let html = '<div class="table-wrapper"><table class="admin-table"><thead><tr><th>ID</th><th>胶囊</th><th>方式</th><th>收件人</th><th>状态</th><th>操作人</th><th>时间</th><th>错误</th></tr></thead><tbody>';
+          for (const l of data.logs) {
+            html += `<tr>
+              <td>${l.id}</td>
+              <td>${l.capsule_title || '#' + l.capsule_id}</td>
+              <td>${l.send_method}</td>
+              <td>${l.recipient}</td>
+              <td>${statusTag(l.status)}</td>
+              <td>${l.operator}</td>
+              <td style="font-size:12px;">${l.sent_at ? new Date(l.sent_at).toLocaleString('zh-CN') : '-'}</td>
+              <td style="font-size:11px;color:var(--danger);">${l.error_message || '-'}</td>
+            </tr>`;
+          }
+          html += '</tbody></table></div>';
+          html += renderPagination(data.totalPages, data.page);
+          content.innerHTML = html;
+        } else if (currentTab === 'leads') {
+          const data = await adminRequest(`/leads`);
+          let html = '<div style="margin-bottom:12px;"><button class="btn btn-primary" onclick="downloadLeads()">导出 CSV</button></div>';
+          html += '<div class="table-wrapper"><table class="admin-table"><thead><tr><th>ID</th><th>称呼</th><th>手机号</th><th>邮箱</th><th>意向内容</th><th>早期</th><th>留言</th><th>登记时间</th></tr></thead><tbody>';
+          for (const l of data.leads) {
+            html += `<tr>
+              <td>${l.id}</td>
+              <td>${l.name || '-'}</td>
+              <td>${l.phone || '-'}</td>
+              <td>${l.email || '-'}</td>
+              <td style="font-size:12px;">${l.content_types || '-'}</td>
+              <td>${l.want_early ? '是' : '否'}</td>
+              <td style="font-size:12px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${l.message || ''}">${l.message || '-'}</td>
+              <td style="font-size:12px;">${new Date(l.created_at).toLocaleString('zh-CN')}</td>
+            </tr>`;
+          }
+          html += '</tbody></table></div>';
+          content.innerHTML = html;
+        }
+      } catch (err) {
+        content.innerHTML = `<p style="text-align:center;color:var(--danger);">${err.message}</p>`;
+      }
+    }
+
+    function renderPagination(totalPages, page) {
+      if (totalPages <= 1) return '';
+      let html = '<div class="pagination">';
+      html += `<button ${page <= 1 ? 'disabled' : ''} onclick="goPage(${page - 1})">上一页</button>`;
+      html += `<span style="padding:6px 14px;font-size:13px;">${page} / ${totalPages}</span>`;
+      html += `<button ${page >= totalPages ? 'disabled' : ''} onclick="goPage(${page + 1})">下一页</button>`;
+      html += '</div>';
+      return html;
+    }
+
+    window.goPage = function(p) { currentPage = p; loadTab(); };
+
+    window.adminTrigger = async function(id) {
+      if (!confirm(`确定要后台触发胶囊 #${id} 的发送吗？`)) return;
+      try {
+        const data = await adminRequest(`/capsules/${id}/trigger`, { method: 'POST' });
+        showToast(data.message);
+        if (data.previewUrl) {
+          setTimeout(() => window.open(data.previewUrl, '_blank'), 1500);
+        }
+        loadDashboard();
+      } catch (err) {
+        showToast(err.message);
+      }
+    };
+
+    window.downloadLeads = async function() {
+      try {
+        const res = await fetch('/api/admin/leads/export', {
+          headers: { 'Authorization': `Bearer ${getAdminToken()}` },
+        });
+        if (!res.ok) throw new Error('导出失败');
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'leads-export.csv';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        showToast(err.message);
+      }
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+# ===== 敏感配置（含真实 SMTP 授权码，切勿提交） =====
+.env
+
+# ===== 依赖 =====
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ===== 运行时数据（数据库 + 用户上传） =====
+data/
+*.db
+*.db-shm
+*.db-wal
+uploads/
+
+# ===== 系统/编辑器 =====
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/

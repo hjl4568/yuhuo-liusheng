@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>注册 — 余火·留声</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <div class="hero" style="padding:32px 24px 24px;">
+      <h2 style="font-size:22px;">开启你的时光胶囊</h2>
+      <p>注册只需一步，即可开始创建</p>
+    </div>
+
+    <div class="page">
+      <div class="card">
+        <form id="register-form">
+          <div class="form-group">
+            <label class="form-label">手机号 <span class="required">*</span></label>
+            <input type="tel" class="form-input" id="phone" placeholder="请输入手机号" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">密码 <span class="required">*</span></label>
+            <input type="password" class="form-input" id="password" placeholder="至少6位" required>
+            <div class="form-hint">密码至少6个字符</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">姓名</label>
+            <input type="text" class="form-input" id="name" placeholder="你的称呼（选填）">
+          </div>
+          <div class="form-group">
+            <label class="form-label">邮箱</label>
+            <input type="email" class="form-input" id="email" placeholder="你的邮箱（选填）">
+            <div class="form-hint">用于接收投递确认通知</div>
+          </div>
+
+          <div class="checkbox-row">
+            <input type="checkbox" id="agree" required>
+            <label for="agree">我已阅读并同意<a href="#" onclick="alert('用户协议与隐私政策：\n\n1. 您的内容将经过AES-256加密后存储\n2. 您可随时查看、修改或删除您的内容\n3. 系统仅在您设定的触发条件下发送内容\n4. 我们不会在未经授权的情况下公开您的内容\n5. 数据保留期限由您自行决定，可随时删除');return false;">《用户协议与隐私政策》</a></label>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block">注册</button>
+        </form>
+        <div style="text-align:center;margin-top:16px;font-size:14px;">
+          已有账号？<a href="/login.html">立即登录</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const phone = document.getElementById('phone').value.trim();
+      const password = document.getElementById('password').value;
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const agree = document.getElementById('agree').checked;
+
+      if (!agree) {
+        showToast('请先同意用户协议');
+        return;
+      }
+
+      try {
+        const data = await request('/auth/register', {
+          method: 'POST',
+          body: JSON.stringify({ phone, password, name, email }),
+        });
+        setToken(data.token);
+        showToast('注册成功，欢迎加入余火·留声');
+        setTimeout(() => { window.location.href = '/index.html'; }, 1500);
+      } catch (err) {
+        showToast(err.message);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>电子合同签署 — 余火·留声</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .contract-text {
+      background: #FAF6F0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      font-size: 13px;
+      color: var(--text-light);
+      max-height: 280px;
+      overflow-y: auto;
+      line-height: 1.9;
+      white-space: pre-wrap;
+    }
+    .sig-wrap {
+      border: 1.5px dashed var(--primary);
+      border-radius: 10px;
+      background: #fff;
+      position: relative;
+      margin-top: 6px;
+    }
+    #sig-canvas {
+      width: 100%;
+      height: 170px;
+      display: block;
+      border-radius: 10px;
+      touch-action: none;
+      cursor: crosshair;
+    }
+    .sig-placeholder {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      color: #ccc;
+      font-size: 15px;
+      pointer-events: none;
+    }
+    .sig-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+    .sig-actions button {
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: 13px;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    .contract-card {
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .contract-card .cc-main { flex: 1; }
+    .contract-card .cc-no { font-size: 12px; color: var(--text-light); }
+    .contract-card .cc-title { font-size: 15px; font-weight: 600; margin: 2px 0; }
+    .badge-signed {
+      display: inline-block; background:#E8F5E9; color:#388E3C;
+      font-size:11px; padding:2px 8px; border-radius:12px; margin-left:6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="navbar">
+      <span class="nav-back" onclick="history.back()">← 返回</span>
+      <h1>电子合同签署</h1>
+      <span style="width:40px;"></span>
+    </div>
+
+    <div class="page" id="contract-page">
+      <div class="empty-state"><div class="empty-icon">⏳</div><p>加载中...</p></div>
+    </div>
+
+    <div class="bottom-nav">
+      <a href="/index.html"><span class="nav-icon">🏠</span>首页</a>
+      <a href="/create.html"><span class="nav-icon">✏️</span>创建</a>
+      <a href="/capsules.html"><span class="nav-icon">📦</span>我的</a>
+      <a href="/profile.html"><span class="nav-icon">👤</span>中心</a>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    if (!requireAuth()) throw new Error('redirect');
+
+    let templateCache = '';
+    let hasDrawn = false;
+
+    async function init() {
+      loadMyContracts();
+      await loadTemplate();
+      renderSignForm();
+      setTimeout(initCanvas, 100);
+    }
+
+    async function loadTemplate() {
+      try {
+        const data = await request('/contracts/template');
+        templateCache = data.body;
+      } catch (e) {
+        templateCache = '（协议加载失败，请稍后重试）';
+      }
+    }
+
+    function renderSignForm() {
+      const page = document.getElementById('contract-page');
+      page.innerHTML = `
+        <div class="card">
+          <div class="card-title">《${'余火·留声 数字遗产托管及内容授权服务协议'}》</div>
+          <div class="contract-text" id="contract-text">${escapeHtml(templateCache)}</div>
+          <div class="form-hint" style="margin-top:6px;">请完整阅读以上条款后再签署。</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">签署人信息</div>
+          <div class="form-group">
+            <label class="form-label">签署人姓名 <span class="required">*</span></label>
+            <input type="text" class="form-input" id="signer_name" placeholder="请输入您的真实姓名">
+          </div>
+          <div class="form-group">
+            <label class="form-label">证件尾号（选填）</label>
+            <input type="text" class="form-input" id="signer_idcard" placeholder="如身份证后4位，用于身份核验" maxlength="6">
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">手写电子签名 <span class="required">*</span></div>
+          <div class="sig-wrap">
+            <canvas id="sig-canvas"></canvas>
+            <div class="sig-placeholder" id="sig-placeholder">在此处手写签名</div>
+          </div>
+          <div class="sig-actions">
+            <button type="button" id="clear-sig">清除重签</button>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-block" id="sign-btn" style="margin-bottom:24px;">确认签署并生效</button>
+
+        <div id="my-contracts"></div>
+      `;
+
+      document.getElementById('clear-sig').addEventListener('click', clearCanvas);
+      document.getElementById('sign-btn').addEventListener('click', submitSign);
+    }
+
+    // ===== 签名板 =====
+    function initCanvas() {
+      const canvas = document.getElementById('sig-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const ratio = Math.max(window.devicePixelRatio || 1, 1);
+      canvas.width = canvas.offsetWidth * ratio;
+      canvas.height = canvas.offsetHeight * ratio;
+      ctx.scale(ratio, ratio);
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.strokeStyle = '#2D1810';
+
+      let drawing = false, lastX = 0, lastY = 0;
+
+      function getPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const p = e.touches ? e.touches[0] : e;
+        return { x: p.clientX - rect.left, y: p.clientY - rect.top };
+      }
+      function start(e) {
+        e.preventDefault();
+        drawing = true;
+        const { x, y } = getPos(e);
+        lastX = x; lastY = y;
+        document.getElementById('sig-placeholder').style.display = 'none';
+        hasDrawn = true;
+      }
+      function move(e) {
+        if (!drawing) return;
+        e.preventDefault();
+        const { x, y } = getPos(e);
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        lastX = x; lastY = y;
+      }
+      function end() { drawing = false; }
+
+      canvas.addEventListener('mousedown', start);
+      canvas.addEventListener('mousemove', move);
+      window.addEventListener('mouseup', end);
+      canvas.addEventListener('touchstart', start, { passive: false });
+      canvas.addEventListener('touchmove', move, { passive: false });
+      canvas.addEventListener('touchend', end);
+    }
+
+    function clearCanvas() {
+      const canvas = document.getElementById('sig-canvas');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      hasDrawn = false;
+      document.getElementById('sig-placeholder').style.display = '';
+    }
+
+    async function submitSign() {
+      const name = document.getElementById('signer_name').value.trim();
+      const idcard = document.getElementById('signer_idcard').value.trim();
+      if (!name) { showToast('请填写签署人姓名'); return; }
+      if (!hasDrawn) { showToast('请先手写签名'); return; }
+
+      const signature = document.getElementById('sig-canvas').toDataURL('image/png');
+      const btn = document.getElementById('sign-btn');
+      btn.disabled = true; btn.textContent = '签署中...';
+
+      try {
+        const data = await request('/contracts', {
+          method: 'POST',
+          body: JSON.stringify({ signer_name: name, signer_idcard_mask: idcard, signature }),
+        });
+        showToast(data.message);
+        if (data.contract && data.contract.id) {
+          setTimeout(() => window.open(`/api/contracts/${data.contract.id}/view?t=${encodeURIComponent(getToken())}`, '_blank'), 800);
+        }
+        init();
+      } catch (err) {
+        showToast(err.message);
+        btn.disabled = false; btn.textContent = '确认签署并生效';
+      }
+    }
+
+    async function loadMyContracts() {
+      try {
+        const data = await request('/contracts');
+        const box = document.getElementById('my-contracts');
+        if (!box) return;
+        if (!data.contracts.length) {
+          box.innerHTML = '';
+          return;
+        }
+        box.innerHTML = `<div class="card-title" style="margin:8px 0 12px;">我的合同（${data.contracts.length}）</div>` +
+          data.contracts.map(c => `
+            <div class="contract-card">
+              <div class="cc-main">
+                <div class="cc-title">${escapeHtml(c.title)}<span class="badge-signed">已签署</span></div>
+                <div class="cc-no">编号 ${escapeHtml(c.contract_no)} · ${formatTime(c.signed_at)}</div>
+              </div>
+              <a class="btn btn-outline" style="padding:8px 14px;font-size:13px;"
+                 href="/api/contracts/${c.id}/view?t=${encodeURIComponent(getToken())}" target="_blank">查看</a>
+            </div>
+          `).join('');
+      } catch (e) {}
+    }
+
+    function formatTime(iso) {
+      if (!iso) return '';
+      const d = new Date(iso);
+      const p = n => String(n).padStart(2, '0');
+      return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+    }
+
+    function escapeHtml(str = '') {
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>个人中心 — 余火·留声</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <div class="navbar">
+      <h1>个人中心</h1>
+      <span style="width:40px;"></span>
+    </div>
+
+    <div class="page" id="profile-page">
+      <div class="empty-state"><div class="empty-icon">⏳</div><p>加载中...</p></div>
+    </div>
+
+    <div class="bottom-nav">
+      <a href="/index.html"><span class="nav-icon">🏠</span>首页</a>
+      <a href="/create.html"><span class="nav-icon">✏️</span>创建</a>
+      <a href="/capsules.html"><span class="nav-icon">📦</span>我的</a>
+      <a href="/profile.html" class="active"><span class="nav-icon">👤</span>我的</a>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    if (!requireAuth()) throw new Error('redirect');
+
+    async function loadProfile() {
+      try {
+        const data = await request('/auth/profile');
+        const u = data.user;
+        document.getElementById('profile-page').innerHTML = `
+          <div class="card" style="text-align:center;">
+            <div style="width:64px;height:64px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 12px;">
+              ${u.name ? u.name[0] : '👤'}
+            </div>
+            <h2 style="font-size:20px;margin-bottom:4px;">${u.name || '未设置姓名'}</h2>
+            <p style="font-size:14px;color:var(--text-light);">${u.phone}</p>
+          </div>
+
+          <div class="card">
+            <div class="card-title">个人信息</div>
+            <form id="profile-form">
+              <div class="form-group">
+                <label class="form-label">姓名</label>
+                <input type="text" class="form-input" id="name" value="${u.name || ''}">
+              </div>
+              <div class="form-group">
+                <label class="form-label">邮箱</label>
+                <input type="email" class="form-input" id="email" value="${u.email || ''}">
+              </div>
+              <div class="form-group">
+                <label class="form-label">紧急联系人</label>
+                <input type="text" class="form-input" id="emergency_contact" value="${u.emergency_contact || ''}" placeholder="用于触发通知">
+              </div>
+              <div class="form-group">
+                <label class="form-label">紧急联系人电话</label>
+                <input type="tel" class="form-input" id="emergency_phone" value="${u.emergency_phone || ''}">
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">保存修改</button>
+            </form>
+          </div>
+
+          <div class="card" id="contract-entry">
+            <div class="card-title">电子合同</div>
+            <div id="contract-status"><p style="font-size:14px;color:var(--text-light);">加载中...</p></div>
+          </div>
+
+          <div class="card">
+            <button class="btn btn-danger btn-block" onclick="logout()">退出登录</button>
+          </div>
+        `;
+
+        loadContractEntry();
+
+        document.getElementById('profile-form').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          try {
+            await request('/auth/profile', {
+              method: 'PUT',
+              body: JSON.stringify({
+                name: document.getElementById('name').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                emergency_contact: document.getElementById('emergency_contact').value.trim(),
+                emergency_phone: document.getElementById('emergency_phone').value.trim(),
+              }),
+            });
+            showToast('保存成功');
+          } catch (err) {
+            showToast(err.message);
+          }
+        });
+      } catch (err) {
+        document.getElementById('profile-page').innerHTML = `<p style="text-align:center;color:var(--danger);">${err.message}</p>`;
+      }
+    }
+
+    async function loadContractEntry() {
+      const box = document.getElementById('contract-status');
+      if (!box) return;
+      try {
+        const data = await request('/contracts');
+        if (data.contracts && data.contracts.length) {
+          const c = data.contracts[0];
+          box.innerHTML = `
+            <p style="font-size:14px;color:var(--success);margin-bottom:8px;">✓ 您已签署服务协议</p>
+            <p style="font-size:13px;color:var(--text-light);margin-bottom:10px;">编号 ${c.contract_no}</p>
+            <a class="btn btn-outline btn-block" href="/contract.html">查看 / 管理合同</a>
+          `;
+        } else {
+          box.innerHTML = `
+            <p style="font-size:14px;color:var(--text-light);margin-bottom:10px;">您尚未签署《数字遗产托管及内容授权服务协议》</p>
+            <a class="btn btn-primary btn-block" href="/contract.html">去签署电子合同</a>
+          `;
+        }
+      } catch (e) {
+        box.innerHTML = `<a class="btn btn-outline btn-block" href="/contract.html">电子合同</a>`;
+      }
+    }
+
+    window.logout = function() {
+      if (!confirm('确定退出登录？')) return;
+      clearToken();
+      window.location.href = '/index.html';
+    };
+
+    loadProfile();
+  </script>
+</body>
+</html>

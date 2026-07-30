@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>创建胶囊 — 余火·留声</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <div class="navbar">
+      <span class="nav-back" onclick="history.back()">← 返回</span>
+      <h1>创建时光胶囊</h1>
+      <span style="width:40px;"></span>
+    </div>
+
+    <div class="page">
+      <!-- Step 1: 内容信息 -->
+      <div class="card">
+        <div class="card-title">第一步：写下你的内容</div>
+
+        <div class="form-group">
+          <label class="form-label">标题 <span class="required">*</span></label>
+          <input type="text" class="form-input" id="title" placeholder="给这封胶囊起个名字" maxlength="50">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">内容类型</label>
+          <select class="form-select" id="content_type">
+            <option value="text">文字</option>
+            <option value="audio">录音</option>
+            <option value="image">图片</option>
+            <option value="video">视频</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="text-area">
+          <label class="form-label">文字内容</label>
+          <textarea class="form-textarea" id="text_content" placeholder="写下你想说的话..." maxlength="5000"></textarea>
+          <div class="form-hint" id="char-count">0 / 5000 字</div>
+        </div>
+
+        <div class="form-group" id="file-area" style="display:none;">
+          <label class="form-label">上传文件</label>
+          <div class="upload-area" id="upload-area">
+            <div class="upload-icon">📎</div>
+            <div class="upload-text">点击选择文件</div>
+          </div>
+          <input type="file" id="file-input" style="display:none;">
+          <div id="file-info-display"></div>
+        </div>
+      </div>
+
+      <!-- Step 2: 投递设置 -->
+      <div class="card">
+        <div class="card-title">第二步：设置投递</div>
+
+        <div class="form-group">
+          <label class="form-label">收件人姓名 <span class="required">*</span></label>
+          <input type="text" class="form-input" id="recipient_name" placeholder="对方的名字">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">收件人邮箱 <span class="required">*</span></label>
+          <input type="email" class="form-input" id="recipient_email" placeholder="对方将在此邮箱收到内容">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">与收件人的关系（选填）</label>
+          <input type="text" class="form-input" id="recipient_relation" placeholder="如：女儿、朋友、前同事">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">触发方式 <span class="required">*</span></label>
+          <select class="form-select" id="trigger_type">
+            <option value="scheduled">固定日期触发</option>
+            <option value="immediate">立即发送（测试用）</option>
+            <option value="manual">手动触发（保存后随时发送）</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="trigger-date-group">
+          <label class="form-label">触发日期</label>
+          <input type="datetime-local" class="form-input" id="trigger_date">
+          <div class="form-hint">到达此时间后，系统自动发送</div>
+        </div>
+      </div>
+
+      <!-- Step 3: 授权 -->
+      <div class="card">
+        <div class="card-title">第三步：授权与确认</div>
+
+        <div class="form-group">
+          <label class="form-label">用户协议与内容授权</label>
+          <div class="agreement-box">
+            <strong>《余火·留声 用户协议与隐私政策》</strong><br><br>
+            1. <strong>内容存储</strong>：您上传的所有内容将经过 AES-256 加密后存储，仅您本人可查看。<br>
+            2. <strong>触发与发送</strong>：系统仅在您设定的触发条件满足时，将内容通过邮件发送至指定收件人。<br>
+            3. <strong>内容授权</strong>：您可选择是否授权将内容匿名化后用于公益展示。此选项独立于投递设置。<br>
+            4. <strong>数据保留</strong>：您可随时查看、修改或删除您的胶囊内容。已送达的胶囊将保留发送记录。<br>
+            5. <strong>免责条款</strong>：因不可抗力（服务器故障、邮件服务商问题等）导致的投递延迟或失败，平台将尽力补救但不承担连带责任。<br>
+            6. <strong>内容审核</strong>：平台有权对涉嫌违法违规的内容进行屏蔽或删除。<br><br>
+            点击下方"同意并创建"即表示您已阅读并同意以上全部条款。
+          </div>
+        </div>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="public_authorize">
+          <label for="public_authorize">我同意将此内容在匿名处理后用于公益展示/公共展示（可选）</label>
+        </div>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="agree_terms" required>
+          <label for="agree_terms">我已阅读并同意《用户协议与隐私政策》</label>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-block" id="submit-btn" style="margin-bottom:20px;">同意并创建胶囊</button>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    if (!requireAuth()) throw new Error('redirect');
+
+    const contentTypeSelect = document.getElementById('content_type');
+    const textArea = document.getElementById('text-area');
+    const fileArea = document.getElementById('file-area');
+    const textContent = document.getElementById('text_content');
+    const charCount = document.getElementById('char-count');
+    const uploadArea = document.getElementById('upload-area');
+    const fileInput = document.getElementById('file-input');
+    const fileInfoDisplay = document.getElementById('file-info-display');
+    const triggerTypeSelect = document.getElementById('trigger_type');
+    const triggerDateGroup = document.getElementById('trigger-date-group');
+
+    contentTypeSelect.addEventListener('change', () => {
+      const type = contentTypeSelect.value;
+      if (type === 'text') {
+        textArea.style.display = '';
+        fileArea.style.display = 'none';
+      } else {
+        textArea.style.display = 'none';
+        fileArea.style.display = '';
+      }
+    });
+
+    textContent.addEventListener('input', () => {
+      charCount.textContent = `${textContent.value.length} / 5000 字`;
+    });
+
+    triggerTypeSelect.addEventListener('change', () => {
+      triggerDateGroup.style.display = triggerTypeSelect.value === 'scheduled' ? '' : 'none';
+    });
+
+    uploadArea.addEventListener('click', () => fileInput.click());
+
+    let selectedFile = null;
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (file.size > 100 * 1024 * 1024) {
+        showToast('文件不能超过100MB');
+        fileInput.value = '';
+        return;
+      }
+      selectedFile = file;
+      const sizeMB = (file.size / 1024 / 1024).toFixed(2);
+      fileInfoDisplay.innerHTML = `
+        <div class="file-info">
+          <span>📎 ${file.name} (${sizeMB}MB)</span>
+          <span style="color:var(--danger);cursor:pointer;" onclick="removeFile()">✕</span>
+        </div>
+      `;
+    });
+
+    window.removeFile = function() {
+      selectedFile = null;
+      fileInput.value = '';
+      fileInfoDisplay.innerHTML = '';
+    };
+
+    document.getElementById('submit-btn').addEventListener('click', async () => {
+      const title = document.getElementById('title').value.trim();
+      const contentType = contentTypeSelect.value;
+      const textVal = textContent.value.trim();
+      const recipientName = document.getElementById('recipient_name').value.trim();
+      const recipientEmail = document.getElementById('recipient_email').value.trim();
+      const recipientRelation = document.getElementById('recipient_relation').value.trim();
+      const triggerType = triggerTypeSelect.value;
+      const triggerDate = document.getElementById('trigger_date').value;
+      const publicAuthorized = document.getElementById('public_authorize').checked;
+      const agreeTerms = document.getElementById('agree_terms').checked;
+
+      if (!title) { showToast('请填写标题'); return; }
+      if (contentType === 'text' && !textVal) { showToast('请填写文字内容'); return; }
+      if (contentType !== 'text' && !selectedFile) { showToast('请上传文件'); return; }
+      if (!recipientName) { showToast('请填写收件人姓名'); return; }
+      if (!recipientEmail) { showToast('请填写收件人邮箱'); return; }
+      if (triggerType === 'scheduled' && !triggerDate) { showToast('请选择触发日期'); return; }
+      if (!agreeTerms) { showToast('请同意用户协议'); return; }
+
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      btn.textContent = '创建中...';
+
+      try {
+        let triggerDateISO = null;
+        if (triggerType === 'scheduled' && triggerDate) {
+          triggerDateISO = new Date(triggerDate).toISOString();
+        }
+
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('content_type', contentType);
+        formData.append('text_content', textVal);
+        formData.append('recipient_name', recipientName);
+        formData.append('recipient_email', recipientEmail);
+        formData.append('recipient_relation', recipientRelation);
+        formData.append('trigger_type', triggerType);
+        formData.append('trigger_date', triggerDateISO || '');
+        formData.append('public_authorized', publicAuthorized ? '1' : '0');
+        formData.append('agreement_signed', '1');
+        if (selectedFile) {
+          formData.append('file', selectedFile);
+        }
+
+        const data = await uploadFile('/capsules', formData);
+        showToast(data.message);
+
+        if (triggerType === 'immediate' && data.capsule) {
+          showToast('邮件正在发送中，请稍候...', 3000);
+        }
+
+        setTimeout(() => { window.location.href = '/capsules.html'; }, 2000);
+      } catch (err) {
+        showToast(err.message);
+        btn.disabled = false;
+        btn.textContent = '同意并创建胶囊';
+      }
+    });
+  </script>
+</body>
+</html>
