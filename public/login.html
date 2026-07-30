@@ -32,7 +32,7 @@
       </div>
 
       <div style="text-align:center;padding:12px;">
-        <a href="/index.html" style="font-size:13px;color:var(--text-light);">← 返回首页</a>
+        <a href="/app.html" style="font-size:13px;color:var(--text-light);">← 返回首页</a>
       </div>
     </div>
   </div>
@@ -50,7 +50,7 @@
         });
         setToken(data.token);
         showToast('登录成功');
-        setTimeout(() => { window.location.href = '/index.html'; }, 1000);
+        setTimeout(() => { window.location.href = '/app.html'; }, 1000);
       } catch (err) {
         showToast(err.message);
       }

@@ -18,7 +18,7 @@
     </div>
 
     <div class="bottom-nav">
-      <a href="/index.html"><span class="nav-icon">🏠</span>首页</a>
+      <a href="/app.html"><span class="nav-icon">🏠</span>首页</a>
       <a href="/create.html"><span class="nav-icon">✏️</span>创建</a>
       <a href="/capsules.html"><span class="nav-icon">📦</span>我的</a>
       <a href="/profile.html" class="active"><span class="nav-icon">👤</span>我的</a>
@@ -125,7 +125,7 @@
     window.logout = function() {
       if (!confirm('确定退出登录？')) return;
       clearToken();
-      window.location.href = '/index.html';
+      window.location.href = '/app.html';
     };
 
     loadProfile();
