@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: yuhuo-liusheng
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    branch: master
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MAIL_SERVICE
+        value: 163
+      - key: SMTP_HOST
+        value: smtp.163.com
+      - key: SMTP_PORT
+        value: "465"
+      - key: SMTP_USER
+        value: changyeyuhuo2026@163.com
+      - key: WORK_MAIL
+        value: changyeyuhuo2026@163.com
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        value: admin123456
+      - key: APP_URL
+        value: https://yuhuo-liusheng.onrender.com
+      # 敏感值：用户首次部署时在 Render 控制台填写
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SMTP_PASS
+        sync: false

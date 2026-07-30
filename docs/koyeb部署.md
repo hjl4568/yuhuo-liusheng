@@ -1,5 +1,7 @@
 # 用 Koyeb 部署「长夜余火 / 余火·留声」后端
 
+> ⚠️ **已失效**：Koyeb 已被 Mistral 收购，登录后控制台已变成 AI 工作负载方向，原来的免费 Web Service 部署入口不再可用。请改看 [`render部署.md`](./render部署.md) 用 Render 部署。
+
 仓库已 Koyeb 就绪：监听 `process.env.PORT`（默认 3000，绑所有网卡）、`npm start` 存在、Dockerfile 已带 better-sqlite3 原生编译工具链。下面两种方式任选，推荐方式一（一键）。
 
 ## 方式一：一键部署链接（最快）
