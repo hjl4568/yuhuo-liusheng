@@ -1,10 +1,11 @@
 const express = require('express');
 const { db } = require('../db');
+const { sendLeadNotification } = require('../services/email');
 
 const router = express.Router();
 
 // 公开：早期体验意向登记（"用户填信息"板块）
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const { name, phone, email, content_types, want_early, message, source } = req.body || {};
 
   const nameStr = (name || '').toString().trim();
@@ -28,6 +29,13 @@ router.post('/', (req, res) => {
     INSERT INTO leads (name, phone, email, content_types, want_early, message, source, ip_address)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `).run(nameStr, phoneStr, emailStr, types, want, msg, (source || 'intro').toString().trim(), ip);
+
+  // 后端在线时，自动把登记通知发到项目邮箱（失败不影响入库）
+  try {
+    await sendLeadNotification({ name: nameStr, phone: phoneStr, email: emailStr, content_types: types, want_early: want, message: msg });
+  } catch (e) {
+    console.error('[Lead] 邮件通知失败:', e.message);
+  }
 
   res.json({ message: '登记成功，感谢你愿意把心事交托给我们 🔥', id: info.lastInsertRowid });
 });

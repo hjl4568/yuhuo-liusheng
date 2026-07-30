@@ -25,6 +25,7 @@ app.use('/api/capsules', require('./routes/capsules'));
 app.use('/api/contracts', require('./routes/contract'));
 app.use('/api/leads', require('./routes/leads'));
 app.use('/api/admin', require('./routes/admin'));
+app.use('/api', require('./routes/stats'));
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

@@ -7,6 +7,7 @@
   <meta name="description" content="长夜余火（余火·留声）：一个数字遗产时光胶囊平台。表达与交还，不是信托；主动送达像快递；在指定的未来时刻，把此刻的声音安静交还。">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/nightfire.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
   <div class="nf-stars" id="stars"></div>
@@ -37,6 +38,7 @@
     <button class="nf-tab" data-tab="vision">产品愿景</button>
     <button class="nf-tab" data-tab="compliance">合规 · e签宝</button>
     <button class="nf-tab" data-tab="lead">登记意向</button>
+    <button class="nf-tab" data-tab="data">实时数据 · LIVE</button>
   </nav>
 
   <div class="nf-wrap">
@@ -240,8 +242,8 @@
         </div>
 
         <p class="nf-note">
-          接入 e签宝 的前提：需<em>企业 / 个体工商户主体</em> + 注册 e签宝开发者 + API 对接 + 付费。详细方案见
-          <a href="/docs/合规与e签宝方案.md">合规与 e签宝方案文档</a>。
+          接入 e签宝 的前提：需<em>企业 / 个体工商户主体</em> + 注册 e签宝开发者 + API 对接 + 付费。          详细方案见
+          <a href="/docs/compliance-esign.md">合规与 e签宝方案文档</a>。
         </p>
       </div>
     </section>
@@ -287,6 +289,31 @@
           <button type="submit" class="nf-submit">提交登记</button>
           <div class="nf-lead-msg" id="lead-msg"></div>
         </form>
+      </div>
+    </section>
+
+    <!-- ============ 实时数据 ============ -->
+    <section class="nf-panel" id="panel-data">
+      <div class="reveal">
+        <div class="nf-eyebrow">实时数据 · LIVE</div>
+        <h2 class="nf-title">此刻，有多少人一起守着火苗</h2>
+        <p class="nf-lead">所有数字均来自真实访问与真实登记，匿名聚合、不含任何个人隐私。它们会随你我的同行，一点点长大。</p>
+        <div class="nf-stat-row">
+          <div class="nf-stat"><div class="num" id="st-total">—</div><div class="lab">累计访问</div></div>
+          <div class="nf-stat"><div class="num" id="st-today">—</div><div class="lab">今日访问</div></div>
+          <div class="nf-stat"><div class="num" id="st-leads">—</div><div class="lab">登记人数</div></div>
+          <div class="nf-stat"><div class="num" id="st-donors">—</div><div class="lab">赞赏人次</div></div>
+          <div class="nf-stat wide"><div class="num" id="st-amount">—</div><div class="lab">赞赏总额（元）</div></div>
+        </div>
+        <div class="nf-charts">
+          <div class="nf-chart-box"><h4>登记内容类型</h4><canvas id="chart-type" height="200"></canvas></div>
+          <div class="nf-chart-box"><h4>近 7 日访问</h4><canvas id="chart-visit" height="200"></canvas></div>
+        </div>
+        <div class="nf-donor-feed">
+          <h4>最新赞赏（匿名）</h4>
+          <div id="donor-list"><div class="nf-empty">还没有人留下赞赏，期待你的第一束火光 🔥</div></div>
+        </div>
+        <p class="nf-data-note" id="data-note">数据每 10 秒自动刷新。</p>
       </div>
     </section>
 
@@ -340,9 +367,60 @@
           const target = document.getElementById('panel-' + id);
           if (target) target.classList.add('active');
           window.scrollTo({ top: 0, behavior: 'smooth' });
+          if (id === 'data') { loadStats(); if (!statsTimer) statsTimer = setInterval(loadStats, 10000); }
+          else { if (statsTimer) { clearInterval(statsTimer); statsTimer = null; } }
         });
       });
     })();
+
+    // 访问计数（后端存在时才有效；失败静默）
+    try { fetch('/api/visit', { method: 'POST' }).catch(() => {}); } catch (e) {}
+
+    // ---------- 实时数据 ----------
+    let statsTimer = null, typeChart = null, visitChart = null;
+    function fmt(n){ return (n == null ? 0 : n).toLocaleString('zh-CN'); }
+    function esc(s){ return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    const GOLD = ['#f0b35a','#d98335','#ffd7a0','#b8743a','#e0a85c','#c98a45','#a8652c'];
+    function renderStats(d){
+      document.getElementById('st-total').textContent = fmt(d.totalVisits);
+      document.getElementById('st-today').textContent = fmt(d.todayVisits);
+      document.getElementById('st-leads').textContent = fmt(d.leadsTotal);
+      document.getElementById('st-donors').textContent = fmt(d.donorsTotal);
+      document.getElementById('st-amount').textContent = '¥' + fmt(Math.round(d.donorAmount));
+      const list = document.getElementById('donor-list');
+      if (!d.recentDonors || !d.recentDonors.length){
+        list.innerHTML = '<div class="nf-empty">还没有人留下赞赏，期待你的第一束火光 🔥</div>';
+      } else {
+        list.innerHTML = d.recentDonors.map(x => {
+          const t = (x.created_at || '').replace('T',' ').slice(0, 16);
+          const msg = x.message ? esc(x.message) : '默默支持了火苗';
+          return '<div class="nf-donor"><span class="amt">¥' + fmt(Math.round(x.amount)) + '</span><span class="msg">' + msg + '</span><span class="time">' + t + '</span></div>';
+        }).join('');
+      }
+      const labels = Object.keys(d.byType || {}), vals = labels.map(k => d.byType[k]);
+      if (typeChart){ typeChart.data.labels = labels; typeChart.data.datasets[0].data = vals; typeChart.update(); }
+      else if (window.Chart && labels.length){
+        typeChart = new Chart(document.getElementById('chart-type'), {
+          type: 'doughnut',
+          data: { labels, datasets: [{ data: vals, backgroundColor: GOLD, borderColor: 'rgba(8,10,18,0.6)', borderWidth: 2 }] },
+          options: { plugins: { legend: { position: 'bottom', labels: { color: '#b3a78d', font: { size: 11 } } } }, cutout: '58%' }
+        });
+      }
+      const vl = (d.daily || []).map(x => x.date.slice(5)), vv = (d.daily || []).map(x => x.count);
+      if (visitChart){ visitChart.data.labels = vl; visitChart.data.datasets[0].data = vv; visitChart.update(); }
+      else if (window.Chart){
+        visitChart = new Chart(document.getElementById('chart-visit'), {
+          type: 'bar',
+          data: { labels: vl, datasets: [{ data: vv, backgroundColor: 'rgba(240,179,90,0.55)', borderColor: '#f0b35a', borderWidth: 1, borderRadius: 6 }] },
+          options: { plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#857c6a' }, grid: { display: false } }, y: { ticks: { color: '#857c6a', precision: 0 }, grid: { color: 'rgba(232,178,110,0.08)' } } } }
+        });
+      }
+    }
+    function loadStats(){
+      fetch('/api/stats/public').then(r => r.json()).then(renderStats).catch(() => {
+        document.getElementById('data-note').textContent = '后端尚未部署，数据将在上线后实时更新。';
+      });
+    }
 
     // 滚动揭示
     (function () {

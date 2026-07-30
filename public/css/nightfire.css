@@ -218,6 +218,28 @@
 .nf-footer{text-align:center;font-size:12px;color:var(--faint);line-height:2;margin-top:40px;}
 .nf-footer b{color:var(--text-light);font-weight:500;}
 
+/* ---------- 实时数据 ---------- */
+.nf-stat-row{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:6px 0 4px;}
+.nf-stat{background:linear-gradient(155deg,rgba(40,30,18,0.42),rgba(20,18,30,0.34));
+  border:1px solid var(--border);border-radius:14px;padding:16px 14px;text-align:center;}
+.nf-stat .num{font-family:var(--serif);font-size:26px;font-weight:700;color:var(--primary);line-height:1.1;}
+.nf-stat .lab{font-size:12px;color:var(--text-light);margin-top:6px;letter-spacing:.5px;}
+.nf-stat.wide{grid-column:span 2;}
+.nf-charts{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px;}
+.nf-chart-box{background:var(--card-solid);border:1px solid var(--border);border-radius:14px;padding:14px;backdrop-filter:blur(10px);}
+.nf-chart-box h4{font-family:var(--serif);font-size:14px;color:var(--primary-strong);margin:0 0 10px;font-weight:600;}
+.nf-chart-box canvas{max-width:100%;}
+.nf-donor-feed{margin-top:18px;background:var(--card-solid);border:1px solid var(--border);border-radius:14px;padding:16px;backdrop-filter:blur(10px);}
+.nf-donor-feed h4{font-family:var(--serif);font-size:14px;color:var(--primary-strong);margin:0 0 12px;font-weight:600;}
+.nf-donor{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px dashed var(--border);font-size:13px;color:var(--text-light);}
+.nf-donor:last-child{border-bottom:none;}
+.nf-donor .amt{font-family:var(--serif);font-weight:700;color:var(--primary);font-size:15px;min-width:54px;}
+.nf-donor .msg{flex:1;color:var(--text-light);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.nf-donor .time{color:var(--faint);font-size:11.5px;white-space:nowrap;}
+.nf-empty{font-size:13px;color:var(--faint);text-align:center;padding:18px 0;}
+.nf-data-note{font-size:12px;color:var(--faint);margin-top:14px;text-align:center;}
+@media (max-width:560px){.nf-charts{grid-template-columns:1fr;}}
+
 /* 滚动揭示 */
 .reveal{opacity:0;transform:translateY(30px);filter:blur(6px);
   transition:opacity .8s cubic-bezier(.2,.7,.3,1),transform .8s cubic-bezier(.2,.7,.3,1),filter .8s ease;}

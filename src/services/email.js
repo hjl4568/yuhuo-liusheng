@@ -75,4 +75,35 @@ async function sendCapsuleEmail({ recipientName, recipientEmail, senderName, tit
   };
 }
 
-module.exports = { init, sendCapsuleEmail };
+// 新的早期体验意向登记 → 通知到项目邮箱（后端上线后自动送达）
+async function sendLeadNotification({ name, phone, email, content_types, want_early, message }) {
+  if (!transporter) await init();
+  const WORK_MAIL = process.env.WORK_MAIL || 'changyeyuhuo2026@163.com';
+  const row = (k, v) => `<tr><td style="padding:8px 12px;color:#888;font-size:13px;width:90px;vertical-align:top;">${k}</td><td style="padding:8px 12px;font-size:14px;color:#333;">${v || '（未填）'}</td></tr>`;
+  const html = `
+    <div style="max-width:560px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+      <div style="background:linear-gradient(135deg,#E8853A,#D4691E);padding:22px;border-radius:12px 12px 0 0;">
+        <h2 style="color:#fff;margin:0;font-size:19px;">长夜余火 · 新的意向登记</h2>
+      </div>
+      <div style="background:#FFF8F0;padding:20px;border-radius:0 0 12px 12px;border:1px solid #F0E0D0;">
+        <table style="border-collapse:collapse;width:100%;">
+          ${row('称呼', name)}
+          ${row('手机', phone)}
+          ${row('邮箱', email)}
+          ${row('想留内容', content_types)}
+          ${row('早期体验', want_early ? '愿意' : '先了解')}
+          ${row('留言', message)}
+        </table>
+        <p style="font-size:12px;color:#999;margin-top:16px;text-align:center;">此邮件由「长夜余火」系统自动发送</p>
+      </div>
+    </div>`;
+  const info = await transporter.sendMail({
+    from: `"长夜余火意向登记" <${process.env.SMTP_USER}>`,
+    to: WORK_MAIL,
+    subject: '长夜余火 · 新的早期体验意向登记',
+    html,
+  });
+  return { messageId: info.messageId };
+}
+
+module.exports = { init, sendCapsuleEmail, sendLeadNotification };

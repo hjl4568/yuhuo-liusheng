@@ -48,6 +48,22 @@
         <p style="font-size:12px;color:var(--text-light);margin-top:8px;text-align:right;">¥1,800 / ¥10,000（示例，可改）</p>
       </div>
 
+      <div class="card">
+        <div class="card-title">留下你的火光（匿名记录）</div>
+        <p style="font-size:13px;color:var(--text-light);line-height:1.8;margin-bottom:12px;">
+          扫码赞赏后，可在这里留下金额与一句话，我们会匿名展示在介绍页的「实时数据」里，让火苗被看见。
+        </p>
+        <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+          <div style="flex:1;min-width:120px;">
+            <div class="form-label" style="font-size:13px;margin-bottom:6px;">赞赏金额（元）</div>
+            <input id="donate-amount" type="number" min="1" step="0.01" placeholder="如 20" class="form-input">
+          </div>
+          <button id="donate-submit" class="btn btn-primary" style="white-space:nowrap;">记录这一束火光</button>
+        </div>
+        <textarea id="donate-msg" placeholder="想留给团队或世界的一句话（选填，匿名展示）" class="form-textarea" style="margin-top:10px;"></textarea>
+        <div id="donate-result" style="font-size:13px;margin-top:10px;min-height:16px;"></div>
+      </div>
+
       <div class="card" style="text-align:center;font-size:12px;color:var(--text-light);line-height:1.95;">
         所有支持均出于自愿，可随时停止。<br>我们不承诺任何对价回报，只把这份心意记在心里。
       </div>
@@ -72,5 +88,23 @@
       </a>
     </div>
   </div>
+
+  <script>
+    const dBtn = document.getElementById('donate-submit');
+    dBtn && dBtn.addEventListener('click', async () => {
+      const amt = parseFloat(document.getElementById('donate-amount').value);
+      const msg = document.getElementById('donate-msg').value.trim();
+      const r = document.getElementById('donate-result');
+      if (!amt || amt <= 0){ r.style.color = 'var(--danger)'; r.textContent = '请填写大于 0 的金额'; return; }
+      r.style.color = 'var(--text-light)'; r.textContent = '记录中…';
+      try {
+        const res = await fetch('/api/donors', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ amount: amt, message: msg }) });
+        if (res.ok){ r.style.color = 'var(--success)'; r.textContent = '已匿名记录，谢谢你的火光 🔥'; document.getElementById('donate-amount').value = ''; document.getElementById('donate-msg').value = ''; }
+        else throw new Error('fail');
+      } catch (e) {
+        r.style.color = 'var(--warning)'; r.textContent = '记录接口暂不可用（需后端部署），但你的心意已收到 ❤';
+      }
+    });
+  </script>
 </body>
 </html>

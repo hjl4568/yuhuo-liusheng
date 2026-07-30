@@ -96,6 +96,24 @@ function init() {
       ip_address TEXT DEFAULT '',
       created_at TEXT DEFAULT (datetime('now'))
     );
+
+    CREATE TABLE IF NOT EXISTS visits (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      date TEXT UNIQUE NOT NULL,
+      count INTEGER DEFAULT 0
+    );
+
+    CREATE TABLE IF NOT EXISTS visit_dedup (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      k TEXT UNIQUE NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS donors (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      amount REAL DEFAULT 0,
+      message TEXT DEFAULT '',
+      created_at TEXT DEFAULT (datetime('now'))
+    );
   `);
 
   const adminUsername = process.env.ADMIN_USERNAME || 'admin';
