@@ -3,38 +3,57 @@ const nodemailer = require('nodemailer');
 let transporter = null;
 let testAccount = null;
 
-async function init() {
-  const service = process.env.MAIL_SERVICE || 'ethereal';
+// 启动时初始化：仅当配置了真实 SMTP 才建连；否则不发起任何网络请求（避免云端启动卡死/假账号）
+function init() {
+  const service = process.env.MAIL_SERVICE;
+  const hasSmtp = service && service !== 'ethereal' && process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS;
 
-  if (service === 'ethereal') {
-    testAccount = await nodemailer.createTestAccount();
-    transporter = nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
-      port: 587,
-      secure: false,
-      auth: {
-        user: testAccount.user,
-        pass: testAccount.pass,
-      },
-    });
-    console.log(`[Mail] Ethereal test account: ${testAccount.user}`);
-  } else {
+  if (hasSmtp) {
     transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || '465'),
-      secure: parseInt(process.env.SMTP_PORT || '465') === 465,
+      port: parseInt(process.env.SMTP_PORT || '465', 10),
+      secure: parseInt(process.env.SMTP_PORT || '465', 10) === 465,
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
       },
     });
     console.log(`[Mail] SMTP configured: ${process.env.SMTP_USER}`);
+  } else if (service === 'ethereal') {
+    // 仅本地开发：首次发送时再惰性创建 Ethereal 测试账号
+    transporter = null;
+    console.log('[Mail] MAIL_SERVICE=ethereal — 首次发送时惰性使用 Ethereal 测试账号（仅开发用）。');
+  } else {
+    transporter = null;
+    console.log('[Mail] 未配置 SMTP — 邮件将被跳过。设置 MAIL_SERVICE + SMTP_* 后可启用发送。');
   }
 }
 
+async function ensureTransporter() {
+  if (transporter) return true;
+  if (process.env.MAIL_SERVICE === 'ethereal') {
+    try {
+      testAccount = await nodemailer.createTestAccount();
+      transporter = nodemailer.createTransport({
+        host: 'smtp.ethereal.email',
+        port: 587,
+        secure: false,
+        auth: { user: testAccount.user, pass: testAccount.pass },
+      });
+      return true;
+    } catch (e) {
+      console.error('[Mail] Ethereal 初始化失败:', e.message);
+      return false;
+    }
+  }
+  return false;
+}
+
 async function sendCapsuleEmail({ recipientName, recipientEmail, senderName, title, textContent, downloadUrl, relation }) {
-  if (!transporter) {
-    await init();
+  const ok = await ensureTransporter();
+  if (!ok) {
+    console.log('[Mail] sendCapsuleEmail 跳过：未配置可用邮件服务');
+    return { skipped: true };
   }
 
   const greeting = relation ? `（来自您的${relation}）` : '';
@@ -69,15 +88,16 @@ async function sendCapsuleEmail({ recipientName, recipientEmail, senderName, tit
     previewUrl = nodemailer.getTestMessageUrl(info);
   }
 
-  return {
-    messageId: info.messageId,
-    previewUrl,
-  };
+  return { messageId: info.messageId, previewUrl };
 }
 
-// 新的早期体验意向登记 → 通知到项目邮箱（后端上线后自动送达）
+// 早期体验意向登记 → 通知到项目邮箱（后端上线且配置 SMTP 后自动送达）
 async function sendLeadNotification({ name, phone, email, content_types, want_early, message }) {
-  if (!transporter) await init();
+  const ok = await ensureTransporter();
+  if (!ok) {
+    console.log('[Mail] sendLeadNotification 跳过：未配置可用邮件服务');
+    return { skipped: true };
+  }
   const WORK_MAIL = process.env.WORK_MAIL || 'changyeyuhuo2026@163.com';
   const row = (k, v) => `<tr><td style="padding:8px 12px;color:#888;font-size:13px;width:90px;vertical-align:top;">${k}</td><td style="padding:8px 12px;font-size:14px;color:#333;">${v || '（未填）'}</td></tr>`;
   const html = `

@@ -1,8 +1,13 @@
 const Database = require('better-sqlite3');
+const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 
 const DB_PATH = path.join(__dirname, '..', 'data', 'yuhuo.db');
+
+// 确保数据库所在目录存在（云端全新部署时 data/ 不存在，必须先创建，否则启动即崩）
+fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
+
 const db = new Database(DB_PATH);
 
 db.pragma('journal_mode = WAL');

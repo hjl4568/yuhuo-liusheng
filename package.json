@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "余火·留声 - 时光胶囊式内容投递平台",
   "main": "src/index.js",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "start": "node src/index.js",
     "dev": "node --watch src/index.js"

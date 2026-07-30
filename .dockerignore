@@ -5,5 +5,4 @@ data
 *.db
 uploads
 docs
-public
 npm-debug.log
