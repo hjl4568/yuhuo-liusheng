@@ -5,10 +5,20 @@
  *       用户生成内容（donor-list / lead-msg）跳过，不被改写。
  */
 (function () {
-  const MAP = window.I18N_MAP || {};
-  const ATTR = window.I18N_ATTR || {};
-  const SKIP_IDS = window.I18N_SKIP_IDS || [];
   const STORE_KEY = 'i18n-lang';
+
+  // 归一化：删除所有空白再比对，避免 HTML 缩进 / <em> 拆分 / 未来开发时的空格差异导致漏翻
+  function norm(s) { return (s || '').replace(/\s+/g, '').replace(/\\/g, '').trim(); }
+
+  // 把原始字典 key 也归一化，建立「无空白 key -> 译文」映射
+  const RAW_MAP = window.I18N_MAP || {};
+  const RAW_ATTR = window.I18N_ATTR || {};
+  const MAP = {};
+  for (const k in RAW_MAP) MAP[norm(k)] = RAW_MAP[k];
+  const ATTR = {};
+  for (const k in RAW_ATTR) ATTR[norm(k)] = RAW_ATTR[k];
+
+  const SKIP_IDS = window.I18N_SKIP_IDS || [];
 
   const SKIP_TAGS = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'CODE', 'INPUT', 'TEXTAREA', 'SELECT', 'OPTION']);
   let lang = (function () { try { return localStorage.getItem(STORE_KEY) || 'zh'; } catch (e) { return 'zh'; } })();
@@ -32,7 +42,7 @@
     const orig = node.__i18n_orig;
     if (!orig || !orig.trim()) return;
     if (lang === 'en') {
-      const tr = MAP[orig.trim()];
+      const tr = MAP[norm(orig)];
       if (tr !== undefined) {
         const out = preserveWS(orig, tr);
         if (node.nodeValue !== out) node.nodeValue = out; // 跳过无变化写入，避免触发自身 MutationObserver 死循环
@@ -50,7 +60,7 @@
       if (el.__i18n_attr_orig[a] === undefined) el.__i18n_attr_orig[a] = v;
       const orig = el.__i18n_attr_orig[a];
       if (lang === 'en') {
-        const tr = ATTR[orig.trim()];
+        const tr = ATTR[norm(orig)];
         if (tr !== undefined && el.getAttribute(a) !== tr) el.setAttribute(a, tr);
       } else {
         if (el.getAttribute(a) !== orig) el.setAttribute(a, orig);
@@ -90,9 +100,9 @@
     walk(document.body || document.documentElement);
     walkAttrs(document.body || document.documentElement);
     // <title> 在 head，单独处理
-    if (document.title && MAP[document.title.trim()]) {
+    if (document.title && MAP[norm(document.title)]) {
       if (document.__title_orig === undefined) document.__title_orig = document.title;
-      document.title = (lang === 'en') ? MAP[document.__title_orig.trim()] : document.__title_orig;
+      document.title = (lang === 'en') ? MAP[norm(document.__title_orig)] : document.__title_orig;
     }
     updateSwitcher();
     applying = false;
@@ -179,7 +189,7 @@
 
   // 供其他脚本使用：window.I18N.t('中文') -> 英文（当前为英文时）
   window.I18N = {
-    t: function (s) { return (lang === 'en' && MAP[s]) ? MAP[s] : s; },
+    t: function (s) { return (lang === 'en' && MAP[norm(s)]) ? MAP[norm(s)] : s; },
     apply: apply,
     get lang() { return lang; }
   };

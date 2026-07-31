@@ -7,9 +7,8 @@
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <div class="deploy-banner">
-    ⚠️ 当前为<strong>静态演示站</strong>：注册 / 登录 / 创建胶囊等需要服务器的功能暂不可用。
-    完整体验请在本机运行后端，或部署 Node 服务到公网。
+  <div class="deploy-banner" id="deploy-banner" style="display:none">
+    ⚠️ 当前为静态演示站：注册 / 登录 / 创建胶囊等需要服务器的功能暂不可用。完整体验请在本机运行后端，或部署 Node 服务到公网。
   </div>
   <div class="app-container">
     <div class="hero">
@@ -106,6 +105,16 @@
         <a href="/login.html" class="btn btn-outline">登录</a>
       `;
     }
+  </script>
+  <script src="/js/i18n-data.js"></script>
+  <script src="/js/i18n.js"></script>
+  <script>
+    // 后端连通则隐藏“静态演示站”横幅（部署后不再误导）
+    fetch('/api/health').then(function (r) {
+      if (!r.ok) document.getElementById('deploy-banner').style.display = 'block';
+    }).catch(function () {
+      document.getElementById('deploy-banner').style.display = 'block';
+    });
   </script>
 </body>
 </html>
