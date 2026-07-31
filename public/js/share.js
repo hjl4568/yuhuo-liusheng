@@ -5,7 +5,7 @@
 (function () {
   'use strict';
 
-  var ALLOW = ['/intro.html', '/app.html', '/', '/index.html'];
+  var ALLOW = ['/intro.html', '/app.html', '/', '/index.html', '/view.html'];
   var path = location.pathname;
   var ok = ALLOW.some(function (p) { return path === p || path.endsWith(p); });
   if (!ok) return;
@@ -112,6 +112,15 @@
         mask.classList.remove('open');
       }
     });
+
+    // 暴露给收件人页的“分享这封信”按钮（打开同一分享面板）
+    window.__shareLetter = function () {
+      if (navigator.share) {
+        navigator.share({ title: TITLE, text: DESC, url: shareUrl() }).catch(function () {});
+        return;
+      }
+      mask.classList.add('open');
+    };
   }
 
   if (document.readyState === 'loading') {

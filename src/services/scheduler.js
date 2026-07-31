@@ -16,10 +16,13 @@ async function deliverCapsule(capsule, operator = 'system') {
     const user = db.prepare('SELECT * FROM users WHERE id = ?').get(capsule.user_id);
     if (!user) throw new Error('用户不存在');
 
+    const baseUrl = process.env.APP_URL || 'http://localhost:3000';
     let downloadUrl = '';
     if (capsule.file_path) {
-      downloadUrl = `${process.env.APP_URL || 'http://localhost:3000'}/api/capsules/${capsule.id}/download?t=${capsule.capsule_code}`;
+      downloadUrl = `${baseUrl}/api/capsules/${capsule.id}/download?t=${capsule.capsule_code}`;
     }
+    // 收件人查看页（无需登录，主动送达闭环）：/view.html?c=view_token
+    const viewUrl = `${baseUrl}/view.html?c=${capsule.view_token}`;
 
     const result = await sendCapsuleEmail({
       recipientName: capsule.recipient_name,
@@ -28,6 +31,7 @@ async function deliverCapsule(capsule, operator = 'system') {
       title: capsule.title,
       textContent: capsule.text_content,
       downloadUrl,
+      viewUrl,
       relation: capsule.recipient_relation,
     });
 
@@ -45,7 +49,7 @@ async function deliverCapsule(capsule, operator = 'system') {
       console.log(`[Scheduler] Preview URL: ${result.previewUrl}`);
     }
 
-    return { success: true, previewUrl: result.previewUrl };
+    return { success: true, previewUrl: result.previewUrl, viewUrl };
   } catch (err) {
     console.error(`[Scheduler] Failed to deliver capsule #${capsule.id}:`, err.message);
 

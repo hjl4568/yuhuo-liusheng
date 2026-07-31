@@ -402,7 +402,27 @@
     "链接已复制，打开小红书粘贴发布": "Link copied — open Xiaohongshu and paste to publish",
     "复制失败，请手动复制网址": "Copy failed — please copy the URL manually",
     "邮件通知配置": "Mail Notification Settings",
-    "发送测试邮件": "Send Test Email"
+    "发送测试邮件": "Send Test Email",
+    "余火·留声": "Yu Huo · Liu Sheng",
+    "余火·留声 · 一份来自时间的礼物": "Yu Huo · Liu Sheng — a gift from time",
+    "了解这个把话留给重要之人的产品 →": "Learn about this product that leaves words for those who matter →",
+    "正在为你开启这封信…": "Opening this letter for you…",
+    "内容不存在或链接已失效": "Content not found or the link has expired",
+    "请确认链接是否完整，或联系寄件人重新发送。": "Please check the link is complete, or ask the sender to resend it.",
+    "这封信还没有开启": "This letter hasn't been opened yet",
+    "寄件人尚未将这封时光胶囊送达。": "The sender hasn't delivered this time capsule yet.",
+    "当它被开启时，你会在这里看到里面的一切。": "When it opens, you'll see everything here.",
+    "附件内容": "Attachment",
+    "下载附件": "Download Attachment",
+    "分享这封信": "Share This Letter",
+    "由": "By",
+    "为你送达": "delivered to you",
+    "的时光胶囊": "time capsule",
+    "你收到一封来自": "You received a time capsule from",
+    "亲爱的": "Dear",
+    "（这封信没有文字内容，请查看上方附件）": "(This letter has no text — see the attachment above)",
+    "👁 预览收件人页面": "👁 Preview Recipient Page",
+    "以收件人视角查看这封信（无需登录）": "View this letter as the recipient (no login needed)"
   };
 
   // 输入框占位符 / 标题等属性翻译

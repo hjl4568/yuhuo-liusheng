@@ -105,7 +105,7 @@ async function sendTestMail() {
   }
 }
 
-async function sendCapsuleEmail({ recipientName, recipientEmail, senderName, title, textContent, downloadUrl, relation }) {
+async function sendCapsuleEmail({ recipientName, recipientEmail, senderName, title, textContent, downloadUrl, viewUrl, relation }) {
   const ok = await ensureTransporter();
   if (!ok) {
     console.log('[Mail] sendCapsuleEmail 跳过：未配置可用邮件服务');
@@ -123,9 +123,10 @@ async function sendCapsuleEmail({ recipientName, recipientEmail, senderName, tit
         <p style="font-size:16px;">亲爱的 <strong>${recipientName}</strong>${greeting}：</p>
         <p style="font-size:14px;color:#666;">您收到一封来自 <strong>${senderName}</strong> 的时光胶囊，标题为「${title}」。</p>
         <div style="background:#fff;border:1px solid #F0E0D0;border-radius:8px;padding:20px;margin:20px 0;">
-          ${textContent ? `<div style="white-space:pre-wrap;font-size:15px;line-height:1.8;color:#3D2817;">${textContent}</div>` : '<p style="color:#999;">（此胶囊包含录音/视频内容，请通过下方链接查看）</p>'}
+          ${textContent ? `<div style="white-space:pre-wrap;font-size:15px;line-height:1.8;color:#3D2817;">${textContent}</div>` : '<p style="color:#999;">（此胶囊包含录音/视频内容，请通过下方按钮查看）</p>'}
         </div>
-        ${downloadUrl ? `<p style="text-align:center;margin:20px 0;"><a href="${downloadUrl}" style="display:inline-block;background:#E8853A;color:#fff;text-decoration:none;padding:12px 32px;border-radius:6px;font-size:14px;">查看附件内容</a></p>` : ''}
+        ${viewUrl ? `<p style="text-align:center;margin:20px 0;"><a href="${viewUrl}" style="display:inline-block;background:linear-gradient(135deg,#E8853A,#D4691E);color:#fff;text-decoration:none;padding:14px 38px;border-radius:8px;font-size:15px;font-weight:600;box-shadow:0 8px 20px rgba(232,133,58,0.35);">打开这封信 🔥</a></p>` : ''}
+        ${downloadUrl ? `<p style="text-align:center;margin:8px 0 0;font-size:13px;"><a href="${downloadUrl}" style="color:#C0601E;text-decoration:underline;">或下载附件内容</a></p>` : ''}
         <hr style="border:none;border-top:1px solid #F0E0D0;margin:24px 0;">
         <p style="font-size:12px;color:#999;text-align:center;">此邮件由「余火·留声」系统自动发送<br/>请妥善保管这份来自时光的礼物</p>
       </div>

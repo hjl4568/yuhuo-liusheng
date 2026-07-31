@@ -121,6 +121,15 @@ function init() {
     );
   `);
 
+  // 收件人查看页所需的安全公开令牌（随机不可猜测）；兼容已存在的库，缺列则补
+  try {
+    db.exec('ALTER TABLE capsules ADD COLUMN view_token TEXT DEFAULT \'\'');
+  } catch (e) {
+    // 列已存在则忽略（SQLite 对重复列报错）
+  }
+  // 回填历史数据：为没有 view_token 的胶囊生成随机令牌
+  db.prepare(`UPDATE capsules SET view_token = lower(hex(randomblob(16))) WHERE view_token IS NULL OR view_token = ''`).run();
+
   const adminUsername = process.env.ADMIN_USERNAME || 'admin';
   const adminPassword = process.env.ADMIN_PASSWORD || 'admin123456';
   const existing = db.prepare('SELECT id FROM admin_users WHERE username = ?').get(adminUsername);

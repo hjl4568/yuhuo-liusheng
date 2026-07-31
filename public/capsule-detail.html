@@ -99,6 +99,12 @@
             <div style="font-size:36px;margin-bottom:8px;">✅</div>
             <p>此胶囊已成功送达</p>
           </div>` : ''}
+
+          ${c.view_token ? `
+          <div class="card" style="text-align:center;">
+            <a class="btn btn-outline" href="/view.html?c=${c.view_token}" target="_blank" style="text-decoration:none;">👁 预览收件人页面</a>
+            <p style="font-size:12px;color:var(--text-light);margin-top:8px;">以收件人视角查看这封信（无需登录）</p>
+          </div>` : ''}
         `;
       } catch (err) {
         document.getElementById('detail-page').innerHTML = `<p style="text-align:center;color:var(--danger);">${err.message}</p>`;
@@ -110,7 +116,12 @@
       try {
         const data = await request(`/capsules/${capsuleId}/trigger`, { method: 'POST' });
         showToast(data.message);
-        if (data.previewUrl) {
+        if (data.viewUrl) {
+          setTimeout(() => {
+            alert('触发成功！这是收件人将看到的页面：\n' + data.viewUrl);
+            window.open(data.viewUrl, '_blank');
+          }, 1500);
+        } else if (data.previewUrl) {
           setTimeout(() => {
             alert('测试邮件已发送！\n\n查看邮件预览：\n' + data.previewUrl);
             window.open(data.previewUrl, '_blank');

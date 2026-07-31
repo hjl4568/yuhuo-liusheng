@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>余火·留声 · 一封来自时间的信</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/nightfire.css">
+  <style>
+    /* ===== 收件人查看页专属样式 ===== */
+    .view-wrap {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 16px 56px;
+      background:
+        radial-gradient(1200px 600px at 50% -10%, rgba(232,133,58,0.16), transparent 60%),
+        radial-gradient(900px 500px at 80% 110%, rgba(255,170,80,0.10), transparent 60%),
+        linear-gradient(180deg, #0c0d12 0%, #111019 100%);
+    }
+    .view-brand {
+      display: flex; align-items: center; gap: 9px;
+      font-family: var(--serif); font-size: 17px; letter-spacing: 2px;
+      color: var(--primary-strong); margin-bottom: 26px; opacity: .92;
+    }
+    .view-brand .flame { font-size: 20px; filter: drop-shadow(0 0 8px var(--glow)); }
+
+    .letter {
+      width: 100%; max-width: 600px;
+      background: linear-gradient(160deg, rgba(34,28,20,0.72), rgba(18,16,26,0.66));
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 30px 26px 26px;
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow-hover);
+      position: relative; overflow: hidden;
+    }
+    .letter::before {
+      content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+      opacity: .8;
+    }
+    .letter-greeting {
+      font-family: var(--serif); font-size: 18px; color: var(--text);
+      margin: 4px 0 6px;
+    }
+    .letter-sub {
+      font-size: 13.5px; color: var(--text-light); margin-bottom: 18px; line-height: 1.7;
+    }
+    .letter-sub b { color: var(--primary-strong); font-weight: 600; }
+    .letter-title {
+      font-family: var(--serif); font-size: 22px; color: var(--primary-strong);
+      margin: 0 0 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border);
+      letter-spacing: .5px;
+    }
+    .letter-body {
+      font-family: var(--serif);
+      font-size: 16.5px; line-height: 2.05; color: #ece3d6;
+      white-space: pre-wrap; word-break: break-word;
+      margin-bottom: 20px;
+    }
+    .letter-media { margin: 18px 0; text-align: center; }
+    .letter-media audio, .letter-media video {
+      width: 100%; max-height: 360px; border-radius: 12px; outline: none;
+      background: #000;
+    }
+    .letter-media img { width: 100%; border-radius: 12px; box-shadow: var(--shadow); }
+    .letter-section-label {
+      font-size: 12px; color: var(--text-light); letter-spacing: 1px;
+      margin: 22px 0 8px; opacity: .8;
+    }
+    .letter-foot {
+      margin-top: 26px; padding-top: 16px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    }
+    .letter-foot .sig { font-size: 12.5px; color: var(--text-light); }
+    .letter-foot .sig b { color: var(--primary-strong); }
+
+    .view-state {
+      width: 100%; max-width: 560px; text-align: center;
+      background: linear-gradient(160deg, rgba(34,28,20,0.72), rgba(18,16,26,0.66));
+      border: 1px solid var(--border); border-radius: 18px;
+      padding: 48px 28px; backdrop-filter: blur(14px);
+    }
+    .view-state .vs-icon { font-size: 46px; margin-bottom: 14px; filter: drop-shadow(0 0 14px var(--glow)); }
+    .view-state h2 { font-family: var(--serif); color: var(--primary-strong); font-size: 21px; margin: 0 0 10px; }
+    .view-state p { color: var(--text-light); font-size: 14px; line-height: 1.8; margin: 0; }
+    .spinner {
+      width: 34px; height: 34px; border: 3px solid rgba(240,179,90,0.25);
+      border-top-color: var(--primary); border-radius: 50%;
+      animation: vf-spin 0.9s linear infinite; margin: 0 auto 16px;
+    }
+    @keyframes vf-spin { to { transform: rotate(360deg); } }
+
+    .view-footer {
+      margin-top: 30px; text-align: center; font-size: 12px;
+      color: var(--text-light); opacity: .7; line-height: 1.8;
+    }
+    .view-footer a { color: var(--primary-strong); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="view-wrap">
+    <div class="view-brand"><span class="flame">🔥</span> 余火·留声</div>
+    <div id="root"></div>
+    <div class="view-footer">
+      余火·留声 · 一份来自时间的礼物<br/>
+      <a href="/intro.html">了解这个把话留给重要之人的产品 →</a>
+    </div>
+  </div>
+
+  <script src="/js/i18n-data.js"></script>
+  <script src="/js/i18n.js"></script>
+  <script src="/js/share.js"></script>
+  <script>
+    const DEMO = window.__DEMO__ || null;
+
+    const root = document.getElementById('root');
+
+    function loadingHTML() {
+      return `<div class="view-state"><div class="spinner"></div><p>正在为你开启这封信…</p></div>`;
+    }
+    function errorHTML(msg) {
+      return `<div class="view-state"><div class="vs-icon">🕯️</div><h2>内容不存在或链接已失效</h2><p>${msg || '请确认链接是否完整，或联系寄件人重新发送。'}</p></div>`;
+    }
+    function lockedHTML(data) {
+      const name = data.recipient_name ? `，<b>${data.recipient_name}</b>` : '';
+      return `<div class="view-state"><div class="vs-icon">🌙</div><h2>这封信还没有开启</h2><p>亲爱的${name}，寄件人尚未将这封时光胶囊送达。<br/>当它被开启时，你会在这里看到里面的一切。</p></div>`;
+    }
+
+    function mediaHTML(data) {
+      if (!data.mediaUrl) return '';
+      const ext = (data.file_name || '').split('.').pop().toLowerCase();
+      const url = data.mediaUrl + '&inline=1';
+      if (['mp3', 'wav', 'm4a', 'aac', 'ogg'].includes(ext)) {
+        return `<div class="letter-media"><audio controls src="${url}"></audio></div>`;
+      }
+      if (['mp4', 'mov', 'avi', 'webm'].includes(ext)) {
+        return `<div class="letter-media"><video controls src="${url}"></video></div>`;
+      }
+      if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) {
+        return `<div class="letter-media"><img src="${url}" alt="附件内容"></div>`;
+      }
+      return `<div class="letter-media"><a class="btn btn-primary" href="${data.mediaUrl}">下载附件</a></div>`;
+    }
+
+    function letterHTML(d) {
+      const greeting = d.recipient_name ? `亲爱的 ${d.recipient_name}：` : '你好：';
+      const sub = d.sender_name
+        ? `你收到一封来自 <b>${d.sender_name}</b> 的时光胶囊${d.relation ? `（${d.relation}）` : ''}`
+        : '你收到一封时光胶囊';
+      const media = mediaHTML(d);
+      const attach = (d.file_name && !['mp3','wav','m4a','aac','ogg','mp4','mov','avi','webm','jpg','jpeg','png','gif'].includes((d.file_name||'').split('.').pop().toLowerCase()))
+        ? `<div class="letter-section-label">附件内容</div><a class="btn btn-primary" href="${d.mediaUrl}">下载附件</a>`
+        : '';
+      const textBlock = d.text_content
+        ? `<div class="letter-body">${d.text_content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`
+        : (media ? '' : `<p style="color:var(--text-light);font-size:14px;">（这封信没有文字内容，请查看上方附件）</p>`);
+      return `
+        <div class="letter">
+          <div class="letter-greeting">${greeting}</div>
+          <div class="letter-sub">${sub}</div>
+          <h1 class="letter-title">${d.title || '（无标题）'}</h1>
+          ${textBlock}
+          ${media}
+          ${attach}
+          <div class="letter-foot">
+            <span class="sig">由 <b>余火·留声</b> 为你送达</span>
+            <button class="btn btn-outline" onclick="window.__shareLetter && window.__shareLetter()">分享这封信</button>
+          </div>
+        </div>`;
+    }
+
+    function applyData(d) {
+      root.innerHTML = letterHTML(d);
+      if (window.initShare) window.initShare();
+    }
+
+    function init() {
+      root.innerHTML = loadingHTML();
+      if (DEMO) { applyData(DEMO); return; }
+
+      const token = new URLSearchParams(location.search).get('c');
+      if (!token) { root.innerHTML = errorHTML(); return; }
+
+      fetch('/api/capsules/view/' + encodeURIComponent(token))
+        .then(r => {
+          if (r.status === 404) {
+            return r.json().catch(() => ({})).then(e => { throw Object.assign(new Error('nf'), { info: e }); });
+          }
+          return r.json();
+        })
+        .then(d => {
+          if (!d.viewable) { root.innerHTML = lockedHTML(d); return; }
+          applyData(d);
+        })
+        .catch(err => {
+          if (err.info) { root.innerHTML = errorHTML(err.info.message); return; }
+          root.innerHTML = errorHTML('加载失败，请检查网络后重试。');
+        });
+    }
+
+    init();
+  </script>
+</body>
+</html>
