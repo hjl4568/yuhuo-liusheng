@@ -83,6 +83,7 @@ a{color:var(--primary);text-decoration:none;}
 
 /* ===== 卡片（玻璃拟态） ===== */
 .card{
+  position:relative;overflow:hidden;
   background:var(--card-bg);
   backdrop-filter:blur(12px);
   border:1px solid var(--border);
@@ -92,6 +93,8 @@ a{color:var(--primary);text-decoration:none;}
   box-shadow:var(--shadow);
   transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease;
 }
+.card::before{content:"";position:absolute;left:16px;right:16px;top:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--primary),transparent);opacity:.45;}
 .card:hover{border-color:var(--border-strong);transform:translateY(-3px);box-shadow:var(--shadow-hover);}
 .card-title{font-family:var(--serif);font-size:17px;font-weight:700;margin-bottom:12px;color:var(--primary-strong);letter-spacing:.5px;}
 
@@ -126,12 +129,15 @@ a{color:var(--primary);text-decoration:none;}
 
 /* ===== 胶囊卡片 ===== */
 .capsule-card{
-  background:var(--card-solid);backdrop-filter:blur(10px);
+  position:relative;overflow:hidden;
+  background:linear-gradient(155deg,rgba(46,34,20,0.5),rgba(18,16,28,0.42));backdrop-filter:blur(10px);
   border:1px solid var(--border);border-radius:var(--radius);
-  padding:16px;margin-bottom:12px;box-shadow:var(--shadow);
-  cursor:pointer;transition:transform .2s,border-color .2s;
+  padding:16px 16px 16px 20px;margin-bottom:12px;box-shadow:var(--shadow);
+  cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s;
 }
-.capsule-card:hover{transform:translateY(-2px);border-color:var(--border-strong);}
+.capsule-card::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:3px;
+  background:linear-gradient(180deg,var(--primary),var(--primary-dark));box-shadow:0 0 8px var(--glow);opacity:.7;}
+.capsule-card:hover{transform:translateY(-2px);border-color:var(--border-strong);box-shadow:var(--shadow-hover);}
 .capsule-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
 .capsule-title{font-size:16px;font-weight:600;flex:1;color:var(--text);}
 .capsule-meta{font-size:13px;color:var(--text-light);margin-top:4px;}
@@ -203,8 +209,10 @@ a{color:var(--primary);text-decoration:none;}
 
 /* ===== 统计卡片 ===== */
 .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
-.stat-card{background:var(--card-solid);border:1px solid var(--border);border-radius:12px;padding:14px 8px;text-align:center;backdrop-filter:blur(8px);}
-.stat-card .stat-num{font-size:24px;font-weight:700;color:var(--primary);font-family:var(--serif);}
+.stat-card{position:relative;overflow:hidden;background:linear-gradient(155deg,rgba(46,34,20,0.5),rgba(18,16,28,0.42));border:1px solid var(--border);border-radius:12px;padding:14px 8px;text-align:center;backdrop-filter:blur(8px);transition:transform .2s,border-color .2s;}
+.stat-card::before{content:"";position:absolute;left:10px;right:10px;top:0;height:2px;background:linear-gradient(90deg,transparent,var(--primary),transparent);opacity:.5;}
+.stat-card:hover{transform:translateY(-2px);border-color:var(--border-strong);}
+.stat-card .stat-num{font-size:24px;font-weight:700;color:var(--primary-strong);font-family:var(--serif);text-shadow:0 0 14px var(--glow);}
 .stat-card .stat-label{font-size:11px;color:var(--text-light);margin-top:2px;}
 
 /* ===== 分页 ===== */
