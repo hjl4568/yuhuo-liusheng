@@ -148,13 +148,24 @@ async function sendCapsuleEmail({ recipientName, recipientEmail, senderName, tit
   return { messageId: info.messageId, previewUrl };
 }
 
-// 早期体验意向登记 → 通知到项目邮箱（后端上线且配置 SMTP 后自动送达）
-async function sendLeadNotification({ name, phone, email, content_types, want_early, message }) {
+// 通用底层发送：供通知中心及各渠道复用
+async function sendRaw({ to, subject, html, text, fromName }) {
   const ok = await ensureTransporter();
   if (!ok) {
-    console.log('[Mail] sendLeadNotification 跳过：未配置可用邮件服务');
+    console.log('[Mail] sendRaw 跳过：未配置可用邮件服务');
     return { skipped: true };
   }
+  const from = `"${fromName || '余火·留声'}" <${process.env.SMTP_USER}>`;
+  const info = await transporter.sendMail({ from, to, subject, html, text });
+  let previewUrl = null;
+  if (process.env.MAIL_SERVICE === 'ethereal' || !process.env.MAIL_SERVICE) {
+    previewUrl = nodemailer.getTestMessageUrl(info);
+  }
+  return { messageId: info.messageId, previewUrl };
+}
+
+// 早期体验意向登记 → 通知到项目邮箱（后端上线且配置 SMTP 后自动送达）
+async function sendLeadNotification({ name, phone, email, content_types, want_early, message }) {
   const WORK_MAIL = process.env.WORK_MAIL || 'changyeyuhuo2026@163.com';
   const row = (k, v) => `<tr><td style="padding:8px 12px;color:#888;font-size:13px;width:90px;vertical-align:top;">${k}</td><td style="padding:8px 12px;font-size:14px;color:#333;">${v || '（未填）'}</td></tr>`;
   const html = `
@@ -174,13 +185,37 @@ async function sendLeadNotification({ name, phone, email, content_types, want_ea
         <p style="font-size:12px;color:#999;margin-top:16px;text-align:center;">此邮件由「长夜余火」系统自动发送</p>
       </div>
     </div>`;
-  const info = await transporter.sendMail({
-    from: `"长夜余火意向登记" <${process.env.SMTP_USER}>`,
-    to: WORK_MAIL,
-    subject: '长夜余火 · 新的早期体验意向登记',
-    html,
-  });
-  return { messageId: info.messageId };
+  return sendRaw({ to: WORK_MAIL, subject: '长夜余火 · 新的早期体验意向登记', html, fromName: '长夜余火意向登记' });
 }
 
-module.exports = { init, sendCapsuleEmail, sendLeadNotification, getMailStatus, sendTestMail };
+// 登记人本人的卡片式确认邮件
+async function sendLeadConfirmation({ name, email, content_types, want_early, message }) {
+  if (!email) return { skipped: true, reason: 'no-email' };
+  const safeName = name || '朋友';
+  const row = (k, v) => `<tr><td style="padding:9px 14px;color:#9A7B5A;font-size:13px;width:96px;vertical-align:top;">${k}</td><td style="padding:9px 14px;font-size:14px;color:#3D2817;">${v || '（未填）'}</td></tr>`;
+  const html = `
+    <div style="max-width:600px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#333;">
+      <div style="background:linear-gradient(135deg,#E8853A,#D4691E);padding:30px;border-radius:14px 14px 0 0;text-align:center;">
+        <h1 style="color:#fff;margin:0;font-size:23px;letter-spacing:1px;">余火·留声</h1>
+        <p style="color:#FFE8D6;margin:10px 0 0;font-size:14px;">我们已收到你的来信</p>
+      </div>
+      <div style="background:#FFF8F0;padding:30px;border-radius:0 0 14px 14px;border:1px solid #F0E0D0;">
+        <p style="font-size:16px;line-height:1.8;">亲爱的 <strong>${safeName}</strong>：</p>
+        <p style="font-size:14px;line-height:1.9;color:#5A4632;">谢谢你愿意把心事交托给「长夜余火」。你的早期体验意向我们已经收到——这是一份来自时间的约定，我们会在合适的火光里，把它交还给对的人。</p>
+        <div style="background:#fff;border:1px solid #F0E0D0;border-radius:10px;padding:6px 8px;margin:22px 0;">
+          <table style="border-collapse:collapse;width:100%;">
+            ${row('你想留下', content_types)}
+            ${row('体验意愿', want_early ? '愿意尽早体验' : '先了解一下')}
+            ${row('你想说', message)}
+          </table>
+        </div>
+        <p style="font-size:13.5px;line-height:1.9;color:#5A4632;">我们会通过这封邮箱与你保持联系。若未来你想先试试，随时可以回到「长夜余火」，创建属于你的第一封时光胶囊 🔥</p>
+        <hr style="border:none;border-top:1px solid #F0E0D0;margin:24px 0;">
+        <p style="font-size:12px;color:#999;text-align:center;">此邮件由「余火·留声」系统自动发送，请勿直接回复<br/>请妥善保管这份来自时光的礼物</p>
+      </div>
+    </div>`;
+  const text = `亲爱的${safeName}：谢谢你把心事交托给长夜余火。我们已收到你的早期体验意向登记（想留下：${content_types || '未填'}；体验意愿：${want_early ? '愿意尽早体验' : '先了解'}）。我们会通过这封邮箱与你保持联系。`;
+  return sendRaw({ to: email, subject: '我们已收到你的来信 · 长夜余火', html, text, fromName: '余火·留声' });
+}
+
+module.exports = { init, sendCapsuleEmail, sendLeadNotification, sendLeadConfirmation, sendRaw, getMailStatus, sendTestMail };

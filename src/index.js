@@ -18,7 +18,17 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'intro.html'));
 });
 
-app.use(express.static(path.join(__dirname, '..', 'public')));
+// 静态资源：HTML 不缓存（确保每次更新立即生效，避免"还是旧版"）；其余资源短缓存
+const publicDir = path.join(__dirname, '..', 'public');
+app.use(express.static(publicDir, {
+  setHeaders(res, filePath) {
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    } else {
+      res.setHeader('Cache-Control', 'public, max-age=300');
+    }
+  },
+}));
 
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/capsules', require('./routes/capsules'));

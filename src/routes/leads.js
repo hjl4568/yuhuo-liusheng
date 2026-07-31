@@ -1,6 +1,6 @@
 const express = require('express');
 const { db } = require('../db');
-const { sendLeadNotification } = require('../services/email');
+const { notifyLeadRegistered } = require('../services/notifications');
 
 const router = express.Router();
 
@@ -30,11 +30,11 @@ router.post('/', async (req, res) => {
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `).run(nameStr, phoneStr, emailStr, types, want, msg, (source || 'intro').toString().trim(), ip);
 
-  // 后端在线时，自动把登记通知发到项目邮箱（失败不影响入库）
+  // 后端在线时，自动触发多渠道通知（登记人确认 + 项目方提醒；失败不影响入库）
   try {
-    await sendLeadNotification({ name: nameStr, phone: phoneStr, email: emailStr, content_types: types, want_early: want, message: msg });
+    await notifyLeadRegistered({ name: nameStr, phone: phoneStr, email: emailStr, content_types: types, want_early: want, message: msg });
   } catch (e) {
-    console.error('[Lead] 邮件通知失败:', e.message);
+    console.error('[Lead] 通知发送失败:', e.message);
   }
 
   res.json({ message: '登记成功，感谢你愿意把心事交托给我们 🔥', id: info.lastInsertRowid });
