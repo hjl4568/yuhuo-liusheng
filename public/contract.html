@@ -8,43 +8,103 @@
   <style>
     .contract-text {
       background: #FAF6F0;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 16px;
-      font-size: 13px;
-      color: var(--text-light);
-      max-height: 280px;
+      border: 1px solid #D8CFC0;
+      border-radius: var(--radius);
+      padding: 0;
+      font-size: 13.5px;
+      color: #2D1810;
+      max-height: 55vh;
+      min-height: 320px;
       overflow-y: auto;
       line-height: 1.9;
-      white-space: pre-wrap;
+      font-family: "Noto Serif SC", "Songti SC", SimSun, "STSong", serif;
+      box-shadow: inset 0 0 24px rgba(139,90,43,0.06);
     }
+    .contract-header {
+      background: linear-gradient(90deg, #2D1810, #5A3A22);
+      color: #FAF6F0;
+      padding: 14px 18px;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    .contract-body {
+      padding: 18px 20px 22px;
+    }
+    .contract-text h2 {
+      font-size: 14px;
+      color: #2D1810;
+      margin: 20px 0 12px;
+      padding: 8px 0 6px 12px;
+      border-left: 4px solid var(--primary);
+      background: rgba(201,162,105,0.12);
+      font-weight: 700;
+      line-height: 1.5;
+    }
+    .contract-text h2:first-child { margin-top: 0; }
+    .contract-text p {
+      margin: 0 0 11px;
+      text-align: justify;
+      text-indent: 2em;
+      line-height: 1.95;
+    }
+    .contract-text p.no-indent { text-indent: 0; }
+    .contract-text strong {
+      color: #2D1810;
+      font-weight: 700;
+    }
+    .contract-divider {
+      text-align: center;
+      color: #9E8E7A;
+      font-size: 12.5px;
+      margin: 18px 0;
+      letter-spacing: 1px;
+      text-indent: 0 !important;
+    }
+    .contract-text::-webkit-scrollbar { width: 6px; }
+    .contract-text::-webkit-scrollbar-thumb { background: rgba(45,24,16,0.25); border-radius: 3px; }
     .sig-wrap {
       border: 1.5px dashed var(--primary);
-      border-radius: 10px;
+      border-radius: 14px;
       background: #fff;
       position: relative;
-      margin-top: 6px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+    .sig-wrap::before {
+      content: "✦";
+      position: absolute;
+      right: 18px; bottom: 14px;
+      font-size: 64px; color: rgba(240,179,90,0.10);
+      pointer-events: none; line-height: 1;
     }
     #sig-canvas {
       width: 100%;
       height: 170px;
       display: block;
-      border-radius: 10px;
+      border-radius: 14px;
       touch-action: none;
       cursor: crosshair;
+      position: relative; z-index: 1;
     }
     .sig-placeholder {
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%,-50%);
-      color: #ccc;
+      color: #cbb;
       font-size: 15px;
       pointer-events: none;
+      letter-spacing: 1px;
+      font-family: var(--serif);
     }
     .sig-actions {
       display: flex;
       justify-content: flex-end;
-      margin-top: 8px;
+      margin-top: 10px;
     }
     .sig-actions button {
       background: none;
@@ -53,23 +113,31 @@
       font-size: 13px;
       cursor: pointer;
       text-decoration: underline;
+      transition: color .2s;
     }
+    .sig-actions button:hover { color: var(--primary-strong); }
     .contract-card {
-      background: #fff;
+      position: relative; overflow: hidden;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 16px;
+      padding: 16px 16px 16px 20px;
       margin-bottom: 12px;
       box-shadow: var(--shadow);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      transition: transform .2s, border-color .2s, box-shadow .2s;
     }
+    .contract-card::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 3px; border-radius: 3px;
+      background: linear-gradient(180deg, var(--primary), var(--primary-dark)); box-shadow: 0 0 8px var(--glow); opacity: .7; }
+    .contract-card:hover { transform: translateY(-2px); border-color: var(--border-strong); box-shadow: var(--shadow-hover); }
     .contract-card .cc-main { flex: 1; }
-    .contract-card .cc-no { font-size: 12px; color: var(--text-light); }
-    .contract-card .cc-title { font-size: 15px; font-weight: 600; margin: 2px 0; }
+    .contract-card .cc-no { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+    .contract-card .cc-title { font-size: 15px; font-weight: 600; margin: 2px 0; color: var(--text); }
     .badge-signed {
-      display: inline-block; background:#E8F5E9; color:#388E3C;
-      font-size:11px; padding:2px 8px; border-radius:12px; margin-left:6px;
+      display: inline-block; background: rgba(127,214,160,0.16); color: var(--success);
+      font-size: 11px; padding: 2px 8px; border-radius: 12px; margin-left: 6px;
     }
   </style>
 </head>
@@ -119,10 +187,9 @@
     function renderSignForm() {
       const page = document.getElementById('contract-page');
       page.innerHTML = `
-        <div class="card">
-          <div class="card-title">《${'余火·留声 数字遗产托管及内容授权服务协议'}》</div>
-          <div class="contract-text" id="contract-text">${escapeHtml(templateCache)}</div>
-          <div class="form-hint" style="margin-top:6px;">请完整阅读以上条款后再签署。</div>
+        <div class="card" style="padding:0;overflow:hidden;">
+          <div class="contract-text" id="contract-text">${renderMarkdown(templateCache)}</div>
+          <div class="form-hint" style="margin:10px 16px 14px;">请完整阅读以上条款后再签署。</div>
         </div>
 
         <div class="card">
@@ -272,6 +339,29 @@
 
     function escapeHtml(str = '') {
       return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function renderMarkdown(md = '') {
+      const blocks = md.split(/\n\s*\n/).filter(s => s.trim());
+      let html = '<div class="contract-header">《余火·留声 数字遗产托管及内容授权服务协议》</div><div class="contract-body">';
+      blocks.forEach(block => {
+        const trimmed = block.trim();
+        if (trimmed.startsWith('## ')) {
+          html += `<h2>${fmtInline(trimmed.slice(3))}</h2>`;
+        } else if (trimmed.startsWith('——') && trimmed.endsWith('——')) {
+          html += `<p class="contract-divider">${fmtInline(trimmed)}</p>`;
+        } else {
+          // 段内保留手动换行（如甲乙方信息被写成多行）
+          const withBr = trimmed.split('\n').map(l => fmtInline(l)).join('<br>');
+          html += `<p>${withBr}</p>`;
+        }
+      });
+      html += '</div>';
+      return html;
+    }
+
+    function fmtInline(str) {
+      return escapeHtml(str).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     }
 
     init();
