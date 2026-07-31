@@ -36,25 +36,25 @@
       <span>隐私优先</span><i></i><span>主动送达</span><i></i><span>早期体验开放</span>
     </div>
     <div class="nf-cta">
-      <a href="#panel-lead" class="nf-btn nf-btn-primary" onclick="goTab('lead')">登记早期体验</a>
-      <a href="#panel-design" class="nf-btn nf-btn-ghost" onclick="goTab('design')">看看怎么设计</a>
+      <a href="#panel-lead" class="nf-btn nf-btn-primary">登记早期体验</a>
+      <a href="#panel-design" class="nf-btn nf-btn-ghost">看看怎么设计</a>
     </div>
   </header>
 
-  <!-- 分板块切换导航 -->
-  <nav class="nf-tabs" id="tabs">
-    <button class="nf-tab active" data-tab="about">关于我们</button>
-    <button class="nf-tab" data-tab="design">核心设计</button>
-    <button class="nf-tab" data-tab="vision">产品愿景</button>
-    <button class="nf-tab" data-tab="compliance">合规 · e签宝</button>
-    <button class="nf-tab" data-tab="lead">登记意向</button>
-    <button class="nf-tab" data-tab="data">实时数据 · LIVE</button>
+  <!-- 一页滚动叙事：吸顶分节导航 -->
+  <nav class="nf-scrollnav" id="scrollnav">
+    <a href="#panel-about" class="nf-anchor active">关于</a>
+    <a href="#panel-design" class="nf-anchor">核心设计</a>
+    <a href="#panel-vision" class="nf-anchor">产品愿景</a>
+    <a href="#panel-compliance" class="nf-anchor">合规 · e签宝</a>
+    <a href="#panel-lead" class="nf-anchor">登记意向</a>
+    <a href="#panel-data" class="nf-anchor">实时数据</a>
   </nav>
 
   <div class="nf-wrap">
 
     <!-- ============ 关于我们 ============ -->
-    <section class="nf-panel active" id="panel-about">
+    <section class="nf-section" id="panel-about">
       <div class="reveal">
         <div class="nf-eyebrow">关于我们 · ABOUT</div>
         <h2 class="nf-title">我们想做什么</h2>
@@ -93,7 +93,7 @@
     </section>
 
     <!-- ============ 核心设计 ============ -->
-    <section class="nf-panel" id="panel-design">
+    <section class="nf-section" id="panel-design">
       <div class="reveal">
         <div class="nf-eyebrow">核心设计 · DESIGN</div>
         <h2 class="nf-title">六个核心设计</h2>
@@ -134,7 +134,7 @@
     </section>
 
     <!-- ============ 产品愿景 ============ -->
-    <section class="nf-panel" id="panel-vision">
+    <section class="nf-section" id="panel-vision">
       <div class="reveal">
         <div class="nf-eyebrow">产品愿景 · ROADMAP</div>
         <h2 class="nf-title">产品愿景时间线</h2>
@@ -220,7 +220,7 @@
     </section>
 
     <!-- ============ 合规 · e签宝 ============ -->
-    <section class="nf-panel" id="panel-compliance">
+    <section class="nf-section" id="panel-compliance">
       <div class="reveal">
         <div class="nf-eyebrow">合规 · 电子签名 · COMPLIANCE</div>
         <div class="nf-status-row">
@@ -259,7 +259,7 @@
     </section>
 
     <!-- ============ 登记意向 ============ -->
-    <section class="nf-panel" id="panel-lead">
+    <section class="nf-section" id="panel-lead">
       <div class="reveal">
         <div class="nf-eyebrow">登记意向 · JOIN US</div>
         <h2 class="nf-title">登记早期体验意向</h2>
@@ -303,7 +303,7 @@
     </section>
 
     <!-- ============ 实时数据 ============ -->
-    <section class="nf-panel" id="panel-data">
+    <section class="nf-section" id="panel-data">
       <div class="reveal">
         <div class="nf-eyebrow">实时数据 · LIVE</div>
         <h2 class="nf-title">此刻，有多少人一起守着火苗</h2>
@@ -360,27 +360,23 @@
       }
     })();
 
-    // 分板块切换
-    function goTab(id){
-      const tab = document.querySelector('.nf-tab[data-tab="'+id+'"]');
-      if(tab) tab.click();
-    }
+    // 一页滚动叙事：分节导航滚动高亮（平滑滚动由 CSS scroll-behavior 负责）
     (function () {
-      const tabs = document.querySelectorAll('.nf-tab');
-      const panels = document.querySelectorAll('.nf-panel');
-      tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-          const id = tab.getAttribute('data-tab');
-          tabs.forEach(t => t.classList.remove('active'));
-          panels.forEach(p => p.classList.remove('active'));
-          tab.classList.add('active');
-          const target = document.getElementById('panel-' + id);
-          if (target) target.classList.add('active');
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-          if (id === 'data') { loadStats(); if (!statsTimer) statsTimer = setInterval(loadStats, 10000); }
-          else { if (statsTimer) { clearInterval(statsTimer); statsTimer = null; } }
+      const anchors = Array.from(document.querySelectorAll('.nf-anchor'));
+      if (!anchors.length) return;
+      const byId = {};
+      anchors.forEach(a => { const id = (a.getAttribute('href') || '').replace('#', ''); if (id) byId[id] = a; });
+      if (!('IntersectionObserver' in window)) return;
+      const spy = new IntersectionObserver((entries) => {
+        entries.forEach(en => {
+          if (en.isIntersecting) {
+            anchors.forEach(a => a.classList.remove('active'));
+            const act = byId[en.target.id];
+            if (act) act.classList.add('active');
+          }
         });
-      });
+      }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+      Object.keys(byId).forEach(id => { const el = document.getElementById(id); if (el) spy.observe(el); });
     })();
 
     // 访问计数（后端存在时才有效；失败静默）
@@ -431,6 +427,19 @@
         document.getElementById('data-note').textContent = '后端尚未部署，数据将在上线后实时更新。';
       });
     }
+
+    // 实时数据：滚动进入视口才加载 + 定时刷新（离开不再重复触发，由定时器持续刷新）
+    (function () {
+      const dataPanel = document.getElementById('panel-data');
+      if (!dataPanel) return;
+      const start = () => { loadStats(); if (!statsTimer) statsTimer = setInterval(loadStats, 10000); };
+      if ('IntersectionObserver' in window) {
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach(en => { if (en.isIntersecting) { start(); io.disconnect(); } });
+        }, { threshold: 0.15 });
+        io.observe(dataPanel);
+      } else { start(); }
+    })();
 
     // 滚动揭示
     (function () {

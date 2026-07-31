@@ -41,19 +41,22 @@
 .nf-topbar nav a{color:var(--text-light);text-decoration:none;font-size:13px;margin-left:20px;transition:color .2s;}
 .nf-topbar nav a:hover{color:var(--primary-strong);}
 
-/* ---------- 分板块切换导航 ---------- */
-.nf-tabs{position:sticky;top:57px;z-index:25;display:flex;gap:6px;justify-content:center;flex-wrap:wrap;
-  padding:12px 10px;backdrop-filter:blur(16px);
+/* ---------- 一页滚动叙事：吸顶分节导航 ---------- */
+html{scroll-behavior:smooth;}
+.nf-scrollnav{position:sticky;top:57px;z-index:25;display:flex;gap:6px;justify-content:center;flex-wrap:wrap;
+  padding:11px 10px;backdrop-filter:blur(16px);
   background:linear-gradient(180deg,rgba(8,10,18,0.95),rgba(8,10,18,0.5));
   border-bottom:1px solid var(--border);}
-.nf-tab{padding:9px 16px;border-radius:22px;font-size:13px;color:var(--text-light);cursor:pointer;
-  border:1px solid transparent;transition:all .2s;background:rgba(255,255,255,0.03);letter-spacing:.5px;font-family:var(--sans);}
-.nf-tab:hover{color:var(--primary-strong);}
-.nf-tab.active{color:#1a1206;background:linear-gradient(135deg,var(--primary),var(--primary-dark));
+.nf-anchor{padding:8px 15px;border-radius:22px;font-size:13px;color:var(--text-light);text-decoration:none;
+  border:1px solid transparent;transition:all .2s;font-family:var(--sans);letter-spacing:.5px;white-space:nowrap;}
+.nf-anchor:hover{color:var(--primary-strong);}
+.nf-anchor.active{color:#1a1206;background:linear-gradient(135deg,var(--primary),var(--primary-dark));
   box-shadow:0 4px 14px var(--glow);font-weight:700;}
-.nf-panel{display:none;}
-.nf-panel.active{display:block;animation:nfPaneIn .5s cubic-bezier(.2,.7,.3,1);}
-@keyframes nfPaneIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+
+/* 章节：纵向堆叠、留白节律、锚点不被吸顶遮住 */
+.nf-section{margin-top:var(--space-section);scroll-margin-top:118px;
+  padding-top:42px;border-top:1px solid rgba(232,178,110,0.10);}
+.nf-section:first-of-type{margin-top:30px;padding-top:0;border-top:none;}
 
 /* ---------- 通用排版元件（粗细有别） ---------- */
 /* 极小金色字距标签，用于制造节奏与对比 */
