@@ -385,7 +385,22 @@
     "这并非购买任何商品或服务，不承诺任何对价回报。": "This is not a purchase of any product or service, and promises no quid pro quo.",
     "收款码待运营者上传": "QR code pending upload by operator",
     "（命名为 donate-qr.png 放入 images/）": "(name it donate-qr.png in images/)",
-    "支持二维码": "Support QR Code"
+    "支持二维码": "Support QR Code",
+
+    // ===== 分享组件 =====
+    "分享给 TA": "Share with TA",
+    "微信": "WeChat",
+    "QQ": "QQ",
+    "微博": "Weibo",
+    "小红书": "Xiaohongshu",
+    "复制链接": "Copy Link",
+    "更多": "More",
+    "关闭": "Close",
+    "微信 / 小红书：点击后复制链接，去对应 App 粘贴即可": "WeChat / Xiaohongshu: tap to copy the link, then paste it in the app",
+    "链接已复制，去粘贴给 TA 吧": "Link copied — go paste it to them",
+    "链接已复制，请打开微信粘贴给好友": "Link copied — open WeChat and paste to your friend",
+    "链接已复制，打开小红书粘贴发布": "Link copied — open Xiaohongshu and paste to publish",
+    "复制失败，请手动复制网址": "Copy failed — please copy the URL manually"
   };
 
   // 输入框占位符 / 标题等属性翻译

@@ -65,6 +65,16 @@
       letter-spacing: 1px;
       text-indent: 0 !important;
     }
+    .contract-preface {
+      text-align: center;
+      font-family: var(--serif);
+      font-size: 15px;
+      font-weight: 700;
+      color: #2D1810;
+      letter-spacing: 3px;
+      margin: 8px 0 14px !important;
+      text-indent: 0 !important;
+    }
     .contract-text::-webkit-scrollbar { width: 6px; }
     .contract-text::-webkit-scrollbar-thumb { background: rgba(45,24,16,0.25); border-radius: 3px; }
     .sig-wrap {
@@ -348,6 +358,10 @@
         const trimmed = block.trim();
         if (trimmed.startsWith('## ')) {
           html += `<h2>${fmtInline(trimmed.slice(3))}</h2>`;
+        } else if (/^第[一二三四五六七八九十百零\d]+条/.test(trimmed)) {
+          html += `<h2>${fmtInline(trimmed)}</h2>`;
+        } else if (trimmed === '前言') {
+          html += `<p class="contract-preface">${fmtInline(trimmed)}</p>`;
         } else if (trimmed.startsWith('——') && trimmed.endsWith('——')) {
           html += `<p class="contract-divider">${fmtInline(trimmed)}</p>`;
         } else {
