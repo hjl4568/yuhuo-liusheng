@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="长夜余火">
+  <defs>
+    <radialGradient id="flame" cx="50%" cy="40%" r="62%">
+      <stop offset="0%" stop-color="#ffe9c7"/>
+      <stop offset="45%" stop-color="#f0b35a"/>
+      <stop offset="100%" stop-color="#d98335"/>
+    </radialGradient>
+    <linearGradient id="night" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0b0d18"/>
+      <stop offset="100%" stop-color="#160d07"/>
+    </linearGradient>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="2.1" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="url(#night)"/>
+  <circle cx="32" cy="35" r="19" fill="url(#flame)" opacity="0.16"/>
+  <g filter="url(#glow)">
+    <path d="M32 13 C 39 23, 45 27, 41 39 C 39 46, 34 49, 32 49 C 30 49, 25 46, 23 39 C 19 27, 25 23, 32 13 Z" fill="url(#flame)"/>
+    <path d="M32 27 C 35 31, 38 34, 36 41 C 34.5 45, 32 46, 32 46 C 32 46, 29.5 45, 28 41 C 26 34, 29 31, 32 27 Z" fill="#fff4e2" opacity="0.9"/>
+  </g>
+</svg>

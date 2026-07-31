@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="长夜余火 标志">
+  <defs>
+    <radialGradient id="flame2" cx="50%" cy="42%" r="60%">
+      <stop offset="0%" stop-color="#ffe9c7"/>
+      <stop offset="42%" stop-color="#f0b35a"/>
+      <stop offset="100%" stop-color="#d98335"/>
+    </radialGradient>
+    <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(240,179,90,0.55)"/>
+      <stop offset="55%" stop-color="rgba(240,179,90,0.14)"/>
+      <stop offset="100%" stop-color="rgba(240,179,90,0)"/>
+    </radialGradient>
+  </defs>
+  <circle cx="120" cy="120" r="112" fill="url(#halo)"/>
+  <circle cx="120" cy="120" r="76" fill="none" stroke="rgba(240,179,90,0.28)" stroke-width="1.4" stroke-dasharray="2 8"/>
+  <g>
+    <path d="M120 46 C 150 86, 178 102, 162 146 C 152 174, 128 188, 120 188 C 112 188, 88 174, 78 146 C 62 102, 90 86, 120 46 Z" fill="url(#flame2)"/>
+    <path d="M120 100 C 135 118, 148 130, 138 154 C 131 172, 120 176, 120 176 C 120 176, 109 172, 102 154 C 92 130, 105 118, 120 100 Z" fill="#fff4e2" opacity="0.92"/>
+  </g>
+</svg>

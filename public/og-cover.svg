@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="长夜余火 社交分享封面">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#070912"/>
+      <stop offset="48%" stop-color="#0b0d18"/>
+      <stop offset="100%" stop-color="#150d08"/>
+    </linearGradient>
+    <radialGradient id="flame" cx="50%" cy="42%" r="60%">
+      <stop offset="0%" stop-color="#ffe9c7"/>
+      <stop offset="45%" stop-color="#f0b35a"/>
+      <stop offset="100%" stop-color="#d98335"/>
+    </radialGradient>
+    <radialGradient id="glowc" cx="50%" cy="34%" r="55%">
+      <stop offset="0%" stop-color="rgba(255,150,60,0.30)"/>
+      <stop offset="100%" stop-color="rgba(255,150,60,0)"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="600" cy="240" r="350" fill="url(#glowc)"/>
+  <g transform="translate(540,150)">
+    <path d="M60 0 C 110 60, 150 82, 130 140 C 116 176, 80 196, 60 196 C 40 196, 4 176, -10 140 C -30 82 10 60, 60 0 Z" fill="url(#flame)"/>
+    <path d="M60 60 C 84 90, 104 108, 90 142 C 80 172, 60 180, 60 180 C 60 180, 40 172, 30 142 C 16 108, 36 90, 60 60 Z" fill="#fff4e2" opacity="0.9"/>
+  </g>
+  <text x="600" y="470" text-anchor="middle" font-family="'Noto Serif SC','Songti SC',serif" font-size="92" font-weight="700" fill="#ffd7a0" letter-spacing="14">长夜余火</text>
+  <text x="600" y="528" text-anchor="middle" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="26" fill="#b3a78d" letter-spacing="8">让此刻的声音，抵达未来</text>
+  <text x="600" y="575" text-anchor="middle" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="17" fill="#857c6a" letter-spacing="4">余火 · 留声 ｜ 表达与交还，把话说给未来</text>
+</svg>

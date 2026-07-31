@@ -278,3 +278,13 @@ a{color:var(--primary);text-decoration:none;}
   font-size:13px;z-index:1000;border:1px solid var(--border);opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;
 }
 .share-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ---------- 应用首页 hero 品牌升级 ---------- */
+.hero-mark{width:60px;height:60px;margin:0 auto 6px;display:block;
+  filter:drop-shadow(0 0 14px rgba(255,150,60,0.4));
+  animation:heroMarkFloat 6s ease-in-out infinite;}
+@keyframes heroMarkFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+.hero-trust{display:flex;align-items:center;justify-content:center;gap:12px;
+  margin:14px 0 4px;font-size:12px;letter-spacing:1.5px;color:var(--text-light);}
+.hero-trust i{width:3px;height:3px;border-radius:50%;background:var(--primary);opacity:.5;}
+@media (prefers-reduced-motion:reduce){.hero-mark{animation:none;}}

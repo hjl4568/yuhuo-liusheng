@@ -5,6 +5,18 @@
  *       用户生成内容（donor-list / lead-msg）跳过，不被改写。
  */
 (function () {
+  // 品牌 favicon 全站注入（兜底：页面 head 没手写 icon 时也保证浏览器标签有图标）
+  (function () {
+    try {
+      if (document.querySelector('link[rel="icon"]')) return;
+      const l = document.createElement('link');
+      l.rel = 'icon';
+      l.type = 'image/svg+xml';
+      l.href = '/favicon.svg';
+      document.head.appendChild(l);
+    } catch (e) {}
+  })();
+
   const STORE_KEY = 'i18n-lang';
 
   // 归一化：删除所有空白再比对，避免 HTML 缩进 / <em> 拆分 / 未来开发时的空格差异导致漏翻
