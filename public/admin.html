@@ -40,6 +40,15 @@
     <div id="admin-section" style="display:none;">
       <div class="stat-grid" id="stats"></div>
 
+      <div id="mail-card" class="card" style="margin-bottom:12px;display:none;">
+        <div class="card-title">邮件通知配置 <span id="mail-badge"></span></div>
+        <div id="mail-detail" style="font-size:13px;color:var(--text-light);line-height:2;"></div>
+        <div style="margin-top:10px;">
+          <button class="btn btn-primary" style="padding:8px 18px;font-size:13px;" onclick="testMail()">发送测试邮件</button>
+          <span id="mail-test-msg" style="margin-left:10px;font-size:13px;"></span>
+        </div>
+      </div>
+
       <div class="admin-tabs">
         <button class="active" onclick="switchTab('capsules')">胶囊管理</button>
         <button onclick="switchTab('users')">用户管理</button>
@@ -116,6 +125,7 @@
           <div class="stat-card"><div class="stat-num">${s.totalLeads}</div><div class="stat-label">意向登记</div></div>
         `;
         loadTab();
+        loadMailStatus();
       } catch (err) {
         showToast(err.message);
       }
@@ -210,6 +220,37 @@
         content.innerHTML = `<p style="text-align:center;color:var(--danger);">${err.message}</p>`;
       }
     }
+
+    async function loadMailStatus() {
+      try {
+        const s = await adminRequest('/mail-status');
+        const card = document.getElementById('mail-card');
+        const badge = document.getElementById('mail-badge');
+        const detail = document.getElementById('mail-detail');
+        card.style.display = '';
+        if (s.configured) {
+          badge.textContent = '已配置';
+          badge.style.background = '#E8F5E9'; badge.style.color = '#388E3C';
+        } else {
+          badge.textContent = '未配置';
+          badge.style.background = '#FDECEA'; badge.style.color = '#D32F2F';
+        }
+        badge.style.padding = '2px 10px'; badge.style.borderRadius = '12px'; badge.style.fontSize = '12px'; badge.style.marginLeft = '6px';
+        detail.innerHTML = `服务类型：${s.service}<br>发件邮箱：${s.user}<br>通知邮箱：${s.workMail}` +
+          (s.configured ? '' : '<br><span style="color:#D32F2F;">⚠️ 当前邮件未配置，有人登记意向你将收不到通知。请检查服务器 .env.prod 的 MAIL_SERVICE / SMTP_* 配置后重启容器。</span>');
+      } catch (e) { /* ignore */ }
+    }
+
+    window.testMail = async function() {
+      const msg = document.getElementById('mail-test-msg');
+      msg.textContent = '发送中…'; msg.style.color = 'var(--text-light)';
+      try {
+        const r = await adminRequest('/mail-test', { method: 'POST' });
+        if (r.ok) { msg.textContent = '✅ ' + r.message; msg.style.color = '#388E3C'; }
+        else { msg.textContent = '❌ ' + (r.error || '发送失败'); msg.style.color = '#D32F2F'; }
+      } catch (e) { msg.textContent = '❌ ' + e.message; msg.style.color = '#D32F2F'; }
+      loadMailStatus();
+    };
 
     function renderPagination(totalPages, page) {
       if (totalPages <= 1) return '';

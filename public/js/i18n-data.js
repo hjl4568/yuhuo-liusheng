@@ -400,7 +400,9 @@
     "链接已复制，去粘贴给 TA 吧": "Link copied — go paste it to them",
     "链接已复制，请打开微信粘贴给好友": "Link copied — open WeChat and paste to your friend",
     "链接已复制，打开小红书粘贴发布": "Link copied — open Xiaohongshu and paste to publish",
-    "复制失败，请手动复制网址": "Copy failed — please copy the URL manually"
+    "复制失败，请手动复制网址": "Copy failed — please copy the URL manually",
+    "邮件通知配置": "Mail Notification Settings",
+    "发送测试邮件": "Send Test Email"
   };
 
   // 输入框占位符 / 标题等属性翻译

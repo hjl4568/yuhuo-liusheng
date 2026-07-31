@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const { db } = require('../db');
 const { adminAuth } = require('../middleware/auth');
 const { deliverCapsule } = require('../services/scheduler');
+const { getMailStatus, sendTestMail } = require('../services/email');
 
 const router = express.Router();
 
@@ -162,6 +163,23 @@ router.get('/leads/export', adminAuth, (req, res) => {
   res.setHeader('Content-Type', 'text/csv; charset=utf-8');
   res.setHeader('Content-Disposition', 'attachment; filename="leads-export.csv"');
   res.send(csv);
+});
+
+router.get('/mail-status', adminAuth, (req, res) => {
+  res.json(getMailStatus());
+});
+
+router.post('/mail-test', adminAuth, async (req, res) => {
+  try {
+    const r = await sendTestMail();
+    if (r.ok) {
+      res.json({ ok: true, message: `测试邮件已发送，请查收 ${process.env.WORK_MAIL || ''}` });
+    } else {
+      res.json({ ok: false, error: r.error || '未配置邮件服务' });
+    }
+  } catch (e) {
+    res.json({ ok: false, error: e.message });
+  }
 });
 
 module.exports = router;

@@ -31,7 +31,23 @@ function init() {
 
 async function ensureTransporter() {
   if (transporter) return true;
-  if (process.env.MAIL_SERVICE === 'ethereal') {
+  const service = process.env.MAIL_SERVICE;
+  const hasSmtp = service && service !== 'ethereal' && process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS;
+  if (hasSmtp) {
+    try {
+      transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: parseInt(process.env.SMTP_PORT || '465', 10),
+        secure: parseInt(process.env.SMTP_PORT || '465', 10) === 465,
+        auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+      });
+      return true;
+    } catch (e) {
+      console.error('[Mail] 创建传输器失败:', e.message);
+      return false;
+    }
+  }
+  if (service === 'ethereal') {
     try {
       testAccount = await nodemailer.createTestAccount();
       transporter = nodemailer.createTransport({
@@ -47,6 +63,46 @@ async function ensureTransporter() {
     }
   }
   return false;
+}
+
+function maskEmail(e) {
+  if (!e || !e.includes('@')) return e || '';
+  const [u, d] = e.split('@');
+  const head = u.length <= 3 ? u[0] + '***' : u.slice(0, 3) + '***';
+  return `${head}@${d}`;
+}
+
+// 返回当前邮件配置状态（供后台自检）
+function getMailStatus() {
+  const service = process.env.MAIL_SERVICE;
+  const hasSmtp = service && service !== 'ethereal' && process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS;
+  return {
+    configured: !!transporter || !!hasSmtp,
+    service: service || '(未设置)',
+    user: process.env.SMTP_USER ? maskEmail(process.env.SMTP_USER) : '(未设置)',
+    workMail: process.env.WORK_MAIL ? maskEmail(process.env.WORK_MAIL) : '(未设置)',
+  };
+}
+
+// 主动发送一封测试信到通知邮箱，返回真实结果（供后台“一键测试”）
+async function sendTestMail() {
+  const ok = await ensureTransporter();
+  if (!ok) {
+    return { ok: false, error: '未配置可用邮件服务（请检查服务器 .env.prod 的 MAIL_SERVICE / SMTP_*）' };
+  }
+  const WORK_MAIL = process.env.WORK_MAIL || 'changyeyuhuo2026@163.com';
+  try {
+    const info = await transporter.sendMail({
+      from: `"长夜余火" <${process.env.SMTP_USER}>`,
+      to: WORK_MAIL,
+      subject: '长夜余火 · 邮件配置测试',
+      text: '这是一封测试邮件。如果你收到它，说明服务器邮件功能已正常工作。',
+      html: '<p style="font-size:15px;line-height:1.8;">这是一封<b>测试邮件</b>。如果你收到它，说明服务器邮件功能已正常工作 🔥</p>',
+    });
+    return { ok: true, messageId: info.messageId };
+  } catch (e) {
+    return { ok: false, error: e.message };
+  }
 }
 
 async function sendCapsuleEmail({ recipientName, recipientEmail, senderName, title, textContent, downloadUrl, relation }) {
@@ -126,4 +182,4 @@ async function sendLeadNotification({ name, phone, email, content_types, want_ea
   return { messageId: info.messageId };
 }
 
-module.exports = { init, sendCapsuleEmail, sendLeadNotification };
+module.exports = { init, sendCapsuleEmail, sendLeadNotification, getMailStatus, sendTestMail };
