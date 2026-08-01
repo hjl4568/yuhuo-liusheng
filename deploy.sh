@@ -14,8 +14,9 @@ if [ ! -d "$DIR/.git" ]; then
   git clone "$REPO" "$DIR"
 fi
 cd "$DIR"
-echo ">> 拉取最新代码 ..."
-git pull --ff-only
+echo ">> 拉取最新代码（强制与 GitHub 对齐，丢弃服务器本地改动）..."
+git fetch origin
+git reset --hard origin/master
 
 # 用 docker compose 重建并后台运行（.env.prod 注入密钥，data 卷持久化）
 echo ">> 构建并启动容器 ..."
