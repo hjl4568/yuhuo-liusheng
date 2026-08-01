@@ -53,20 +53,7 @@
     <a href="#panel-about" class="nf-scrollcue" aria-label="向下滚动了解更多">↓</a>
   </header>
 
-  <!-- 最新留言墙：置顶预览，第一时间看到同行者 -->
-  <section class="nf-section msg-preview" id="msg-preview">
-    <div class="reveal">
-      <div class="nf-eyebrow">最新留言 · RECENT WORDS</div>
-      <h2 class="nf-title">陪伴我们的火苗</h2>
-      <p class="nf-lead">下面这些是最近赞赏我们的人留下的匿名留言（金额与留言皆可空）。如果你也想留下点什么，欢迎支持我们。</p>
-      <div class="msg-cards" id="msg-cards">
-        <div class="msg-empty">正在加载大家的留言…</div>
-      </div>
-      <div class="msg-more">
-        <a href="#panel-data" class="nf-btn nf-btn-ghost">查看完整留言墙 · 实时数据</a>
-      </div>
-    </div>
-  </section>
+  <!-- 留言墙已并入「登记意向」板块（见 panel-lead），避免分散导致找不到 -->
 
   <!-- 一页滚动叙事：吸顶分节导航 -->
   <nav class="nf-scrollnav" id="scrollnav">
@@ -117,38 +104,6 @@
         </div>
       </div>
 
-      <section class="card nf-support reveal" style="margin-top:38px;">
-        <div class="nf-eyebrow" style="justify-content:center;">陪我们走下去 · SUPPORT</div>
-        <h2 class="nf-title" style="justify-content:center;">自愿赞赏，陪火苗走更远</h2>
-        <p class="nf-desc">
-          长夜余火正处在验证想法的早期，产品免费使用。如果你也被这个念头打动，
-          欢迎以<b>自愿赞赏</b>的方式支持我们——所有支持均出于自愿，我们不承诺任何对价回报。
-        </p>
-
-        <!-- 二维码与账户直接内嵌（不需要跳转） -->
-        <div class="pay-grid">
-          <div class="pay-card">
-            <div class="pay-icon wechat">微</div>
-            <div class="pay-name">微信赞赏</div>
-            <div class="pay-sub">扫码支持</div>
-            <img class="pay-qr" src="/images/wechat-qr.png" alt="微信赞赏二维码">
-          </div>
-          <div class="pay-card">
-            <div class="pay-icon alipay">支</div>
-            <div class="pay-name">支付宝</div>
-            <div class="pay-sub">扫码或转账</div>
-            <div class="pay-account" id="pay-account" data-account="935382253@qq.com">935382253@qq.com</div>
-            <button class="pay-copy" type="button" onclick="(function(btn){var acc=document.getElementById('pay-account').getAttribute('data-account');navigator.clipboard.writeText(acc).then(function(){var o=btn.textContent;btn.textContent='✓ 已复制';btn.classList.add('copied');setTimeout(function(){btn.textContent=o;btn.classList.remove('copied');},2400);}).catch(function(){btn.textContent='复制失败，请手动';});})(this)">复制账号</button>
-          </div>
-        </div>
-        <div class="pay-note">
-          <span class="pay-note-tag">备注</span>
-          目前仅是概念设计阶段，捐赠看个人偏好，活动群之后会放上去。
-        </div>
-        <div class="pay-actions">
-          <a href="/support.html" class="nf-btn nf-btn-ghost">查看完整支持页</a>
-        </div>
-      </section>
     </section>
 
     <!-- ============ 创始人是谁 ============ -->
@@ -537,6 +492,19 @@
           <div class="flow-hint">现在 → 第一步就开始：</div>
         </div>
 
+        <!-- 最新留言墙：社交见证，先看同行者（已从顶部并入本板块） -->
+        <div class="msg-preview" id="msg-preview">
+          <div class="nf-eyebrow">最新留言 · RECENT WORDS</div>
+          <h2 class="nf-title">陪伴我们的火苗</h2>
+          <p class="nf-lead">下面这些是最近赞赏我们的人留下的匿名留言（金额与留言皆可空）。如果你也想留下点什么，欢迎支持我们。</p>
+          <div class="msg-cards" id="msg-cards">
+            <div class="msg-empty">正在加载大家的留言…</div>
+          </div>
+          <div class="msg-more">
+            <a href="#panel-data" class="nf-btn nf-btn-ghost">查看完整留言墙 · 实时数据</a>
+          </div>
+        </div>
+
         <form id="lead-form">
           <label>怎么称呼你 *</label>
           <input type="text" id="name" placeholder="昵称或真名都可以" maxlength="40">
@@ -578,6 +546,40 @@
           <button type="submit" class="nf-submit">提交登记</button>
           <div class="nf-lead-msg" id="lead-msg"></div>
         </form>
+
+        <!-- 自愿赞赏：登记之后，可选支持（已从「关于我们」并入本板块） -->
+        <section class="card nf-support" style="margin-top:38px;">
+          <div class="nf-eyebrow" style="justify-content:center;">陪我们走下去 · SUPPORT</div>
+          <h2 class="nf-title" style="justify-content:center;">自愿赞赏，陪火苗走更远</h2>
+          <p class="nf-desc">
+            长夜余火正处在验证想法的早期，产品免费使用。如果你也被这个念头打动，
+            欢迎以<b>自愿赞赏</b>的方式支持我们——所有支持均出于自愿，我们不承诺任何对价回报。
+          </p>
+
+          <!-- 二维码与账户直接内嵌（不需要跳转） -->
+          <div class="pay-grid">
+            <div class="pay-card">
+              <div class="pay-icon wechat">微</div>
+              <div class="pay-name">微信赞赏</div>
+              <div class="pay-sub">扫码支持</div>
+              <img class="pay-qr" src="/images/wechat-qr.png" alt="微信赞赏二维码">
+            </div>
+            <div class="pay-card">
+              <div class="pay-icon alipay">支</div>
+              <div class="pay-name">支付宝</div>
+              <div class="pay-sub">扫码或转账</div>
+              <div class="pay-account" id="pay-account" data-account="935382253@qq.com">935382253@qq.com</div>
+              <button class="pay-copy" type="button" onclick="(function(btn){var acc=document.getElementById('pay-account').getAttribute('data-account');navigator.clipboard.writeText(acc).then(function(){var o=btn.textContent;btn.textContent='✓ 已复制';btn.classList.add('copied');setTimeout(function(){btn.textContent=o;btn.classList.remove('copied');},2400);}).catch(function(){btn.textContent='复制失败，请手动';});})(this)">复制账号</button>
+            </div>
+          </div>
+          <div class="pay-note">
+            <span class="pay-note-tag">备注</span>
+            目前仅是概念设计阶段，捐赠看个人偏好，活动群之后会放上去。
+          </div>
+          <div class="pay-actions">
+            <a href="/support.html" class="nf-btn nf-btn-ghost">查看完整支持页</a>
+          </div>
+        </section>
       </div>
     </section>
 
@@ -722,7 +724,8 @@
       }
       function load() {
         fetch('/api/stats/public').then(r => r.json()).then(d => render(d && d.recentDonors)).catch(() => {
-          wrap.innerHTML = '<div class="msg-empty">留言加载中…</div>';
+          // 接口异常时不卡在“加载中”，显示友好的空状态
+          render([]);
         });
       }
       load();
@@ -901,6 +904,14 @@
         });
       }, { threshold: 0.12 });
       els.forEach(el => io.observe(el));
+      // 安全网：个别浏览器 IO 初始回调可能漏触发，1.5s 后强制揭示视口内仍未显示的元素，
+      // 避免任何意外导致 .reveal 内容永久透明（内容不可见）。
+      setTimeout(function () {
+        document.querySelectorAll('.reveal:not(.in)').forEach(function (el) {
+          var r = el.getBoundingClientRect();
+          if (r.top < window.innerHeight) el.classList.add('in');
+        });
+      }, 1500);
     })();
 
     // 意向登记提交（Web3Forms 真发信 + 本地后端 + 邮件降级）
