@@ -66,7 +66,8 @@ a{color:var(--primary);text-decoration:none;}
   position:sticky;top:0;z-index:100;
   border-bottom:1px solid var(--border);
 }
-.navbar h1{font-family:var(--serif);font-size:18px;font-weight:600;letter-spacing:1px;color:var(--primary-strong);}
+.navbar h1{font-family:var(--serif);font-size:18px;font-weight:600;letter-spacing:1px;color:var(--primary-strong);display:flex;align-items:center;gap:9px;}
+.navbar h1::before{content:url(/favicon.svg);width:22px;height:22px;flex:0 0 auto;filter:drop-shadow(0 0 6px rgba(255,150,60,0.55));}
 .navbar .nav-back,.navbar .nav-action{color:var(--text-light);font-size:14px;cursor:pointer;transition:color .2s;}
 .navbar .nav-back:hover,.navbar .nav-action:hover{color:var(--primary-strong);}
 
@@ -180,8 +181,10 @@ a{color:var(--primary);text-decoration:none;}
 .hero .btn{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#1a1206;box-shadow:0 8px 24px var(--glow);}
 
 /* ===== 空状态 ===== */
-.empty-state{text-align:center;padding:60px 20px;color:var(--text-light);}
-.empty-state .empty-icon{font-size:48px;margin-bottom:12px;}
+.empty-state{text-align:center;padding:60px 20px;color:var(--text-light);position:relative;}
+.empty-state::before{content:"";position:absolute;left:50%;top:22px;transform:translateX(-50%);width:190px;height:190px;border-radius:50%;background:radial-gradient(circle,rgba(255,160,70,0.12),transparent 66%);filter:blur(10px);z-index:0;pointer-events:none;}
+.empty-state>*{position:relative;z-index:1;}
+.empty-state .empty-icon{font-size:48px;margin-bottom:12px;filter:drop-shadow(0 0 10px rgba(255,150,60,0.25));}
 
 /* ===== Toast ===== */
 .toast{
