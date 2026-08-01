@@ -58,6 +58,7 @@
     <a href="#panel-compliance" class="nf-anchor">合规 · e签宝</a>
     <a href="#panel-trust" class="nf-anchor">信任背书</a>
     <a href="#panel-lead" class="nf-anchor">登记意向</a>
+    <a href="#panel-tree" class="nf-anchor">生长之树</a>
     <a href="#panel-data" class="nf-anchor">实时数据</a>
   </nav>
 
@@ -373,7 +374,7 @@
 
         <p class="nf-note">
           接入 e签宝 的前提：需<em>企业 / 个体工商户主体</em> + 注册 e签宝开发者 + API 对接 + 付费。          详细方案见
-          <a href="/docs/compliance-esign.md">合规与 e签宝方案文档</a>。
+          <a href="/compliance.html">合规与 e签宝方案文档</a>。
         </p>
       </div>
     </section>
@@ -404,7 +405,7 @@
             <span class="nf-tc-more">合规运营中</span>
           </div>
 
-          <a class="nf-trust-card" href="/docs/compliance-esign.md">
+          <a class="nf-trust-card" href="/compliance.html">
             <span class="nf-tc-ico">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l4-1 9.5-9.5a2 2 0 0 0-3-3L5 16z"/><path d="M14 6l3 3"/></svg>
             </span>
@@ -484,6 +485,36 @@
           <button type="submit" class="nf-submit">提交登记</button>
           <div class="nf-lead-msg" id="lead-msg"></div>
         </form>
+      </div>
+    </section>
+
+    <!-- ============ 生长之树 · 数据可视化 ============ -->
+    <section class="nf-section" id="panel-tree">
+      <div class="reveal">
+        <div class="nf-eyebrow">生长之树 · DATA TREE</div>
+        <h2 class="nf-title">这棵树，和我们一起长</h2>
+        <p class="nf-lead">访问、注册、胶囊——三个数字决定它的样子。人来了，树干就粗一点；有人登记了，枝叶就密一层；有人创建胶囊了，枝头就结出一颗小小的果实。现在它还小，但每一天都在长。</p>
+        <div class="nf-tree-wrap">
+          <div class="nf-tree-stage" id="tree-stage-info">
+            <span class="era-badge era-0" id="tree-era-badge">萌芽期</span>
+            <span id="tree-stage-name">种子</span>
+          </div>
+          <div class="nf-tree-svg-box">
+            <svg class="nf-tree-svg" id="tree-svg" viewBox="0 0 400 340" aria-label="数据生长树"></svg>
+            <div class="nf-tree-particles" id="tree-particles"></div>
+          </div>
+          <div class="nf-tree-stats">
+            <div class="ts-card"><div class="ts-num" id="ts-visits">0</div><div class="ts-lab">累计访问 → 树干</div></div>
+            <div class="ts-card"><div class="ts-num" id="ts-regs">0</div><div class="ts-lab">注册人数 → 枝叶</div></div>
+            <div class="ts-card"><div class="ts-num" id="ts-caps">0</div><div class="ts-lab">已建胶囊 → 果实</div></div>
+          </div>
+          <div class="nf-tree-legend">
+            <div class="lg-item"><span class="lg-dot lg-trunk"></span>树干粗细 = 访问量</div>
+            <div class="lg-item"><span class="lg-dot lg-leaf"></span>枝叶疏密 = 注册量</div>
+            <div class="lg-item"><span class="lg-dot lg-fruit"></span>果实数量 = 胶囊数</div>
+          </div>
+          <div class="nf-tree-scale" id="tree-scale-text">当前量级：0 — 100</div>
+        </div>
       </div>
     </section>
 
@@ -835,6 +866,7 @@
   </script>
   <script src="/js/i18n-data.js"></script>
   <script src="/js/i18n.js"></script>
+  <script src="/js/tree-viz.js"></script>
   <script src="/js/share.js"></script>
 </body>
 </html>

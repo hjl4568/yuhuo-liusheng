@@ -50,11 +50,51 @@ router.post('/', auth, upload.single('file'), (req, res) => {
     trigger_date,
     public_authorized,
     agreement_signed,
+    recipients_json,
+    sender_profile,
+    delivery_note,
   } = req.body;
 
-  if (!title || !recipient_name || !recipient_email) {
-    return res.status(400).json({ error: '标题、收件人姓名和邮箱不能为空' });
+  if (!title) {
+    return res.status(400).json({ error: '标题不能为空' });
   }
+
+  // 解析多收件人；兼容旧版单收件人
+  var recipients = [];
+  if (recipients_json) {
+    try { recipients = JSON.parse(recipients_json); } catch(e) { recipients = []; }
+  }
+  if (!recipients.length) {
+    // 旧版：单收件人字段
+    if (!recipient_name || !recipient_email) {
+      return res.status(400).json({ error: '至少需要一位收件人' });
+    }
+    recipients = [{ name: recipient_name, email: recipient_email, relation: recipient_relation || '', method: 'email', contact: recipient_email }];
+  } else {
+    // 验证每位收件人
+    for (var i = 0; i < recipients.length; i++) {
+      var r = recipients[i];
+      if (!r.name) {
+        return res.status(400).json({ error: '第' + (i + 1) + '位收件人姓名不能为空' });
+      }
+      if (!r.method) {
+        return res.status(400).json({ error: '请选择第' + (i + 1) + '位收件人的投递方式' });
+      }
+      if (r.method === 'email' && !r.contact) {
+        return res.status(400).json({ error: '第' + (i + 1) + '位收件人邮箱不能为空' });
+      }
+      if (r.method === 'sms' && !r.contact) {
+        return res.status(400).json({ error: '第' + (i + 1) + '位收件人手机号不能为空' });
+      }
+    }
+  }
+
+  // 兼容旧字段：取第一位收件人
+  var firstR = recipients[0] || {};
+  var compatName = firstR.name || recipient_name || '';
+  var compatEmail = firstR.contact || firstR.email || recipient_email || '';
+  var compatRelation = firstR.relation || recipient_relation || '';
+  var recipientsStr = JSON.stringify(recipients);
 
   const capsuleCode = `${userId}_${Date.now()}`;
   const viewToken = crypto.randomBytes(16).toString('hex');
@@ -84,15 +124,15 @@ router.post('/', auth, upload.single('file'), (req, res) => {
       user_id, title, content_type, text_content, file_path, file_name, file_size,
       capsule_code, recipient_name, recipient_email, recipient_relation,
       trigger_type, trigger_date, status, public_authorized, agreement_signed, agreement_log,
-      view_token
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      view_token, recipients_json, sender_profile, delivery_note
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     userId, title, content_type || 'text', text_content || '', filePath, fileName, fileSize,
-    capsuleCode, recipient_name, recipient_email, recipient_relation || '',
+    capsuleCode, compatName, compatEmail, compatRelation,
     trigger_type || 'scheduled', trigger_date || null, status,
     parseInt(public_authorized) || 0, parseInt(agreement_signed) || 0,
     agreement_signed ? `用户#${userId}于${new Date().toISOString()}签署协议` : '',
-    viewToken
+    viewToken, recipientsStr, sender_profile || '', delivery_note || ''
   );
 
   const capsuleId = result.lastInsertRowid;

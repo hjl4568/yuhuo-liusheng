@@ -633,11 +633,40 @@
     "上一张": "Previous",
     "下一张": "Next",
     "分镜导航": "Storyboard navigation",
-    "播放（筹备中）": "Play (in the works)"
+    "播放（筹备中）": "Play (in the works)",
+    "生长之树": "Growth Tree",
+    "生长之树 · DATA TREE": "Growth Tree · DATA TREE",
+    "这棵树，和我们一起长": "This tree grows with us",
+    "访问、注册、胶囊——三个数字决定它的样子。人来了，树干就粗一点；有人登记了，枝叶就密一层；有人创建胶囊了，枝头就结出一颗小小的果实。现在它还小，但每一天都在长。": "Visits, registrations, capsules — three numbers shape it. People visit, the trunk thickens; someone registers, branches grow denser; a capsule is created, a small fruit appears. It's still small now, but growing every day.",
+    "萌芽期": "Sprout Era",
+    "种子": "Seed",
+    "累计访问 → 树干": "Total Visits → Trunk",
+    "注册人数 → 枝叶": "Registrations → Foliage",
+    "已建胶囊 → 果实": "Capsules → Fruit",
+    "树干粗细 = 访问量": "Trunk thickness = Visits",
+    "枝叶疏密 = 注册量": "Foliage density = Registrations",
+    "果实数量 = 胶囊数": "Fruit count = Capsules",
+    "当前量级：0 — 100": "Current scale: 0 — 100",
+    "生长期": "Growth Era",
+    "繁茂期": "Flourishing Era",
+    "森林期": "Forest Era",
+    "萌芽": "Sprout",
+    "树苗": "Sapling",
+    "小树": "Young Tree",
+    "大树": "Mature Tree",
+    "当前量级：100 — 1000": "Current scale: 100 — 1,000",
+    "当前量级：1000 — 10000": "Current scale: 1,000 — 10,000",
+    "当前量级：10000 — 100000": "Current scale: 10,000 — 100,000",
+    "你的档案": "Your Profile",
+    "0 / 2000 字（选填）": "0 / 2000 chars (optional)",
+    "一封胶囊可以发给多个人。每位收件人可以选择不同的投递方式：邮件、短信、实物寄递，或者自定义方式（我们会联系你沟通安排）。": "A capsule can be sent to multiple people. Each recipient can choose a different delivery method: email, SMS, physical mail, or custom (we will contact you to arrange).",
+    "+ 添加收件人": "+ Add Recipient",
+    "定制投递说明": "Custom Delivery Instructions",
+    "选填。仅当你选择了\"自定义方式\"投递时需要填写。": "Optional. Only needed when you chose \"Custom\" delivery."
   };
 
   // 这些容器里的文本是“用户生成内容”，不翻译，避免串改用户留言
-  const skipIds = ["donor-list", "lead-msg"];
+  const skipIds = ["donor-list", "lead-msg", "compliance-doc"];
 
   window.I18N_MAP = zh2en;
   window.I18N_ATTR = attrMap;

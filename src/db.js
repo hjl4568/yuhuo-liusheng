@@ -134,6 +134,16 @@ function init() {
   } catch (e) {
     // 列已存在则忽略
   }
+  // 胶囊：多收件人 JSON、用户档案、投递说明
+  try {
+    db.exec('ALTER TABLE capsules ADD COLUMN recipients_json TEXT DEFAULT \'\'');
+  } catch (e) {}
+  try {
+    db.exec('ALTER TABLE capsules ADD COLUMN sender_profile TEXT DEFAULT \'\'');
+  } catch (e) {}
+  try {
+    db.exec('ALTER TABLE capsules ADD COLUMN delivery_note TEXT DEFAULT \'\'');
+  } catch (e) {}
   // 回填历史数据：为没有 view_token 的胶囊生成随机令牌
   db.prepare(`UPDATE capsules SET view_token = lower(hex(randomblob(16))) WHERE view_token IS NULL OR view_token = ''`).run();
 

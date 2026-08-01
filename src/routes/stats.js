@@ -33,9 +33,12 @@ router.get('/stats/public', (req, res) => {
     });
   });
   const daily = db.prepare("SELECT date, count FROM visits WHERE date >= date('now','-6 days') ORDER BY date ASC").all();
+  const usersTotal = db.prepare('SELECT COUNT(*) AS c FROM users').get().c;
+  const capsulesTotal = db.prepare('SELECT COUNT(*) AS c FROM capsules').get().c;
   res.json({
     totalVisits, todayVisits,
     leadsTotal,
+    usersTotal, capsulesTotal,
     donorsTotal: d.c, donorAmount: d.s,
     recentDonors, byType, daily,
   });

@@ -5,6 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>创建胶囊 — 余火·留声</title>
   <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .recipient-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px;margin-bottom:12px;position:relative;}
+    .recipient-card .rc-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+    .recipient-card .rc-num{font-size:13px;color:var(--text-light);font-weight:600;}
+    .recipient-card .rc-del{font-size:13px;color:var(--danger);cursor:pointer;background:none;border:none;padding:4px 8px;}
+    .recipient-card .rc-del:disabled{opacity:.3;cursor:default;}
+    .method-contact-group{margin-top:8px;}
+    .custom-note-box{background:rgba(240,179,90,.08);border:1px solid rgba(240,179,90,.2);border-radius:8px;padding:12px 16px;margin-top:8px;font-size:13px;color:var(--text-light);line-height:1.7;}
+    .custom-note-box a{color:var(--primary-strong);}
+    .add-recipient-btn{width:100%;padding:12px;border:1px dashed rgba(255,255,255,.15);border-radius:12px;background:none;color:var(--text-light);font-size:14px;cursor:pointer;transition:all .2s;margin-bottom:16px;}
+    .add-recipient-btn:hover{border-color:var(--primary-strong);color:var(--primary-strong);}
+    .profile-textarea{min-height:80px;}
+  </style>
 </head>
 <body>
   <div class="app-container">
@@ -15,7 +28,7 @@
     </div>
 
     <div class="page">
-      <!-- Step 1: 内容信息 -->
+      <!-- Step 1: 内容信息 + 档案 -->
       <div class="card">
         <div class="card-title">第一步：写下你的内容</div>
 
@@ -55,25 +68,32 @@
           <input type="file" id="file-input" style="display:none;">
           <div id="file-info-display"></div>
         </div>
+
+        <div class="form-group">
+          <label class="form-label">你的档案</label>
+          <textarea class="form-textarea profile-textarea" id="sender_profile" placeholder="简单写写你自己——你的名字、你和收件人的故事、你想让对方知道的背景。这些信息会随胶囊一起保存，帮助收件人在未来的某一天更好地理解你的心意。" maxlength="2000"></textarea>
+          <div class="form-hint" id="profile-count">0 / 2000 字（选填）</div>
+        </div>
       </div>
 
-      <!-- Step 2: 投递设置 -->
+      <!-- Step 2: 收件人与投递方式 -->
       <div class="card">
         <div class="card-title">第二步：设置投递</div>
 
-        <div class="form-group">
-          <label class="form-label">收件人姓名 <span class="required">*</span></label>
-          <input type="text" class="form-input" id="recipient_name" placeholder="对方的名字">
+        <div class="form-hint" style="margin-bottom:16px;">
+          一封胶囊可以发给多个人。每位收件人可以选择不同的投递方式：邮件、短信、实物寄递，或者自定义方式（我们会联系你沟通安排）。
         </div>
 
-        <div class="form-group">
-          <label class="form-label">收件人邮箱 <span class="required">*</span></label>
-          <input type="email" class="form-input" id="recipient_email" placeholder="对方将在此邮箱收到内容">
+        <div id="recipients-list">
+          <!-- 收件人卡片由 JS 动态生成 -->
         </div>
 
-        <div class="form-group">
-          <label class="form-label">与收件人的关系（选填）</label>
-          <input type="text" class="form-input" id="recipient_relation" placeholder="如：女儿、朋友、前同事">
+        <button class="add-recipient-btn" id="add-recipient-btn">+ 添加收件人</button>
+
+        <div class="form-group" id="custom-delivery-section" style="display:none;">
+          <label class="form-label">定制投递说明</label>
+          <textarea class="form-textarea" id="delivery_note" placeholder="如果你有特殊的投递需求——比如希望以某种特定的媒介、仪式或方式送达给对方——在这里描述，我们会通过邮箱与你联系，一起想办法实现。" maxlength="2000"></textarea>
+          <div class="form-hint">选填。仅当你选择了"自定义方式"投递时需要填写。</div>
         </div>
 
         <div class="form-group">
@@ -129,21 +149,27 @@
   <script>
     if (!requireAuth()) throw new Error('redirect');
 
-    const contentTypeSelect = document.getElementById('content_type');
-    const textArea = document.getElementById('text-area');
-    const fileArea = document.getElementById('file-area');
-    const textContent = document.getElementById('text_content');
-    const charCount = document.getElementById('char-count');
-    const uploadArea = document.getElementById('upload-area');
-    const fileInput = document.getElementById('file-input');
-    const fileInfoDisplay = document.getElementById('file-info-display');
-    const triggerTypeSelect = document.getElementById('trigger_type');
-    const triggerDateGroup = document.getElementById('trigger-date-group');
-    const ctHint = document.getElementById('ct-hint');
-    const contactNotice = document.getElementById('contact-notice');
+    var contentTypeSelect = document.getElementById('content_type');
+    var textArea = document.getElementById('text-area');
+    var fileArea = document.getElementById('file-area');
+    var textContent = document.getElementById('text_content');
+    var charCount = document.getElementById('char-count');
+    var uploadArea = document.getElementById('upload-area');
+    var fileInput = document.getElementById('file-input');
+    var fileInfoDisplay = document.getElementById('file-info-display');
+    var triggerTypeSelect = document.getElementById('trigger_type');
+    var triggerDateGroup = document.getElementById('trigger-date-group');
+    var ctHint = document.getElementById('ct-hint');
+    var contactNotice = document.getElementById('contact-notice');
+    var senderProfile = document.getElementById('sender_profile');
+    var profileCount = document.getElementById('profile-count');
+    var recipientsList = document.getElementById('recipients-list');
+    var addRecipientBtn = document.getElementById('add-recipient-btn');
+    var customDeliverySection = document.getElementById('custom-delivery-section');
 
+    /* ---- 内容类型切换 ---- */
     function syncContentType() {
-      const type = contentTypeSelect.value;
+      var type = contentTypeSelect.value;
       if (type === 'text') {
         textArea.style.display = '';
         fileArea.style.display = 'none';
@@ -155,7 +181,6 @@
         contactNotice.style.display = 'none';
         ctHint.style.display = '';
       } else {
-        // 影像/视频、实物/纸质：走邮箱联系，不在应用内上传
         textArea.style.display = 'none';
         fileArea.style.display = 'none';
         contactNotice.style.display = '';
@@ -165,19 +190,23 @@
     contentTypeSelect.addEventListener('change', syncContentType);
     syncContentType();
 
-    textContent.addEventListener('input', () => {
-      charCount.textContent = `${textContent.value.length} / 5000 字`;
+    textContent.addEventListener('input', function() {
+      charCount.textContent = textContent.value.length + ' / 5000 字';
     });
 
-    triggerTypeSelect.addEventListener('change', () => {
+    senderProfile.addEventListener('input', function() {
+      profileCount.textContent = senderProfile.value.length + ' / 2000 字（选填）';
+    });
+
+    triggerTypeSelect.addEventListener('change', function() {
       triggerDateGroup.style.display = triggerTypeSelect.value === 'scheduled' ? '' : 'none';
     });
 
-    uploadArea.addEventListener('click', () => fileInput.click());
+    uploadArea.addEventListener('click', function() { fileInput.click(); });
 
-    let selectedFile = null;
-    fileInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
+    var selectedFile = null;
+    fileInput.addEventListener('change', function(e) {
+      var file = e.target.files[0];
       if (!file) return;
       if (file.size > 100 * 1024 * 1024) {
         showToast('文件不能超过100MB');
@@ -185,13 +214,12 @@
         return;
       }
       selectedFile = file;
-      const sizeMB = (file.size / 1024 / 1024).toFixed(2);
-      fileInfoDisplay.innerHTML = `
-        <div class="file-info">
-          <span>📎 ${file.name} (${sizeMB}MB)</span>
-          <span style="color:var(--danger);cursor:pointer;" onclick="removeFile()">✕</span>
-        </div>
-      `;
+      var sizeMB = (file.size / 1024 / 1024).toFixed(2);
+      fileInfoDisplay.innerHTML =
+        '<div class="file-info">' +
+        '<span>📎 ' + file.name + ' (' + sizeMB + 'MB)</span>' +
+        '<span style="color:var(--danger);cursor:pointer;" onclick="removeFile()">✕</span>' +
+        '</div>';
     });
 
     window.removeFile = function() {
@@ -200,17 +228,155 @@
       fileInfoDisplay.innerHTML = '';
     };
 
-    document.getElementById('submit-btn').addEventListener('click', async () => {
-      const title = document.getElementById('title').value.trim();
-      const contentType = contentTypeSelect.value;
-      const textVal = textContent.value.trim();
-      const recipientName = document.getElementById('recipient_name').value.trim();
-      const recipientEmail = document.getElementById('recipient_email').value.trim();
-      const recipientRelation = document.getElementById('recipient_relation').value.trim();
-      const triggerType = triggerTypeSelect.value;
-      const triggerDate = document.getElementById('trigger_date').value;
-      const publicAuthorized = document.getElementById('public_authorize').checked;
-      const agreeTerms = document.getElementById('agree_terms').checked;
+    /* ---- 多收件人管理 ---- */
+    var recipientCounter = 0;
+
+    function createRecipientCard() {
+      recipientCounter++;
+      var num = recipientCounter;
+      var div = document.createElement('div');
+      div.className = 'recipient-card';
+      div.dataset.idx = num;
+      div.innerHTML =
+        '<div class="rc-head">' +
+        '  <span class="rc-num">收件人 #' + num + '</span>' +
+        '  <button class="rc-del" onclick="removeRecipient(this)">删除</button>' +
+        '</div>' +
+        '<div class="form-group">' +
+        '  <label class="form-label">姓名 <span class="required">*</span></label>' +
+        '  <input type="text" class="form-input rc-name" placeholder="对方的名字">' +
+        '</div>' +
+        '<div class="form-group">' +
+        '  <label class="form-label">与收件人的关系（选填）</label>' +
+        '  <input type="text" class="form-input rc-relation" placeholder="如：女儿、朋友、前同事">' +
+        '</div>' +
+        '<div class="form-group">' +
+        '  <label class="form-label">投递方式 <span class="required">*</span></label>' +
+        '  <select class="form-select rc-method" onchange="onMethodChange(this)">' +
+        '    <option value="email">邮件</option>' +
+        '    <option value="sms">短信</option>' +
+        '    <option value="physical">实物寄递</option>' +
+        '    <option value="custom">自定义方式（联系平台沟通）</option>' +
+        '  </select>' +
+        '</div>' +
+        '<div class="form-group method-contact-group">' +
+        '  <label class="form-label rc-contact-label">收件人邮箱</label>' +
+        '  <input type="email" class="form-input rc-contact" placeholder="对方将在此邮箱收到内容">' +
+        '</div>' +
+        '<div class="custom-note-box" style="display:none;">' +
+        '  选择自定义方式后，我们会通过邮箱 <a href="mailto:changyeyuhuo2026@163.com">changyeyuhuo2026@163.com</a> 与你联系，沟通具体的送达方案。' +
+        '</div>';
+      recipientsList.appendChild(div);
+      updateDeleteButtons();
+      updateCustomDeliverySection();
+    }
+
+    window.removeRecipient = function(btn) {
+      var card = btn.closest('.recipient-card');
+      if (card) {
+        card.remove();
+        updateDeleteButtons();
+        updateCustomDeliverySection();
+        renumberRecipients();
+      }
+    };
+
+    function renumberRecipients() {
+      var cards = recipientsList.querySelectorAll('.recipient-card');
+      cards.forEach(function(card, i) {
+        card.querySelector('.rc-num').textContent = '收件人 #' + (i + 1);
+      });
+    }
+
+    function updateDeleteButtons() {
+      var cards = recipientsList.querySelectorAll('.recipient-card');
+      cards.forEach(function(card) {
+        var btn = card.querySelector('.rc-del');
+        btn.disabled = cards.length <= 1;
+      });
+    }
+
+    window.onMethodChange = function(select) {
+      var card = select.closest('.recipient-card');
+      var method = select.value;
+      var contactGroup = card.querySelector('.method-contact-group');
+      var contactLabel = card.querySelector('.rc-contact-label');
+      var contactInput = card.querySelector('.rc-contact');
+      var customNote = card.querySelector('.custom-note-box');
+
+      if (method === 'email') {
+        contactGroup.style.display = '';
+        contactLabel.textContent = '收件人邮箱';
+        contactInput.type = 'email';
+        contactInput.placeholder = '对方将在此邮箱收到内容';
+        customNote.style.display = 'none';
+      } else if (method === 'sms') {
+        contactGroup.style.display = '';
+        contactLabel.textContent = '收件人手机号';
+        contactInput.type = 'tel';
+        contactInput.placeholder = '对方将在此手机号收到短信通知';
+        customNote.style.display = 'none';
+      } else if (method === 'physical') {
+        contactGroup.style.display = '';
+        contactLabel.textContent = '收件地址';
+        contactInput.type = 'text';
+        contactInput.placeholder = '请填写收件地址（我们会通过快递或 EMS 寄达）';
+        customNote.style.display = 'none';
+      } else if (method === 'custom') {
+        contactGroup.style.display = 'none';
+        customNote.style.display = '';
+      }
+
+      updateCustomDeliverySection();
+    };
+
+    function updateCustomDeliverySection() {
+      var hasCustom = false;
+      recipientsList.querySelectorAll('.rc-method').forEach(function(sel) {
+        if (sel.value === 'custom') hasCustom = true;
+      });
+      customDeliverySection.style.display = hasCustom ? '' : 'none';
+    }
+
+    addRecipientBtn.addEventListener('click', function() {
+      createRecipientCard();
+    });
+
+    // 初始化第一位收件人
+    createRecipientCard();
+
+    /* ---- 收集收件人数据 ---- */
+    function collectRecipients() {
+      var recipients = [];
+      recipientsList.querySelectorAll('.recipient-card').forEach(function(card) {
+        var name = card.querySelector('.rc-name').value.trim();
+        var relation = card.querySelector('.rc-relation').value.trim();
+        var method = card.querySelector('.rc-method').value;
+        var contact = '';
+        if (method !== 'custom') {
+          contact = card.querySelector('.rc-contact').value.trim();
+        }
+        recipients.push({
+          name: name,
+          relation: relation,
+          method: method,
+          contact: contact
+        });
+      });
+      return recipients;
+    }
+
+    /* ---- 提交 ---- */
+    document.getElementById('submit-btn').addEventListener('click', async function() {
+      var title = document.getElementById('title').value.trim();
+      var contentType = contentTypeSelect.value;
+      var textVal = textContent.value.trim();
+      var profileVal = senderProfile.value.trim();
+      var deliveryNoteVal = document.getElementById('delivery_note').value.trim();
+      var triggerType = triggerTypeSelect.value;
+      var triggerDate = document.getElementById('trigger_date').value;
+      var publicAuthorized = document.getElementById('public_authorize').checked;
+      var agreeTerms = document.getElementById('agree_terms').checked;
 
       if (!title) { showToast('请填写标题'); return; }
       if (contentType === 'video' || contentType === 'physical') {
@@ -221,28 +387,51 @@
       }
       if (contentType === 'text' && !textVal) { showToast('请填写文字内容'); return; }
       if (contentType !== 'text' && !selectedFile) { showToast('请上传文件'); return; }
-      if (!recipientName) { showToast('请填写收件人姓名'); return; }
-      if (!recipientEmail) { showToast('请填写收件人邮箱'); return; }
+
+      var recipients = collectRecipients();
+      for (var i = 0; i < recipients.length; i++) {
+        if (!recipients[i].name) {
+          showToast('请填写第' + (i + 1) + '位收件人的姓名');
+          return;
+        }
+        if (recipients[i].method === 'email' && !recipients[i].contact) {
+          showToast('请填写第' + (i + 1) + '位收件人的邮箱');
+          return;
+        }
+        if (recipients[i].method === 'sms' && !recipients[i].contact) {
+          showToast('请填写第' + (i + 1) + '位收件人的手机号');
+          return;
+        }
+        if (recipients[i].method === 'physical' && !recipients[i].contact) {
+          showToast('请填写第' + (i + 1) + '位收件人的收件地址');
+          return;
+        }
+      }
+
       if (triggerType === 'scheduled' && !triggerDate) { showToast('请选择触发日期'); return; }
       if (!agreeTerms) { showToast('请同意用户协议'); return; }
 
-      const btn = document.getElementById('submit-btn');
+      var btn = document.getElementById('submit-btn');
       btn.disabled = true;
       btn.textContent = '创建中...';
 
       try {
-        let triggerDateISO = null;
+        var triggerDateISO = null;
         if (triggerType === 'scheduled' && triggerDate) {
           triggerDateISO = new Date(triggerDate).toISOString();
         }
 
-        const formData = new FormData();
+        var formData = new FormData();
         formData.append('title', title);
         formData.append('content_type', contentType);
         formData.append('text_content', textVal);
-        formData.append('recipient_name', recipientName);
-        formData.append('recipient_email', recipientEmail);
-        formData.append('recipient_relation', recipientRelation);
+        formData.append('sender_profile', profileVal);
+        formData.append('delivery_note', deliveryNoteVal);
+        formData.append('recipients_json', JSON.stringify(recipients));
+        // 兼容旧字段
+        formData.append('recipient_name', recipients[0].name);
+        formData.append('recipient_email', recipients[0].contact || recipients[0].email || '');
+        formData.append('recipient_relation', recipients[0].relation);
         formData.append('trigger_type', triggerType);
         formData.append('trigger_date', triggerDateISO || '');
         formData.append('public_authorized', publicAuthorized ? '1' : '0');
@@ -251,14 +440,14 @@
           formData.append('file', selectedFile);
         }
 
-        const data = await uploadFile('/capsules', formData);
+        var data = await uploadFile('/capsules', formData);
         showToast(data.message);
 
         if (triggerType === 'immediate' && data.capsule) {
           showToast('邮件正在发送中，请稍候...', 3000);
         }
 
-        setTimeout(() => { window.location.href = '/capsules.html'; }, 2000);
+        setTimeout(function() { window.location.href = '/capsules.html'; }, 2000);
       } catch (err) {
         showToast(err.message);
         btn.disabled = false;
