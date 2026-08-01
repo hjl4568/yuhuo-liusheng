@@ -169,14 +169,18 @@ function init() {
 
   const adminUsername = process.env.ADMIN_USERNAME || 'admin';
   const adminPassword = process.env.ADMIN_PASSWORD || 'admin123456';
+  const hashed = bcrypt.hashSync(adminPassword, 10);
   const existing = db.prepare('SELECT id FROM admin_users WHERE username = ?').get(adminUsername);
   if (!existing) {
-    const hashed = bcrypt.hashSync(adminPassword, 10);
     db.prepare('INSERT INTO admin_users (username, password, role, display_name) VALUES (?, ?, ?, ?)').run(adminUsername, hashed, 'main', '主管理员');
     console.log(`[DB] Admin user created: ${adminUsername} (main)`);
   } else {
-    // 确保默认管理员是 main 角色
-    db.prepare("UPDATE admin_users SET role = 'main' WHERE username = ? AND (role IS NULL OR role = '' OR role = 'sub')").run(adminUsername);
+    // 关键修复：主账号密码与 .env.prod 的 ADMIN_PASSWORD 保持一致（每次启动都同步）。
+    // 否则一旦首次建库时用了别的密码（例如部署示例里的占位符“改成强密码”或用户已忘记的强密码），
+    // 之后无论怎么改 .env.prod 都无法登录，且旧逻辑只在首次建库时写一次密码、永不更新。
+    // 这里保证：ADMIN_PASSWORD 配成啥，数据库主账号密码就是啥；不配则回落到默认 admin123456。
+    db.prepare("UPDATE admin_users SET role = 'main', password = ?, display_name = '主管理员' WHERE username = ?").run(hashed, adminUsername);
+    console.log(`[DB] Admin user synced: ${adminUsername} (main) — 密码已与 ADMIN_PASSWORD 对齐`);
   }
 
   console.log('[DB] Database initialized');
