@@ -4,7 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>我的胶囊 — 余火·留声</title>
-  <link rel="stylesheet" href="/css/style.css?v=20260802c">
+  <link rel="stylesheet" href="/css/style.css?v=20260803">
+  <style>
+    .mg-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+    .mg-stat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px 10px;text-align:center;}
+    .mg-stat .n{font-size:22px;font-weight:700;color:var(--primary-strong);line-height:1.2;}
+    .mg-stat .l{font-size:12px;color:var(--text-light);margin-top:4px;}
+    .mg-toolbar{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+    .mg-search{width:100%;padding:11px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);color:var(--secondary);font-size:14px;outline:none;box-sizing:border-box;}
+    .mg-search:focus{border-color:var(--primary-strong);}
+    .mg-tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;}
+    .mg-tab{flex:0 0 auto;padding:7px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.12);background:none;color:var(--text-light);font-size:13px;cursor:pointer;white-space:nowrap;transition:all .2s;}
+    .mg-tab.active{background:linear-gradient(135deg,#d4af37,#b8860b);color:#1a1206;border-color:transparent;font-weight:600;}
+    .mg-methods{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+    .mg-method{font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(255,255,255,.06);color:var(--text-light);}
+    .mg-method.sms{background:rgba(240,179,90,.14);color:#e9c96a;}
+    .mg-method.physical{background:rgba(120,180,255,.14);color:#9ec5ff;}
+    .mg-method.custom{background:rgba(180,160,255,.14);color:#c3b3ff;}
+    .capsule-card{cursor:pointer;transition:transform .15s,border-color .15s;}
+    .capsule-card:active{transform:scale(.99);}
+    @media (max-width:480px){.mg-summary{grid-template-columns:repeat(2,1fr);}}
+  </style>
 </head>
 <body>
   <div class="app-container">
@@ -14,9 +34,16 @@
     </div>
 
     <div class="page" id="capsules-page">
-      <div class="empty-state" id="loading">
-        <div class="empty-icon">⏳</div>
-        <p>加载中...</p>
+      <div id="mg-summary"></div>
+      <div class="mg-toolbar">
+        <input class="mg-search" id="mg-search" type="search" placeholder="搜索标题或收件人">
+        <div class="mg-tabs" id="mg-tabs"></div>
+      </div>
+      <div id="capsule-list">
+        <div class="empty-state" id="loading">
+          <div class="empty-icon">⏳</div>
+          <p>加载中...</p>
+        </div>
       </div>
     </div>
 
@@ -32,60 +59,151 @@
   <script>
     if (!requireAuth()) throw new Error('redirect');
 
+    const METHOD_LABEL = {
+      email: '邮件',
+      sms: '短信 · 预留',
+      physical: '实物寄递',
+      custom: '自定义方式',
+    };
+    const METHOD_CLASS = { email: 'email', sms: 'sms', physical: 'physical', custom: 'custom' };
+
+    let ALL = [];
+    let curFilter = 'all';
+    let curKeyword = '';
+
+    function methodTags(c) {
+      let list = [];
+      if (c.recipients_json) {
+        try { list = JSON.parse(c.recipients_json); } catch (e) { list = []; }
+      }
+      if (!Array.isArray(list) || !list.length) {
+        list = [{ method: 'email', name: c.recipient_name }];
+      }
+      return list.map(r => {
+        const m = (r.method || 'email').toLowerCase();
+        const cls = METHOD_CLASS[m] || 'email';
+        const label = METHOD_LABEL[m] || m;
+        return `<span class="mg-method ${cls}">${label}</span>`;
+      }).join('');
+    }
+
+    function counts() {
+      const res = { all: ALL.length, saved: 0, pending: 0, delivered: 0, cancelled: 0 };
+      ALL.forEach(c => {
+        if (c.status === 'saved') res.saved++;
+        else if (c.status === 'pending' || c.status === 'triggered') res.pending++;
+        else if (c.status === 'delivered') res.delivered++;
+        else if (c.status === 'cancelled') res.cancelled++;
+      });
+      return res;
+    }
+
+    function renderSummary() {
+      const n = counts();
+      document.getElementById('mg-summary').innerHTML = `
+        <div class="mg-summary">
+          <div class="mg-stat"><div class="n">${n.all}</div><div class="l">全部</div></div>
+          <div class="mg-stat"><div class="n">${n.saved}</div><div class="l">已保存</div></div>
+          <div class="mg-stat"><div class="n">${n.pending}</div><div class="l">等待触发</div></div>
+          <div class="mg-stat"><div class="n">${n.delivered}</div><div class="l">已送达</div></div>
+        </div>`;
+    }
+
+    function renderTabs() {
+      const n = counts();
+      const tabs = [
+        { k: 'all', t: `全部 ${n.all}` },
+        { k: 'saved', t: `已保存 ${n.saved}` },
+        { k: 'pending', t: `等待触发 ${n.pending}` },
+        { k: 'delivered', t: `已送达 ${n.delivered}` },
+        { k: 'cancelled', t: `已取消 ${n.cancelled}` },
+      ];
+      const box = document.getElementById('mg-tabs');
+      box.innerHTML = tabs.map(t =>
+        `<button class="mg-tab ${curFilter === t.k ? 'active' : ''}" data-f="${t.k}">${t.t}</button>`
+      ).join('');
+      box.querySelectorAll('.mg-tab').forEach(btn => {
+        btn.addEventListener('click', () => { curFilter = btn.getAttribute('data-f'); render(); });
+      });
+    }
+
+    function filtered() {
+      return ALL.filter(c => {
+        if (curFilter !== 'all' && c.status !== curFilter) return false;
+        if (curKeyword) {
+          const hay = (c.title + ' ' + (c.recipient_name || '') + ' ' + (c.recipient_email || '')).toLowerCase();
+          if (!hay.includes(curKeyword)) return false;
+        }
+        return true;
+      });
+    }
+
+    function cardHtml(c) {
+      let triggerInfo = '';
+      if (c.trigger_type === 'immediate') triggerInfo = '立即发送';
+      else if (c.trigger_type === 'scheduled' && c.trigger_date) {
+        triggerInfo = `定时：${new Date(c.trigger_date).toLocaleString('zh-CN')}`;
+      } else triggerInfo = '手动触发';
+
+      return `
+        <div class="capsule-card" onclick="location.href='/capsule-detail.html?id=${c.id}'">
+          <div class="capsule-header">
+            <div class="capsule-title">${c.title}</div>
+            ${statusTag(c.status)}
+          </div>
+          <div class="capsule-meta">
+            ${typeTag(c.content_type)}
+            <span style="margin-left:8px;">收件人：${c.recipient_name || '—'}</span>
+          </div>
+          <div class="mg-methods">${methodTags(c)}</div>
+          <div class="capsule-meta">${triggerInfo}</div>
+          <div class="capsule-footer">
+            <span style="font-size:12px;color:var(--text-light);">创建于 ${new Date(c.created_at).toLocaleDateString('zh-CN')}</span>
+          </div>
+        </div>`;
+    }
+
+    function renderList() {
+      const listBox = document.getElementById('capsule-list');
+      const list = filtered();
+      if (!ALL.length) {
+        listBox.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📦</div>
+            <p>还没有胶囊</p>
+            <a href="/create.html" class="btn btn-primary" style="margin-top:16px;">创建第一个胶囊</a>
+          </div>`;
+      } else if (!list.length) {
+        listBox.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><p>没有匹配的胶囊</p></div>`;
+      } else {
+        listBox.innerHTML = list.map(cardHtml).join('');
+      }
+    }
+
+    function render() {
+      renderSummary();
+      renderTabs();
+      renderList();
+    }
+
+    document.getElementById('mg-search').addEventListener('input', function (e) {
+      curKeyword = e.target.value.trim().toLowerCase();
+      renderList();
+    });
+
     async function loadCapsules() {
       try {
         const data = await request('/capsules');
-        const page = document.getElementById('capsules-page');
-
-        if (data.capsules.length === 0) {
-          page.innerHTML = `
-            <div class="empty-state">
-              <div class="empty-icon">📦</div>
-              <p>还没有胶囊</p>
-              <a href="/create.html" class="btn btn-primary" style="margin-top:16px;">创建第一个胶囊</a>
-            </div>
-          `;
-          return;
-        }
-
-        let html = '';
-        for (const c of data.capsules) {
-          let triggerInfo = '';
-          if (c.trigger_type === 'immediate') {
-            triggerInfo = '立即发送';
-          } else if (c.trigger_type === 'scheduled' && c.trigger_date) {
-            const d = new Date(c.trigger_date).toLocaleString('zh-CN');
-            triggerInfo = `定时：${d}`;
-          } else {
-            triggerInfo = '手动触发';
-          }
-
-          html += `
-            <div class="capsule-card" onclick="location.href='/capsule-detail.html?id=${c.id}'">
-              <div class="capsule-header">
-                <div class="capsule-title">${c.title}</div>
-                ${statusTag(c.status)}
-              </div>
-              <div class="capsule-meta">
-                ${typeTag(c.content_type)}
-                <span style="margin-left:8px;">收件人：${c.recipient_name}</span>
-              </div>
-              <div class="capsule-meta">${triggerInfo}</div>
-              <div class="capsule-footer">
-                <span style="font-size:12px;color:var(--text-light);">创建于 ${new Date(c.created_at).toLocaleDateString('zh-CN')}</span>
-              </div>
-            </div>
-          `;
-        }
-        page.innerHTML = html;
+        ALL = data.capsules || [];
+        render();
       } catch (err) {
-        document.getElementById('loading').innerHTML = `<p style="text-align:center;color:var(--danger);">${err.message}</p>`;
+        document.getElementById('capsule-list').innerHTML = `<p style="text-align:center;color:var(--danger);">${err.message}</p>`;
       }
     }
 
     loadCapsules();
   </script>
-  <script src="/js/i18n-data.js?v=20260802c"></script>
-  <script src="/js/i18n.js?v=20260802c"></script>
+  <script src="/js/i18n-data.js?v=20260803"></script>
+  <script src="/js/i18n.js?v=20260803"></script>
 </body>
 </html>

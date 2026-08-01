@@ -705,6 +705,43 @@
     "如果你有特殊的投递需求——比如希望以某种特定的媒介、仪式或方式送达给对方——在这里描述，我们会通过邮箱与你联系，一起想办法实现。": "If you have a special delivery need — e.g. a particular medium, ceremony, or way of arriving — describe it here; we'll email you to figure it out together.",
 
     // ===== 通用文本 · 补全 =====
+    // ===== 状态标签（胶囊状态，供状态标签 / 仪表盘统一翻译） =====
+    "已保存": "Saved",
+    "等待触发": "Awaiting Trigger",
+    "已送达": "Delivered",
+    "已取消": "Cancelled",
+
+    // ===== 多胶囊管理 =====
+    "全部": "All",
+    "没有匹配的胶囊": "No matching capsules",
+    "搜索标题或收件人": "Search by title or recipient",
+    "创建第一个胶囊": "Create Your First Capsule",
+    "投递方式明细": "Delivery Method Details",
+
+    // ===== 投递方式标签 =====
+    "邮件": "Email",
+    "短信 · 预留": "SMS · Reserved",
+    "短信（即将上线）": "SMS (Coming Soon)",
+    "实物寄递": "Physical Delivery",
+    "自定义方式": "Custom Method",
+
+    // ===== 短信预留提示 =====
+    "短信为预留功能，正式商业化后上线。当前选择短信的收件人将以「预留」状态记录，上线后自动补发，不影响其他方式的投递。": "SMS is a reserved feature, launching after commercialization. Recipients set to SMS will be recorded as 'reserved' and auto-sent once live, without affecting other delivery methods.",
+
+    // ===== 编辑模式 =====
+    "修改胶囊": "Edit Capsule",
+    "保存修改": "Save Changes",
+    "保存中...": "Saving...",
+    "（已有附件，修改文字内容将保留原附件）": "(Existing attachment — editing text keeps the original file)",
+
+    // ===== 数据仪表盘 =====
+    "数据仪表盘": "Data Dashboard",
+    "状态分布": "Status Breakdown",
+    "内容类型分布": "Content Type Breakdown",
+    "近期动态": "Recent Activity",
+    "暂无数据": "No data yet",
+    "暂无胶囊，去创建一个吧": "No capsules yet — create one",
+
     "悬停暂停 · 横向滑动": "Hover to pause · slides horizontally"
   };
 

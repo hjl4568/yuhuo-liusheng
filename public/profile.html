@@ -4,7 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>个人中心 — 余火·留声</title>
-  <link rel="stylesheet" href="/css/style.css?v=20260802c">
+  <link rel="stylesheet" href="/css/style.css?v=20260803">
+  <style>
+    .dash-card{margin-bottom:16px;}
+    .dash-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px;}
+    .dash-tile{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;text-align:center;}
+    .dash-tile .n{font-size:24px;font-weight:700;color:var(--primary-strong);line-height:1.1;}
+    .dash-tile .l{font-size:12px;color:var(--text-light);margin-top:4px;}
+    .dash-sub{font-size:14px;font-weight:600;margin:16px 0 10px;color:var(--secondary);}
+    .dash-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:13px;}
+    .dash-bar-label{width:92px;flex:0 0 auto;color:var(--text-light);}
+    .dash-bar-track{flex:1;height:10px;background:rgba(255,255,255,.06);border-radius:6px;overflow:hidden;}
+    .dash-bar-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#d4af37,#b8860b);}
+    .dash-bar-val{width:30px;text-align:right;color:var(--text-light);}
+    .dash-act{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;}
+    .dash-act:last-child{border-bottom:none;}
+    .dash-act .t{color:var(--secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:62%;}
+    .dash-act .m{color:var(--text-light);font-size:12px;flex:0 0 auto;}
+    @media (max-width:480px){.dash-tile .n{font-size:20px;}}
+  </style>
 </head>
 <body>
   <div class="app-container">
@@ -14,6 +32,10 @@
     </div>
 
     <div class="page" id="profile-page">
+      <div class="empty-state"><div class="empty-icon">⏳</div><p>加载中...</p></div>
+    </div>
+
+    <div class="page" id="dashboard-page">
       <div class="empty-state"><div class="empty-icon">⏳</div><p>加载中...</p></div>
     </div>
 
@@ -128,9 +150,64 @@
       window.location.href = '/app.html';
     };
 
+    async function loadDashboard() {
+      const box = document.getElementById('dashboard-page');
+      try {
+        const s = await request('/stats/me');
+        const byStatus = s.byStatus || {};
+        const byType = s.byType || {};
+        const total = s.total || 0;
+
+        const tiles = `
+          <div class="dash-grid">
+            <div class="dash-tile"><div class="n">${total}</div><div class="l">我的胶囊</div></div>
+            <div class="dash-tile"><div class="n">${s.delivered || 0}</div><div class="l">已送达</div></div>
+            <div class="dash-tile"><div class="n">${ (byStatus.pending || 0) + (byStatus.triggered || 0) }</div><div class="l">等待触发</div></div>
+            <div class="dash-tile"><div class="n">${ byStatus.saved || 0 }</div><div class="l">已保存</div></div>
+          </div>`;
+
+        const statusDefs = [['saved', '已保存'], ['pending', '等待触发'], ['delivered', '已送达'], ['cancelled', '已取消']];
+        const maxStatus = Math.max(1, ...statusDefs.map(function (d) { return byStatus[d[0]] || 0; }));
+        const statusBars = statusDefs.map(function (d) {
+          const v = byStatus[d[0]] || 0;
+          const pct = Math.round(v / maxStatus * 100);
+          return '<div class="dash-bar-row"><div class="dash-bar-label">' + d[1] + '</div><div class="dash-bar-track"><div class="dash-bar-fill" style="width:' + pct + '%;"></div></div><div class="dash-bar-val">' + v + '</div></div>';
+        }).join('');
+
+        const typeDefs = [['text', '文字'], ['audio', '录音'], ['video', '影像/视频'], ['physical', '实物/纸质'], ['image', '图片']];
+        const maxType = Math.max(1, ...Object.keys(byType).map(function (k) { return byType[k] || 0; }));
+        const typeBars = typeDefs.filter(function (d) { return byType[d[0]]; }).map(function (d) {
+          const v = byType[d[0]] || 0;
+          const pct = Math.round(v / maxType * 100);
+          return '<div class="dash-bar-row"><div class="dash-bar-label">' + d[1] + '</div><div class="dash-bar-track"><div class="dash-bar-fill" style="width:' + pct + '%;"></div></div><div class="dash-bar-val">' + v + '</div></div>';
+        }).join('');
+        const typeBlock = typeBars || '<p style="font-size:13px;color:var(--text-light);">暂无数据</p>';
+
+        const recent = (s.recent || []).map(function (r) {
+          return '<div class="dash-act"><span class="t">' + r.title + '</span><span class="m">' + statusTag(r.status) + ' ' + new Date(r.created_at).toLocaleDateString('zh-CN') + '</span></div>';
+        }).join('');
+        const recentBlock = recent || '<p style="font-size:13px;color:var(--text-light);">暂无胶囊，去创建一个吧</p>';
+
+        box.innerHTML = `
+          <div class="card dash-card">
+            <div class="card-title">数据仪表盘</div>
+            ${tiles}
+            <div class="dash-sub">状态分布</div>
+            ${statusBars}
+            <div class="dash-sub">内容类型分布</div>
+            ${typeBlock}
+            <div class="dash-sub">近期动态</div>
+            ${recentBlock}
+          </div>`;
+      } catch (err) {
+        box.innerHTML = '<p style="text-align:center;color:var(--danger);">' + err.message + '</p>';
+      }
+    }
+
     loadProfile();
+    loadDashboard();
   </script>
-  <script src="/js/i18n-data.js?v=20260802c"></script>
-  <script src="/js/i18n.js?v=20260802c"></script>
+  <script src="/js/i18n-data.js?v=20260803"></script>
+  <script src="/js/i18n.js?v=20260803"></script>
 </body>
 </html>

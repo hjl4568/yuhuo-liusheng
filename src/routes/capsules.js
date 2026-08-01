@@ -160,7 +160,7 @@ router.post('/', auth, upload.single('file'), (req, res) => {
 router.get('/', auth, (req, res) => {
   const capsules = db.prepare(`
     SELECT id, title, content_type, recipient_name, recipient_email, recipient_relation,
-           trigger_type, trigger_date, status, public_authorized, capsule_code, created_at
+           trigger_type, trigger_date, status, public_authorized, capsule_code, created_at, recipients_json
     FROM capsules WHERE user_id = ? ORDER BY created_at DESC
   `).all(req.userId);
   res.json({ capsules });
@@ -260,6 +260,7 @@ router.put('/:id', auth, (req, res) => {
   const {
     title, text_content, recipient_name, recipient_email, recipient_relation,
     trigger_type, trigger_date, public_authorized,
+    content_type, sender_profile, recipients_json,
   } = req.body;
 
   let status = capsule.status;
@@ -269,9 +270,27 @@ router.put('/:id', auth, (req, res) => {
     status = 'pending';
   }
 
+  // 解析多收件人并回填兼容字段（与创建逻辑一致）
+  let recipientsStr = capsule.recipients_json || '';
+  let compatName = capsule.recipient_name;
+  let compatEmail = capsule.recipient_email;
+  let compatRelation = capsule.recipient_relation;
+  if (recipients_json) {
+    let recipients = [];
+    try { recipients = JSON.parse(recipients_json); } catch (e) { recipients = []; }
+    if (Array.isArray(recipients) && recipients.length) {
+      recipientsStr = JSON.stringify(recipients);
+      const first = recipients[0] || {};
+      compatName = first.name || '';
+      compatEmail = first.contact || first.email || '';
+      compatRelation = first.relation || '';
+    }
+  }
+
   db.prepare(`
     UPDATE capsules SET
       title = COALESCE(?, title),
+      content_type = COALESCE(?, content_type),
       text_content = COALESCE(?, text_content),
       recipient_name = COALESCE(?, recipient_name),
       recipient_email = COALESCE(?, recipient_email),
@@ -280,12 +299,19 @@ router.put('/:id', auth, (req, res) => {
       trigger_date = COALESCE(?, trigger_date),
       status = ?,
       public_authorized = COALESCE(?, public_authorized),
+      sender_profile = COALESCE(?, sender_profile),
+      recipients_json = COALESCE(?, recipients_json),
       updated_at = datetime('now')
     WHERE id = ?
   `).run(
-    title, text_content, recipient_name, recipient_email, recipient_relation,
+    title, content_type, text_content,
+    recipient_name || compatName,
+    recipient_email || compatEmail,
+    recipient_relation || compatRelation,
     trigger_type, trigger_date, status,
     public_authorized !== undefined ? parseInt(public_authorized) : null,
+    sender_profile !== undefined ? sender_profile : null,
+    recipientsStr,
     req.params.id
   );
 
@@ -305,8 +331,9 @@ router.delete('/:id', auth, (req, res) => {
     fs.unlinkSync(capsule.file_path);
   }
 
-  db.prepare('DELETE FROM capsules WHERE id = ?').run(req.params.id);
+  // 先删子表（投递日志）再删父表（胶囊），避免外键约束冲突
   db.prepare('DELETE FROM delivery_logs WHERE capsule_id = ?').run(req.params.id);
+  db.prepare('DELETE FROM capsules WHERE id = ?').run(req.params.id);
 
   res.json({ message: '胶囊已删除' });
 });
@@ -324,10 +351,18 @@ router.post('/:id/trigger', auth, async (req, res) => {
   }
 
   const result = await deliverCapsule(capsule, 'user');
-  if (result.success) {
-    res.json({ message: '触发成功，邮件已发送', previewUrl: result.previewUrl, viewUrl: result.viewUrl });
-  } else {
+  if (result.error) {
+    // 真正的异常（如邮件服务不可用）
     res.status(500).json({ error: '触发失败', detail: result.error });
+  } else {
+    // 操作完成：可能已发邮件，也可能仅为预留/人工方式（无邮件收件人）
+    res.json({
+      message: result.message || '操作完成',
+      previewUrl: result.previewUrl,
+      viewUrl: result.viewUrl,
+      emailDelivered: result.emailDelivered || 0,
+      reservedCount: result.reservedCount || 0,
+    });
   }
 });
 

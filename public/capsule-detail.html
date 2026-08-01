@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>胶囊详情 — 余火·留声</title>
-  <link rel="stylesheet" href="/css/style.css?v=20260802c">
+  <link rel="stylesheet" href="/css/style.css?v=20260803">
 </head>
 <body>
   <div class="app-container">
@@ -28,6 +28,24 @@
 
     if (!capsuleId) {
       window.location.href = '/capsules.html';
+    }
+
+    function methodDetailHtml(c) {
+      let list = [];
+      if (c.recipients_json) { try { list = JSON.parse(c.recipients_json); } catch (e) { list = []; } }
+      if (!Array.isArray(list) || !list.length) {
+        list = [{ name: c.recipient_name, relation: c.recipient_relation, method: 'email', contact: c.recipient_email }];
+      }
+      const LABEL = { email: '邮件', sms: '短信 · 预留', physical: '实物寄递', custom: '自定义方式' };
+      const CLS = { email: '', sms: ' style="color:#e9c96a;"', physical: ' style="color:#9ec5ff;"', custom: ' style="color:#c3b3ff;"' };
+      const rows = list.map(function (r) {
+        const m = (r.method || 'email').toLowerCase();
+        const label = LABEL[m] || m;
+        const contact = r.contact || (m === 'email' ? c.recipient_email : '');
+        return '<div>· ' + (r.name || '—') + ' — <span' + (CLS[m] || '') + '>' + label + '</span>' + (contact ? '（' + contact + '）' : '') + '</div>';
+      }).join('');
+      return '<div style="margin:4px 0 2px;font-size:13px;color:var(--text-light);">投递方式明细：</div>' +
+        '<div style="font-size:13px;line-height:1.9;padding-left:4px;">' + rows + '</div>';
     }
 
     async function loadDetail() {
@@ -85,6 +103,7 @@
               <div>收件人：<strong>${c.recipient_name}</strong></div>
               <div>邮箱：${c.recipient_email}</div>
               ${c.recipient_relation ? `<div>关系：${c.recipient_relation}</div>` : ''}
+              ${methodDetailHtml(c)}
               <div>触发方式：${triggerInfo}</div>
               <div>公开授权：${c.public_authorized ? '✅ 已授权匿名公开展示' : '❌ 未授权'}</div>
               <div>胶囊编号：${c.capsule_code}</div>
@@ -150,7 +169,7 @@
 
     loadDetail();
   </script>
-  <script src="/js/i18n-data.js?v=20260802c"></script>
-  <script src="/js/i18n.js?v=20260802c"></script>
+  <script src="/js/i18n-data.js?v=20260803"></script>
+  <script src="/js/i18n.js?v=20260803"></script>
 </body>
 </html>

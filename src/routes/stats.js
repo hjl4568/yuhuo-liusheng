@@ -1,5 +1,6 @@
 const express = require('express');
 const { db } = require('../db');
+const { auth } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -51,6 +52,37 @@ router.post('/donors', (req, res) => {
   if (amount <= 0) return res.status(400).json({ error: '金额需大于 0' });
   db.prepare('INSERT INTO donors (amount, message) VALUES (?, ?)').run(amount, message);
   res.json({ ok: true });
+});
+
+// 用户级仪表盘数据（需登录）
+router.get('/stats/me', auth, (req, res) => {
+  const uid = req.userId;
+
+  const total = db.prepare('SELECT COUNT(*) AS c FROM capsules WHERE user_id = ?').get(uid).c;
+
+  const byStatus = {};
+  db.prepare('SELECT status, COUNT(*) AS c FROM capsules WHERE user_id = ? GROUP BY status')
+    .all(uid)
+    .forEach(r => { byStatus[r.status] = r.c; });
+
+  const byType = {};
+  db.prepare('SELECT content_type, COUNT(*) AS c FROM capsules WHERE user_id = ? GROUP BY content_type')
+    .all(uid)
+    .forEach(r => { byType[r.content_type] = r.c; });
+
+  const recent = db.prepare(`
+    SELECT id, title, status, trigger_type, created_at
+    FROM capsules WHERE user_id = ?
+    ORDER BY created_at DESC LIMIT 6
+  `).all(uid);
+
+  const delivered = db.prepare(`
+    SELECT COUNT(*) AS c FROM delivery_logs dl
+    JOIN capsules c ON c.id = dl.capsule_id
+    WHERE c.user_id = ? AND dl.status = 'success'
+  `).get(uid).c;
+
+  res.json({ total, byStatus, byType, recent, delivered });
 });
 
 module.exports = router;
