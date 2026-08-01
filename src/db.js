@@ -168,7 +168,14 @@ function init() {
   `);
 
   const adminUsername = process.env.ADMIN_USERNAME || 'admin';
-  const adminPassword = process.env.ADMIN_PASSWORD || 'admin123456';
+  // 主账号（引导账号）密码处理：默认 admin123456。
+  // 仅当用户在 .env.prod 显式配置了“真实强密码”（且不是示例占位符“改成强密码”、也不是空值）时才用它，
+  // 否则回落到 admin123456。这样可避免：① 直接复制示例未改 → 占位符被写进库；
+  // ② 配了强密码但已遗忘 → admin123456 永远登不进去而被永久锁死。
+  // 每次启动都把主账号密码同步为下面这个值，确保改了配置重启即生效。
+  const PW_PLACEHOLDER = '改成强密码';
+  const envPw = (process.env.ADMIN_PASSWORD || '').trim();
+  const adminPassword = (envPw && envPw !== PW_PLACEHOLDER) ? envPw : 'admin123456';
   const hashed = bcrypt.hashSync(adminPassword, 10);
   const existing = db.prepare('SELECT id FROM admin_users WHERE username = ?').get(adminUsername);
   if (!existing) {
