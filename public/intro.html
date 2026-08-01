@@ -17,6 +17,11 @@
 </head>
 <body>
   <div class="nf-stars" id="stars"></div>
+  <div class="nf-aurora" aria-hidden="true">
+    <span class="nf-blob b1"></span>
+    <span class="nf-blob b2"></span>
+    <span class="nf-blob b3"></span>
+  </div>
 
   <div class="nf-topbar">
     <span class="logo"><img class="nf-logo-mark" src="/favicon.svg" alt="">长夜余火<small>余火 · 留声</small></span>
@@ -45,9 +50,11 @@
   <!-- 一页滚动叙事：吸顶分节导航 -->
   <nav class="nf-scrollnav" id="scrollnav">
     <a href="#panel-about" class="nf-anchor active">关于</a>
+    <a href="#panel-founder" class="nf-anchor">创始人</a>
     <a href="#panel-design" class="nf-anchor">核心设计</a>
     <a href="#panel-vision" class="nf-anchor">产品愿景</a>
     <a href="#panel-compliance" class="nf-anchor">合规 · e签宝</a>
+    <a href="#panel-trust" class="nf-anchor">信任背书</a>
     <a href="#panel-lead" class="nf-anchor">登记意向</a>
     <a href="#panel-data" class="nf-anchor">实时数据</a>
   </nav>
@@ -64,9 +71,9 @@
           你设定一个未来的时刻和收件人，到了那一刻，我们替你把这份心意，<em>安静地交还</em>到对的人手里。
         </p>
         <div class="nf-triad reveal">
-          <div class="tri"><span class="ico">🔥</span><div class="t-title">你留下话语</div><div class="t-body">文字、录音、影像，甚至一封手写的信、一件随身的小物件</div></div>
-          <div class="tri"><span class="ico">📅</span><div class="t-title">你设定未来</div><div class="t-body">指定一个未来的时刻与收件人，时间到了才送达</div></div>
-          <div class="tri"><span class="ico">🤝</span><div class="t-title">我们主动交还</div><div class="t-body">替你把心意送达对的人手里，不是对方来领</div></div>
+          <div class="tri"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.5A8 8 0 1 1 21 12z"/><path d="M8.5 11.5v.01M12 11.5v.01M15.5 11.5v.01"/></svg></span><div class="t-title">你留下话语</div><div class="t-body">文字、录音、影像，甚至一封手写的信、一件随身的小物件</div></div>
+          <div class="tri"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M3.5 9h17M8 3v4M16 3v4"/></svg></span><div class="t-title">你设定未来</div><div class="t-body">指定一个未来的时刻与收件人，时间到了才送达</div></div>
+          <div class="tri"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg></span><div class="t-title">我们主动交还</div><div class="t-body">替你把心意送达对的人手里，不是对方来领</div></div>
         </div>
       </div>
 
@@ -96,6 +103,40 @@
         </p>
         <a href="/support.html" class="nf-btn nf-btn-primary">去支持我们 💛</a>
       </section>
+    </section>
+
+    <!-- ============ 创始人是谁 ============ -->
+    <section class="nf-section" id="panel-founder">
+      <div class="reveal">
+        <div class="nf-eyebrow">创始人是谁 · FOUNDER</div>
+        <h2 class="nf-title">一个普通人的执念</h2>
+        <p class="nf-lead">这个项目没有豪华团队，也不是某家公司的产品。它来自一个人很朴素的念头，被一点一点做成了现在的样子。</p>
+
+        <div class="nf-founder reveal">
+          <div class="nf-fd-avatar">
+            <!-- 想换成真实照片：把照片命名为 founder.jpg 放进 public/images/，并取消下一行注释 -->
+            <!-- <img src="/images/founder.jpg" alt="创始人照片"> -->
+            <img src="/brand-mark.svg" alt="长夜余火 标志">
+            <span class="nf-fd-ring" aria-hidden="true"></span>
+          </div>
+          <div class="nf-fd-body">
+            <div class="nf-fd-name">长夜余火 · 主理人</div>
+            <div class="nf-fd-role">产品构想 / 设计 / 运营</div>
+            <p class="nf-fd-bio">有些话、有些物，我们想留给未来的某个人，却苦于没有一个稳妥、克制、不打扰的方式。于是我把它从想法做成了现在的样子——一个人，从头到尾。</p>
+            <p class="nf-fd-bio">我崇尚「活在当下，不问前生，不求来世」。余火想做的，只是把此刻的声音，安静地交还到对的人手里。如果你愿意，我们可以一起把它做得更稳、更好。</p>
+            <div class="nf-fd-contact">
+              <a class="nf-fd-link" href="mailto:changyeyuhuo2026@163.com">
+                <svg class="nf-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+                写信给我
+              </a>
+              <a class="nf-fd-link" href="/support.html">
+                <svg class="nf-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-4.5-9.5-9A4.8 4.8 0 0 1 12 6a4.8 4.8 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg>
+                支持我们
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- ============ 核心设计 ============ -->
@@ -261,6 +302,62 @@
           接入 e签宝 的前提：需<em>企业 / 个体工商户主体</em> + 注册 e签宝开发者 + API 对接 + 付费。          详细方案见
           <a href="/docs/compliance-esign.md">合规与 e签宝方案文档</a>。
         </p>
+      </div>
+    </section>
+
+    <!-- ============ 信任背书墙 ============ -->
+    <section class="nf-section" id="panel-trust">
+      <div class="reveal">
+        <div class="nf-eyebrow">信任背书 · TRUST</div>
+        <h2 class="nf-title">我们凭什么让你放心</h2>
+        <p class="nf-lead">特殊业务更要透明。下面这些不是口号，而是我们已经在做、或正在对接的事。</p>
+
+        <div class="nf-trust-grid">
+          <a class="nf-trust-card" href="/privacy.html">
+            <span class="nf-tc-ico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg>
+            </span>
+            <div class="nf-tc-title">隐私优先</div>
+            <div class="nf-tc-body">数据最小化、AES 加密、可随时删除，绝不向第三方贩卖。</div>
+            <span class="nf-tc-more">查看隐私政策 ›</span>
+          </a>
+
+          <div class="nf-trust-card">
+            <span class="nf-tc-ico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="5"/><path d="M9 13l-1.5 7L12 18l4.5 2L15 13"/></svg>
+            </span>
+            <div class="nf-tc-title">ICP 备案</div>
+            <div class="nf-tc-body">国内合规运营中：ICP 备案正在办理，完成前仅开放自愿赞赏，不开展收费服务。</div>
+            <span class="nf-tc-more">合规运营中</span>
+          </div>
+
+          <a class="nf-trust-card" href="/docs/compliance-esign.md">
+            <span class="nf-tc-ico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l4-1 9.5-9.5a2 2 0 0 0-3-3L5 16z"/><path d="M14 6l3 3"/></svg>
+            </span>
+            <div class="nf-tc-title">e签宝 对接</div>
+            <div class="nf-tc-body">合规电子签名与存证规划中，合同文本已就合规点全部固化。</div>
+            <span class="nf-tc-more">了解合规方案 ›</span>
+          </a>
+
+          <div class="nf-trust-card">
+            <span class="nf-tc-ico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 8l-4 4 4 4"/><path d="M15 8l4 4-4 4"/></svg>
+            </span>
+            <div class="nf-tc-title">代码开源</div>
+            <div class="nf-tc-body">核心代码公开可查，欢迎审计，安全不靠「黑箱」。</div>
+            <span class="nf-tc-more">公开可查</span>
+          </div>
+
+          <div class="nf-trust-card">
+            <span class="nf-tc-ico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-4.5-9.5-9A4.8 4.8 0 0 1 12 6a4.8 4.8 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg>
+            </span>
+            <div class="nf-tc-title">自愿赞赏</div>
+            <div class="nf-tc-body">不承诺任何对价回报，不诱导付费，所有支持出于自愿。</div>
+            <span class="nf-tc-more">试水早期</span>
+          </div>
+        </div>
       </div>
     </section>
 

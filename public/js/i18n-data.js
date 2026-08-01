@@ -430,7 +430,72 @@
     "亲爱的": "Dear",
     "（这封信没有文字内容，请查看上方附件）": "(This letter has no text — see the attachment above)",
     "👁 预览收件人页面": "👁 Preview Recipient Page",
-    "以收件人视角查看这封信（无需登录）": "View this letter as the recipient (no login needed)"
+    "以收件人视角查看这封信（无需登录）": "View this letter as the recipient (no login needed)",
+
+    // ===== 介绍页 · 创始人是谁（NEW） =====
+    "创始人是谁 · FOUNDER": "FOUNDER",
+    "一个普通人的执念": "An Ordinary Person's Obsession",
+    "这个项目没有豪华团队，也不是某家公司的产品。它来自一个人很朴素的念头，被一点一点做成了现在的样子。": "This project has no fancy team, nor is it a company's product. It grew from one ordinary person's simple idea, built piece by piece into what it is now.",
+    "长夜余火 · 主理人": "Long Night Ember · Founder",
+    "产品构想 / 设计 / 运营": "Concept / Design / Ops",
+    "有些话、有些物，我们想留给未来的某个人，却苦于没有一个稳妥、克制、不打扰的方式。于是我把它从想法做成了现在的样子——一个人，从头到尾。": "There are words and things we want to leave for someone in the future, yet no steady, restrained, non-intrusive way to do it. So I built it from an idea into what it is now — one person, start to finish.",
+    "我崇尚「活在当下，不问前生，不求来世」。余火想做的，只是把此刻的声音，安静地交还到对的人手里。如果你愿意，我们可以一起把它做得更稳、更好。": "I believe in 'living in the present; ask not of the past, hope not for the afterlife.' What Ember wants is only to quietly return this moment's voice to the right person. If you're willing, we can make it steadier and better, together.",
+    "写信给我": "Write to Me",
+
+    // ===== 介绍页 · 信任背书墙（NEW） =====
+    "信任背书 · TRUST": "TRUST",
+    "我们凭什么让你放心": "Why You Can Trust Us",
+    "特殊业务更要透明。下面这些不是口号，而是我们已经在做、或正在对接的事。": "A sensitive business demands transparency. These are not slogans, but things we are already doing or integrating.",
+    "隐私优先": "Privacy First",
+    "数据最小化、AES 加密、可随时删除，绝不向第三方贩卖。": "Data minimization, AES encryption, deletable anytime — never sold to third parties.",
+    "查看隐私政策 ›": "View Privacy Policy ›",
+    "ICP 备案": "ICP Filing",
+    "国内合规运营中：ICP 备案正在办理，完成前仅开放自愿赞赏，不开展收费服务。": "Domestically compliant operation: ICP filing in progress; until done, only voluntary tipping is open — no paid services.",
+    "合规运营中": "Compliant Operation",
+    "e签宝 对接": "eSign Integration",
+    "合规电子签名与存证规划中，合同文本已就合规点全部固化。": "Compliant e-signature and notarization planned; contract text already hardens all compliance points.",
+    "了解合规方案 ›": "Learn Compliance Plan ›",
+    "代码开源": "Open Source",
+    "核心代码公开可查，欢迎审计，安全不靠「黑箱」。": "Core code is public and auditable; security does not rely on a 'black box.'",
+    "公开可查": "Publicly Auditable",
+    "不承诺任何对价回报，不诱导付费，所有支持出于自愿。": "No promise of any quid pro quo, no induced payment — all support is voluntary.",
+    "试水早期": "Early Trial",
+
+    // ===== 介绍页 · 新增导航锚点（NEW） =====
+    "创始人": "Founder",
+    "信任背书": "Trust",
+
+    // ===== 介绍页 · 既有缺失补译（守门员基线 9 条） =====
+    "免费试用": "Free Trial",
+    "早期体验开放": "Early Access Open",
+    "关于": "About",
+    "实时数据": "Live Data",
+    "端到端加密": "End-to-End Encryption",
+    "免费使用": "Free to Use",
+    "内容加密": "Content Encrypted",
+    "随时可删": "Deletable Anytime",
+
+    // ===== 隐私政策页 privacy.html（NEW） =====
+    "隐私政策 — 长夜余火（余火·留声）": "Privacy Policy — Long Night Ember (Yu Huo · Liu Sheng)",
+    "隐私政策": "Privacy Policy",
+    "返回介绍": "Back to Intro",
+    "你留下的，只属于你": "What You Leave Belongs Only to You",
+    "长夜余火是一个把「表达与交还」当作全部的产品。我们比谁都清楚：你愿意留下的话、声音、影像，有多私密。下面是我们对隐私的具体承诺。": "Long Night Ember is a product built entirely around 'expression and return.' We know better than anyone how private the words, voices, and images you choose to leave are. Here are our concrete privacy commitments.",
+    "我们收集什么": "What We Collect",
+    "仅收集为你提供服务所必需的最小信息：你主动填写的称呼、联系方式，以及你创建的内容本身。我们不偷偷抓取、不强制实名、不读取你设备里的其他东西。": "We collect only the minimum needed to serve you: the name and contact you voluntarily provide, and the content you create. We do not secretly scrape, force real-name verification, or read anything else on your device.",
+    "我们如何保护": "How We Protect",
+    "你的内容在存储时使用 AES-256 加密；传输全程 HTTPS。服务器访问控制严格，密钥不落地明文。即便我们，也无法在未经你授权时查看已加密的内容。": "Your content is stored with AES-256 encryption and transmitted over HTTPS. Server access is tightly controlled; keys are never stored in plaintext. Even we cannot view encrypted content without your authorization.",
+    "我们不做什么": "What We Don't Do",
+    "我们绝不在任何第三方贩卖、出租或交换你的个人数据；绝不把你的内容用于广告或训练模型；绝不偷偷分析你的私密表达。": "We will never sell, rent, or trade your personal data to any third party; never use your content for ads or model training; never secretly analyze your private expression.",
+    "你的权利": "Your Rights",
+    "你随时可以查看、修改或删除自己的胶囊与账户；删除后，相关内容将从可用存储中清除。你留下的每一句话，去留由你决定。": "You can view, modify, or delete your capsules and account anytime; after deletion, the content is removed from available storage. Every word you leave is yours to keep or withdraw.",
+    "关于触发与送达": "On Triggering & Delivery",
+    "内容仅在你设定的触发条件满足时，才会主动送达你指定的收件人。触发前不会外泄；送达范围严格限定为你指定的人。": "Content is actively delivered to your designated recipient only when your set trigger condition is met. It is not leaked before triggering; delivery is strictly limited to those you name.",
+    "联系我们": "Contact Us",
+    "如果你对隐私有任何疑问，或想行使上述权利，写信给我们：": "If you have any privacy questions, or wish to exercise the rights above, write to us:",
+    "我们会认真回应。": "We will respond seriously.",
+    "本政策随产品迭代更新，重大变更会在介绍页与站内通知。": "This policy updates as the product evolves; major changes are announced on the intro page and in-app.",
+    "本页为构想展示，最终以正式上线版本为准。": "This page is a concept showcase; the live version prevails."
   };
 
   // 输入框占位符 / 标题等属性翻译
