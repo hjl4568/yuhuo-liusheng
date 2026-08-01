@@ -118,6 +118,8 @@
     }
     updateSwitcher();
     applying = false;
+    // 通知动态内容（如生长之树）语言已切换，需要重新渲染
+    window.dispatchEvent(new CustomEvent('i18n-lang-change', { detail: { lang: lang } }));
   }
 
   // ---------- 切换器样式（自注入，确保任意页面/样式表都生效） ----------

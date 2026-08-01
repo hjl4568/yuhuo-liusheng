@@ -19,6 +19,11 @@
     };
   }
 
+  /* ---- i18n 辅助 ---- */
+  function t(s) {
+    return (window.I18N && typeof window.I18N.t === 'function') ? window.I18N.t(s) : s;
+  }
+
   /* ---- 量级判定 ---- */
   function getEra(maxVal) {
     if (maxVal < 100) return { ceiling: 100, name: '萌芽期', index: 0 };
@@ -270,21 +275,22 @@
     }
 
     // 更新统计数字
-    setText('ts-visits', visits.toLocaleString('zh-CN'));
-    setText('ts-regs', regs.toLocaleString('zh-CN'));
-    setText('ts-caps', caps.toLocaleString('zh-CN'));
+    var locale = (window.I18N && window.I18N.lang === 'en') ? 'en-US' : 'zh-CN';
+    setText('ts-visits', visits.toLocaleString(locale));
+    setText('ts-regs', regs.toLocaleString(locale));
+    setText('ts-caps', caps.toLocaleString(locale));
 
     // 更新阶段信息
     var badge = document.getElementById('tree-era-badge');
     if (badge) {
       badge.className = 'era-badge era-' + era.index;
-      badge.textContent = era.name;
+      badge.textContent = t(era.name);
     }
-    setText('tree-stage-name', stage.name);
+    setText('tree-stage-name', t(stage.name));
 
     // 量级文字
     var lower = era.index === 0 ? 0 : [100, 1000, 10000][era.index - 1];
-    setText('tree-scale-text', '当前量级：' + lower + ' — ' + era.ceiling);
+    setText('tree-scale-text', t('当前量级：' + lower + ' — ' + era.ceiling));
 
     // 粒子（大树阶段才有）
     createParticles(stage.depth >= 3 ? 8 : (stage.depth >= 2 ? 4 : 0));
@@ -296,12 +302,18 @@
   }
 
   /* ---- 数据获取 ---- */
+  var lastData = null;
   function loadAndRender() {
     fetch('/api/stats/public')
       .then(function (r) { return r.json(); })
-      .then(renderTree)
+      .then(function (data) { lastData = data; renderTree(data); })
       .catch(function () {});
   }
+
+  /* ---- 语言切换时重新渲染（不重新拉数据，用缓存） ---- */
+  window.addEventListener('i18n-lang-change', function () {
+    if (lastData) renderTree(lastData);
+  });
 
   /* ---- 滚动进入视口时启动 ---- */
   var started = false;

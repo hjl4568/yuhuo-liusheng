@@ -613,27 +613,7 @@
     "镜头：特写·固定→淡出；自毁型收尾": "Shot: close-up · static → fade out; self-destructive ending",
     "工作方式短片": "How We Work",
     "筹备中": "In the works",
-    "视频制作完成后，会替换到这组手绘分镜的下方；手绘分镜作为「漫画预览」保留。只想直观看看我们怎么工作？翻完上面七张就好。": "When the video is ready, it will replace this placeholder below the hand-drawn storyboard, which stays as a 'comic preview'. Want a quick sense of how we work? Flip through the seven panels above."
-  };
-
-  // 输入框占位符 / 标题等属性翻译
-  const attrMap = {
-    "昵称或真名都可以": "Nickname or real name",
-    "方便我们后续联系你": "So we can reach you later",
-    "用于发送确认与体验邀请": "For confirmation and trial invites",
-    "随便聊聊你的想法、顾虑，或你想留给谁的话……": "Share your thoughts, concerns, or words for someone…",
-    "如 20": "e.g. 20",
-    "帧1 开场：傍晚客厅，林叔坐沙发角看手机，茶几上旧搪瓷杯": "Frame 1 Opening: evening living room, Lin Shu on sofa corner looking at phone, old enamel mug on table",
-    "帧2 录入：过肩拍林叔背影，手机屏幕显示正在打字": "Frame 2 Record: over-shoulder shot of Lin Shu's back, phone screen showing typing",
-    "帧3 设定触发：特写手指在触发条件界面选择日期": "Frame 3 Set Trigger: close-up of finger selecting a date on trigger screen",
-    "帧4 托付：信封装好放进一排格子架": "Frame 4 Entrust: envelope sealed and placed into a grid shelf",
-    "帧5 时间流过：蒙太奇，日历四季，搪瓷杯原位": "Frame 5 Time Passes: montage of calendar, seasons, mug in place",
-    "帧6 不经意送达：小满回家，门把手挂着信封": "Frame 6 Quiet Delivery: Xiaoman comes home, envelope hanging on doorknob",
-    "帧7 收讫与退出：拆信封见旧照片，手机注销开关": "Frame 7 Received & Exit: opening envelope to old photo, phone cancel toggle",
-    "上一张": "Previous",
-    "下一张": "Next",
-    "分镜导航": "Storyboard navigation",
-    "播放（筹备中）": "Play (in the works)",
+    "视频制作完成后，会替换到这组手绘分镜的下方；手绘分镜作为「漫画预览」保留。只想直观看看我们怎么工作？翻完上面七张就好。": "When the video is ready, it will replace this placeholder below the hand-drawn storyboard, which stays as a 'comic preview'. Want a quick sense of how we work? Flip through the seven panels above.",
     "生长之树": "Growth Tree",
     "生长之树 · DATA TREE": "Growth Tree · DATA TREE",
     "这棵树，和我们一起长": "This tree grows with us",
@@ -663,6 +643,27 @@
     "+ 添加收件人": "+ Add Recipient",
     "定制投递说明": "Custom Delivery Instructions",
     "选填。仅当你选择了\"自定义方式\"投递时需要填写。": "Optional. Only needed when you chose \"Custom\" delivery."
+  };
+
+  // 输入框占位符 / 标题等属性翻译
+  const attrMap = {
+    "昵称或真名都可以": "Nickname or real name",
+    "方便我们后续联系你": "So we can reach you later",
+    "用于发送确认与体验邀请": "For confirmation and trial invites",
+    "随便聊聊你的想法、顾虑，或你想留给谁的话……": "Share your thoughts, concerns, or words for someone…",
+    "如 20": "e.g. 20",
+    "帧1 开场：傍晚客厅，林叔坐沙发角看手机，茶几上旧搪瓷杯": "Frame 1 Opening: evening living room, Lin Shu on sofa corner looking at phone, old enamel mug on table",
+    "帧2 录入：过肩拍林叔背影，手机屏幕显示正在打字": "Frame 2 Record: over-shoulder shot of Lin Shu's back, phone screen showing typing",
+    "帧3 设定触发：特写手指在触发条件界面选择日期": "Frame 3 Set Trigger: close-up of finger selecting a date on trigger screen",
+    "帧4 托付：信封装好放进一排格子架": "Frame 4 Entrust: envelope sealed and placed into a grid shelf",
+    "帧5 时间流过：蒙太奇，日历四季，搪瓷杯原位": "Frame 5 Time Passes: montage of calendar, seasons, mug in place",
+    "帧6 不经意送达：小满回家，门把手挂着信封": "Frame 6 Quiet Delivery: Xiaoman comes home, envelope hanging on doorknob",
+    "帧7 收讫与退出：拆信封见旧照片，手机注销开关": "Frame 7 Received & Exit: opening envelope to old photo, phone cancel toggle",
+    "上一张": "Previous",
+    "下一张": "Next",
+    "分镜导航": "Storyboard navigation",
+    "播放（筹备中）": "Play (in the works)",
+    "数据生长树": "Data Growth Tree"
   };
 
   // 这些容器里的文本是“用户生成内容”，不翻译，避免串改用户留言
