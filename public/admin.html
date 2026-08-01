@@ -5,13 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>后台管理 — 余火·留声</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="/css/style.css?v=20260803">
+  <link rel="stylesheet" href="/css/style.css?v=20260804">
+  <link rel="stylesheet" href="/css/nightfire.css?v=20260804">
   <style>
     .admin-container { max-width: 900px; margin: 0 auto; padding: 20px; }
     .admin-tabs { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; }
     .admin-tabs button { white-space: nowrap; padding: 8px 16px; border: 1px solid var(--border); background: #fff; border-radius: 8px; cursor: pointer; font-size: 14px; }
     .admin-tabs button.active { background: var(--primary); color: #fff; border-color: var(--primary); }
     .table-wrapper { overflow-x: auto; background: #fff; border-radius: 12px; box-shadow: var(--shadow); }
+    .admin-table tbody tr { cursor: pointer; transition: background .15s; }
+    .admin-table tbody tr:hover { background: #F3F4F6; }
+    /* 搜索栏 */
+    .admin-toolbar { display: flex; gap: 10px; margin-bottom: 12px; align-items: center; flex-wrap: wrap; }
+    .admin-toolbar input { flex: 1; min-width: 180px; padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; }
+    .admin-toolbar .btn { white-space: nowrap; }
+    /* 统计标签 */
+    .reg-chips { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    .reg-chip { padding: 4px 14px; border-radius: 20px; font-size: 13px; background: #F0F4FF; color: #3B5998; border: 1px solid #D0DDEF; }
+    /* 详情弹窗 */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 999; display: none; justify-content: center; align-items: flex-start; padding: 40px 16px; overflow-y: auto; }
+    .modal-overlay.show { display: flex; }
+    .modal-box { background: #fff; border-radius: 16px; max-width: 640px; width: 100%; box-shadow: 0 12px 48px rgba(0,0,0,.2); padding: 24px; margin-bottom: 40px; }
+    .modal-box h3 { margin: 0 0 4px; font-size: 18px; }
+    .modal-close { float: right; cursor: pointer; font-size: 22px; color: var(--text-light); line-height: 1; }
+    .detail-section { margin-top: 18px; }
+    .detail-section h4 { font-size: 14px; color: var(--text-light); margin: 0 0 8px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; font-size: 13px; }
+    .detail-grid .label { color: var(--text-light); }
+    .detail-table { width: 100%; font-size: 13px; border-collapse: collapse; }
+    .detail-table th, .detail-table td { padding: 5px 8px; border-bottom: 1px solid #EEE; text-align: left; }
+    .detail-table th { color: var(--text-light); font-weight: normal; font-size: 12px; }
+    .badge { display: inline-block; padding: 1px 8px; border-radius: 10px; font-size: 11px; }
+    .badge-saved { background: #E3F2FD; color: #1565C0; }
+    .badge-pending { background: #FFF3E0; color: #E65100; }
+    .badge-delivered { background: #E8F5E9; color: #2E7D32; }
+    .badge-cancelled { background: #FDECEA; color: #C62828; }
+    .badge-signed { background: #E8F5E9; color: #2E7D32; }
   </style>
 </head>
 <body>
@@ -59,9 +88,17 @@
 
       <div id="tab-content"></div>
     </div>
+
+    <!-- 用户详情弹窗 -->
+    <div class="modal-overlay" id="user-modal" onclick="if(event.target===this)closeUserModal()">
+      <div class="modal-box">
+        <span class="modal-close" onclick="closeUserModal()">&times;</span>
+        <div id="user-modal-content"></div>
+      </div>
+    </div>
   </div>
 
-  <script src="/js/api.js"></script>
+  <script src="/js/api.js?v=20260804"></script>
   <script>
     function getAdminToken() { return localStorage.getItem('adminToken') || ''; }
     function setAdminToken(t) { localStorage.setItem('adminToken', t); }
@@ -125,6 +162,18 @@
           <div class="stat-card"><div class="stat-num">${s.totalLogs}</div><div class="stat-label">总发送记录</div></div>
           <div class="stat-card"><div class="stat-num">${s.totalLeads}</div><div class="stat-label">意向登记</div></div>
         `;
+        // 注册统计标签
+        let regHtml = '<div class="reg-chips">';
+        regHtml += `<span class="reg-chip">今日注册 ${s.todayUsers}</span>`;
+        regHtml += `<span class="reg-chip">近7天 ${s.weekUsers}</span>`;
+        regHtml += `<span class="reg-chip">近30天 ${s.monthUsers}</span>`;
+        regHtml += '</div>';
+        const oldReg = document.getElementById('reg-stats');
+        if (oldReg) oldReg.remove();
+        const regDiv = document.createElement('div');
+        regDiv.id = 'reg-stats';
+        regDiv.innerHTML = regHtml;
+        document.getElementById('stats').after(regDiv);
         loadTab();
         loadMailStatus();
       } catch (err) {
@@ -165,14 +214,21 @@
           html += renderPagination(data.totalPages, data.page);
           content.innerHTML = html;
         } else if (currentTab === 'users') {
-          const data = await adminRequest(`/users?page=${currentPage}`);
-          let html = '<div class="table-wrapper"><table class="admin-table"><thead><tr><th>ID</th><th>手机号</th><th>姓名</th><th>邮箱</th><th>紧急联系人</th><th>注册时间</th></tr></thead><tbody>';
+          let html = '<div class="admin-toolbar">';
+          html += '<input type="text" id="user-search-input" placeholder="搜索手机号 / 姓名 / 邮箱" onkeydown="if(event.key===\'Enter\')searchUsers()">';
+          html += '<button class="btn btn-primary" style="padding:8px 16px;font-size:13px;" onclick="searchUsers()">搜索</button>';
+          html += '<button class="btn" style="padding:8px 16px;font-size:13px;border:1px solid var(--border);" onclick="downloadUsers()">导出CSV</button>';
+          html += '</div>';
+          const searchVal = document.getElementById('user-search-input') ? document.getElementById('user-search-input').value : '';
+          const data = await adminRequest(`/users?page=${currentPage}&search=${encodeURIComponent(searchVal)}`);
+          html += '<div class="table-wrapper"><table class="admin-table"><thead><tr><th>ID</th><th>手机号</th><th>姓名</th><th>邮箱</th><th>胶囊数</th><th>紧急联系人</th><th>注册时间</th></tr></thead><tbody>';
           for (const u of data.users) {
-            html += `<tr>
+            html += `<tr onclick="showUserDetail(${u.id})">
               <td>${u.id}</td>
               <td>${u.phone}</td>
               <td>${u.name || '-'}</td>
               <td>${u.email || '-'}</td>
+              <td style="text-align:center;font-weight:600;color:var(--primary);">${u.capsule_count || 0}</td>
               <td>${u.emergency_contact || '-'} ${u.emergency_phone || ''}</td>
               <td style="font-size:12px;">${new Date(u.created_at).toLocaleString('zh-CN')}</td>
             </tr>`;
@@ -298,8 +354,114 @@
         showToast(err.message);
       }
     };
+
+    // === 用户管理增强 ===
+    window.searchUsers = function() {
+      currentPage = 1;
+      loadTab();
+    };
+
+    window.showUserDetail = async function(id) {
+      const modal = document.getElementById('user-modal');
+      const content = document.getElementById('user-modal-content');
+      content.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:20px;">加载中...</p>';
+      modal.classList.add('show');
+      try {
+        const data = await adminRequest(`/users/${id}`);
+        const u = data.user;
+        let html = `<h3>${u.name || u.phone}</h3>`;
+        html += `<p style="font-size:13px;color:var(--text-light);">用户 #${u.id} · 注册于 ${new Date(u.created_at).toLocaleString('zh-CN')}</p>`;
+        // 基本信息
+        html += '<div class="detail-section"><h4>基本信息</h4><div class="detail-grid">';
+        html += `<div><span class="label">手机号</span></div><div>${u.phone}</div>`;
+        html += `<div><span class="label">邮箱</span></div><div>${u.email || '-'}</div>`;
+        html += `<div><span class="label">紧急联系人</span></div><div>${u.emergency_contact || '-'}</div>`;
+        html += `<div><span class="label">紧急联系电话</span></div><div>${u.emergency_phone || '-'}</div>`;
+        html += `<div><span class="label">更新时间</span></div><div>${u.updated_at ? new Date(u.updated_at).toLocaleString('zh-CN') : '-'}</div>`;
+        html += '</div></div>';
+        // 胶囊列表
+        html += '<div class="detail-section"><h4>胶囊 (' + data.capsules.length + ')</h4>';
+        if (data.capsules.length === 0) {
+          html += '<p style="font-size:13px;color:var(--text-light);">暂无胶囊</p>';
+        } else {
+          html += '<table class="detail-table"><thead><tr><th>标题</th><th>类型</th><th>状态</th><th>触发</th><th>创建时间</th></tr></thead><tbody>';
+          for (const c of data.capsules) {
+            const trigger = c.trigger_type === 'immediate' ? '立即' : c.trigger_type === 'scheduled' ? (c.trigger_date ? new Date(c.trigger_date).toLocaleDateString('zh-CN') : '未设置') : '手动';
+            html += `<tr>
+              <td>${c.title}</td>
+              <td>${TYPE_MAP[c.content_type] || c.content_type}</td>
+              <td>${statusTag(c.status)}</td>
+              <td style="font-size:12px;">${trigger}</td>
+              <td style="font-size:12px;">${new Date(c.created_at).toLocaleDateString('zh-CN')}</td>
+            </tr>`;
+          }
+          html += '</tbody></table>';
+        }
+        html += '</div>';
+        // 合同
+        if (data.contracts && data.contracts.length > 0) {
+          html += '<div class="detail-section"><h4>合同 (' + data.contracts.length + ')</h4>';
+          html += '<table class="detail-table"><thead><tr><th>合同编号</th><th>类型</th><th>状态</th><th>签署时间</th></tr></thead><tbody>';
+          for (const ct of data.contracts) {
+            html += `<tr>
+              <td style="font-size:12px;">${ct.contract_no}</td>
+              <td>${ct.contract_type}</td>
+              <td>${statusTag(ct.status)}</td>
+              <td style="font-size:12px;">${ct.signed_at ? new Date(ct.signed_at).toLocaleString('zh-CN') : '-'}</td>
+            </tr>`;
+          }
+          html += '</tbody></table></div>';
+        }
+        // 投递日志
+        html += '<div class="detail-section"><h4>投递日志 (' + data.logs.length + ')</h4>';
+        if (data.logs.length === 0) {
+          html += '<p style="font-size:13px;color:var(--text-light);">暂无投递记录</p>';
+        } else {
+          html += '<table class="detail-table"><thead><tr><th>胶囊</th><th>方式</th><th>收件人</th><th>状态</th><th>操作人</th><th>时间</th></tr></thead><tbody>';
+          for (const l of data.logs) {
+            html += `<tr>
+              <td>${l.capsule_title || '#' + l.capsule_id}</td>
+              <td>${l.send_method}</td>
+              <td style="font-size:12px;">${l.recipient}</td>
+              <td>${statusTag(l.status)}</td>
+              <td style="font-size:12px;">${l.operator}</td>
+              <td style="font-size:12px;">${l.sent_at ? new Date(l.sent_at).toLocaleString('zh-CN') : '-'}</td>
+            </tr>`;
+          }
+          html += '</tbody></table>';
+        }
+        html += '</div>';
+        content.innerHTML = html;
+      } catch (err) {
+        content.innerHTML = `<p style="color:var(--danger);">${err.message}</p>`;
+      }
+    };
+
+    window.closeUserModal = function() {
+      document.getElementById('user-modal').classList.remove('show');
+    };
+
+    window.downloadUsers = async function() {
+      try {
+        const res = await fetch('/api/admin/users/export', {
+          headers: { 'Authorization': `Bearer ${getAdminToken()}` },
+        });
+        if (!res.ok) throw new Error('导出失败');
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'users-export.csv';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        showToast(err.message);
+      }
+    };
   </script>
-  <script src="/js/i18n-data.js?v=20260803"></script>
-  <script src="/js/i18n.js?v=20260803"></script>
+  <script src="/js/i18n-data.js?v=20260804"></script>
+  <script src="/js/i18n.js?v=20260804"></script>
 </body>
 </html>

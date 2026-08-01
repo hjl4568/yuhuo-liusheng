@@ -769,7 +769,22 @@
     "下一块展板": "Next panel",
     "展板导航": "Panel navigation",
     "微信": "WeChat",
-    "公众号": "Official Account"
+    "公众号": "Official Account",
+    "搜索手机号 / 姓名 / 邮箱": "Search phone / name / email",
+    "导出CSV": "Export CSV",
+    "胶囊数": "Capsules",
+    "今日注册": "Today",
+    "近7天": "Last 7 days",
+    "近30天": "Last 30 days",
+    "基本信息": "Basic Info",
+    "更新时间": "Updated",
+    "胶囊": "Capsules",
+    "暂无胶囊": "No capsules",
+    "合同": "Contracts",
+    "投递日志": "Delivery Logs",
+    "暂无投递记录": "No delivery records",
+    "用户不存在": "User not found",
+    "加载中...": "Loading..."
   };
 
   // 这些容器里的文本是“用户生成内容”，不翻译，避免串改用户留言

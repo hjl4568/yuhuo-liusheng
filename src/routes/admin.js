@@ -32,6 +32,14 @@ router.get('/dashboard', adminAuth, (req, res) => {
   const successLogs = db.prepare("SELECT COUNT(*) as count FROM delivery_logs WHERE status = 'success'").get().count;
   const totalLeads = db.prepare('SELECT COUNT(*) as count FROM leads').get().count;
 
+  // 注册统计
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayUsers = db.prepare("SELECT COUNT(*) as count FROM users WHERE created_at >= ?").get(todayStr).count;
+  const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString();
+  const weekUsers = db.prepare("SELECT COUNT(*) as count FROM users WHERE created_at >= ?").get(weekAgo).count;
+  const monthAgo = new Date(Date.now() - 30 * 86400000).toISOString();
+  const monthUsers = db.prepare("SELECT COUNT(*) as count FROM users WHERE created_at >= ?").get(monthAgo).count;
+
   res.json({
     stats: {
       totalUsers,
@@ -41,6 +49,9 @@ router.get('/dashboard', adminAuth, (req, res) => {
       totalLogs,
       successLogs,
       totalLeads,
+      todayUsers,
+      weekUsers,
+      monthUsers,
     },
   });
 });
@@ -51,21 +62,75 @@ router.get('/users', adminAuth, (req, res) => {
   const offset = (page - 1) * limit;
   const search = req.query.search || '';
 
-  let query = 'SELECT id, phone, name, email, emergency_contact, emergency_phone, created_at FROM users';
-  let countQuery = 'SELECT COUNT(*) as count FROM users';
+  let query = `SELECT u.id, u.phone, u.name, u.email, u.emergency_contact, u.emergency_phone, u.created_at,
+      (SELECT COUNT(*) FROM capsules WHERE user_id = u.id) as capsule_count
+    FROM users u`;
+  let countQuery = 'SELECT COUNT(*) as count FROM users u';
   const params = [];
 
   if (search) {
-    query += ' WHERE phone LIKE ? OR name LIKE ? OR email LIKE ?';
-    countQuery += ' WHERE phone LIKE ? OR name LIKE ? OR email LIKE ?';
+    query += ' WHERE u.phone LIKE ? OR u.name LIKE ? OR u.email LIKE ?';
+    countQuery += ' WHERE u.phone LIKE ? OR u.name LIKE ? OR u.email LIKE ?';
     params.push(`%${search}%`, `%${search}%`, `%${search}%`);
   }
 
-  query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
+  query += ' ORDER BY u.created_at DESC LIMIT ? OFFSET ?';
   const users = db.prepare(query).all(...params, limit, offset);
   const total = db.prepare(countQuery).get(...params).count;
 
   res.json({ users, total, page, totalPages: Math.ceil(total / limit) });
+});
+
+// 导出全量用户 CSV（必须在 /users/:id 之前，否则 "export" 被当作 id）
+router.get('/users/export', adminAuth, (req, res) => {
+  const users = db.prepare(`
+    SELECT u.id, u.phone, u.name, u.email, u.emergency_contact, u.emergency_phone, u.created_at,
+      (SELECT COUNT(*) FROM capsules WHERE user_id = u.id) as capsule_count
+    FROM users u ORDER BY u.created_at DESC
+  `).all();
+
+  const header = ['编号', '手机号', '姓名', '邮箱', '紧急联系人', '紧急联系电话', '胶囊数', '注册时间'];
+  const escapeCsv = (v) => {
+    const s = v == null ? '' : String(v);
+    return '"' + s.replace(/"/g, '""') + '"';
+  };
+  const rows = users.map(u => [
+    u.id, u.phone, u.name, u.email, u.emergency_contact, u.emergency_phone, u.capsule_count,
+    u.created_at,
+  ].map(escapeCsv).join(','));
+
+  const csv = '﻿' + header.map(escapeCsv).join(',') + '\n' + rows.join('\n');
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', 'attachment; filename="users-export.csv"');
+  res.send(csv);
+});
+
+// 用户详情：完整信息 + 其所有胶囊 + 投递日志
+router.get('/users/:id', adminAuth, (req, res) => {
+  const user = db.prepare('SELECT id, phone, name, email, emergency_contact, emergency_phone, created_at, updated_at FROM users WHERE id = ?').get(req.params.id);
+  if (!user) {
+    return res.status(404).json({ error: '用户不存在' });
+  }
+
+  const capsules = db.prepare(`
+    SELECT id, title, capsule_code, content_type, status, trigger_type, trigger_date, created_at
+    FROM capsules WHERE user_id = ? ORDER BY created_at DESC
+  `).all(req.params.id);
+
+  const logs = db.prepare(`
+    SELECT l.id, l.send_method, l.recipient, l.status, l.operator, l.sent_at, l.error_message,
+      c.title as capsule_title
+    FROM delivery_logs l
+    LEFT JOIN capsules c ON l.capsule_id = c.id
+    WHERE c.user_id = ? ORDER BY l.sent_at DESC LIMIT 50
+  `).all(req.params.id);
+
+  const contracts = db.prepare(`
+    SELECT id, contract_no, contract_type, status, signed_at
+    FROM contracts WHERE user_id = ? ORDER BY signed_at DESC
+  `).all(req.params.id);
+
+  res.json({ user, capsules, logs, contracts });
 });
 
 router.get('/capsules', adminAuth, (req, res) => {
