@@ -5,12 +5,23 @@
 #   以后： 我推了代码 → 你登录服务器 → bash deploy.sh → 自动拉取并重建
 set -e
 
-DIR="/root/yuhuo-liusheng"
 REPO="https://github.com/hjl4568/yuhuo-liusheng.git"
+
+# 优先使用当前目录（如果已经在项目目录里执行，就直接用它）
+if [ -d ".git" ]; then
+  DIR="$(pwd)"
+else
+  # 不在项目目录时，按当前用户选择默认路径，避免 ubuntu 用户写到 /root 没权限
+  if [ "$(whoami)" = "root" ]; then
+    DIR="/root/yuhuo-liusheng"
+  else
+    DIR="$HOME/yuhuo-liusheng"
+  fi
+fi
 
 # 首次克隆，之后只拉最新
 if [ ! -d "$DIR/.git" ]; then
-  echo ">> 首次克隆代码 ..."
+  echo ">> 首次克隆代码到 $DIR ..."
   git clone "$REPO" "$DIR"
 fi
 cd "$DIR"
