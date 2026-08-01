@@ -24,20 +24,20 @@
     return (window.I18N && typeof window.I18N.t === 'function') ? window.I18N.t(s) : s;
   }
 
-  /* ---- 量级判定（按加权后数值）
+  /* ---- 量级判定（按真实总互动量）
    * 自然转化漏斗：访问 : 登记 : 胶囊 ≈ 10 : 5 : 1
    *   - 访问（树干）：人人可来，体量最大、最随意
    *   - 登记（枝叶）：愿意留下信息，是中间层、需要一点 commitment
    *   - 胶囊（果实·树冠）：真正留内容的人最少，却是最难、最高的一级
-   * 权重：访问=1，登记=10，胶囊=100 —— 让"真正创建胶囊"的人，
-   *       权重远高于"随手访问"；登记是承上启下的中层。
-   * 量级：萌芽(0-500) / 生长(500-5k) / 繁茂(5k-50k) / 森林(50k+)
+   * 树的"大小/阶段"只由真实数字之和决定：总互动量 = 访问 + 登记 + 胶囊。
+   * 不再使用任何人为加权，避免把小数据包装成"加权值 188 / 参与度 96%"这类虚假繁荣。
+   * 量级：萌芽期(0-50) / 生长期(50-500) / 繁茂期(500-5k) / 森林期(5k+)
    */
-  function getEra(weighted) {
-    if (weighted < 500) return { ceiling: 500, name: '萌芽期', index: 0 };
-    if (weighted < 5000) return { ceiling: 5000, name: '生长期', index: 1 };
-    if (weighted < 50000) return { ceiling: 50000, name: '繁茂期', index: 2 };
-    return { ceiling: 500000, name: '森林期', index: 3 };
+  function getEra(total) {
+    if (total < 50) return { ceiling: 50, name: '萌芽期', index: 0 };
+    if (total < 500) return { ceiling: 500, name: '生长期', index: 1 };
+    if (total < 5000) return { ceiling: 5000, name: '繁茂期', index: 2 };
+    return { ceiling: 50000, name: '森林期', index: 3 };
   }
 
   /* ---- 生长阶段 ---- */
@@ -234,14 +234,14 @@
   /* ---- 主渲染函数 ---- */
   function renderTree(data) {
     var visits = data.totalVisits || 0;
-    var regs = (data.usersTotal || 0) + (data.leadsTotal || 0);
+    // "登记" = 意向登记表单提交数（leads），不再把注册用户混进来，避免口径重复/虚高
+    var regs = data.leadsTotal || 0;
     var caps = data.capsulesTotal || 0;
 
-    // === 加权：访问=1，登记=10，胶囊=100 ===
-    // 真正创建胶囊的人，权重是普通访客的 100 倍
-    var weighted = visits * 1 + regs * 10 + caps * 100;
-    var era = getEra(weighted);
-    var ratio = weighted / era.ceiling;
+    // 树的大小只由真实总互动量决定，没有任何人为加权
+    var total = visits + regs + caps;
+    var era = getEra(total);
+    var ratio = total / era.ceiling;
     var stage = getStage(ratio);
 
     // 种子用于确定性随机
@@ -289,17 +289,14 @@
       drawBranch(treeGroup, cx, gy, trunkLen, -Math.PI / 2, stage.depth, trunkW, rng, params, 0);
     }
 
-    // 更新统计数字
+    // 更新统计数字（全部来自真实数据库，不含任何合成指标）
     var locale = (window.I18N && window.I18N.lang === 'en') ? 'en-US' : 'zh-CN';
     setText('ts-visits', visits.toLocaleString(locale));
     setText('ts-regs', regs.toLocaleString(locale));
     setText('ts-caps', caps.toLocaleString(locale));
 
-    // 加权值 + 实际参与度
-    setText('ts-weighted', weighted.toLocaleString(locale));
-    // 实际参与度 = (登记*10 + 胶囊*100) / (加权值)，反映"非纯访问"的占比
-    var engagement = weighted > 0 ? Math.round((regs * 10 + caps * 100) / weighted * 100) : 0;
-    setText('ts-engagement', engagement + '%');
+    // 总互动量：三个真实数字的简单求和，作为树的量级依据
+    setText('ts-total', total.toLocaleString(locale));
 
     // 转化漏斗：访问 → 登记 → 胶囊（目标 10 : 5 : 1，胶囊为最高一级）
     renderFunnel(visits, regs, caps);
@@ -313,7 +310,7 @@
     setText('tree-stage-name', t(stage.name));
 
     // 量级文字
-    var lower = era.index === 0 ? 0 : [500, 5000, 50000][era.index - 1];
+    var lower = era.index === 0 ? 0 : [50, 500, 5000][era.index - 1];
     setText('tree-scale-text', t('当前量级：' + lower + ' — ' + era.ceiling));
 
     // 粒子（大树阶段才有）

@@ -587,7 +587,7 @@
       <div class="reveal">
         <div class="nf-eyebrow">生长之树 · DATA TREE</div>
         <h2 class="nf-title">这棵树，和我们一起长</h2>
-        <p class="nf-lead">这棵树按一条自然的<b>转化漏斗</b>生长：<b>访问 : 登记 : 胶囊 ≈ 10 : 5 : 1</b>。访问是根基（人人可来、体量最大）；登记是中层（愿意留下信息）；胶囊是最高一级——真正留内容的人最少，却是<b>最难、最高</b>的果实。权重上，一次胶囊创建抵得上百次普通访问，所以我们更在意真正留下内容的人，而不是匆匆过客。</p>
+        <p class="nf-lead">这棵树按一条自然的转化漏斗生长：访问 : 登记 : 胶囊 ≈ 10 : 5 : 1。访问是根基（人人可来、体量最大）；登记是中层（愿意留下信息）；胶囊是最高一级——真正留内容的人最少，却是最难、最高的果实。下面每一个数字都来自真实记录，没有任何人为加权。</p>
         <div class="nf-tree-wrap">
           <div class="nf-tree-stage" id="tree-stage-info">
             <span class="era-badge era-0" id="tree-era-badge">萌芽期</span>
@@ -599,21 +599,19 @@
           </div>
           <div class="nf-tree-stats">
             <div class="ts-card"><div class="ts-num" id="ts-visits">0</div><div class="ts-lab">累计访问 → 树干</div></div>
-            <div class="ts-card"><div class="ts-num" id="ts-regs">0</div><div class="ts-lab">注册人数 → 枝叶</div></div>
+            <div class="ts-card"><div class="ts-num" id="ts-regs">0</div><div class="ts-lab">登记人数 → 枝叶</div></div>
             <div class="ts-card"><div class="ts-num" id="ts-caps">0</div><div class="ts-lab">已建胶囊 → 果实</div></div>
-            <div class="ts-card ts-card-weighted"><div class="ts-num" id="ts-weighted">0</div><div class="ts-lab">加权值（决定量级）</div></div>
-            <div class="ts-card ts-card-engagement"><div class="ts-num" id="ts-engagement">0%</div><div class="ts-lab">实际参与度</div></div>
+            <div class="ts-card"><div class="ts-num" id="ts-total">0</div><div class="ts-lab">总互动量</div></div>
           </div>
           <div class="nf-tree-funnel" id="tree-funnel"></div>
           <div class="nf-tree-legend">
             <div class="lg-item"><span class="lg-dot lg-trunk"></span>树干粗细 = 访问量（基础，最宽）</div>
             <div class="lg-item"><span class="lg-dot lg-leaf"></span>枝叶疏密 = 登记量（中层）</div>
             <div class="lg-item"><span class="lg-dot lg-fruit"></span>果实数量 = 胶囊数（最高一级，最窄）</div>
-            <div class="lg-item lg-rule"><b>转化漏斗：</b>访问 : 登记 : 胶囊 = 10 : 5 : 1（胶囊最难最高）</div>
-            <div class="lg-item lg-rule"><b>权重：</b>访问 × 1 ｜ 登记 × 10 ｜ 胶囊 × 100</div>
-            <div class="lg-item lg-rule"><b>实际参与度：</b>（登记 × 10 + 胶囊 × 100）÷ 加权值</div>
+            <div class="lg-item lg-rule"><b>转化漏斗：</b>访问 : 登记 : 胶囊 ≈ 10 : 5 : 1（胶囊最难最高）</div>
+            <div class="lg-item lg-rule"><b>全部来自真实记录，</b>没有任何人为加权或合成指标</div>
           </div>
-          <div class="nf-tree-scale" id="tree-scale-text">当前量级：0 — 500</div>
+          <div class="nf-tree-scale" id="tree-scale-text">当前量级：0 — 50</div>
         </div>
       </div>
     </section>
@@ -1024,7 +1022,7 @@
   </script>
   <script src="/js/i18n-data.js?v=20260806"></script>
   <script src="/js/i18n.js?v=20260806"></script>
-  <script src="/js/tree-viz.js?v=20260806"></script>
+  <script src="/js/tree-viz.js?v=20260807"></script>
   <script src="/js/share.js"></script>
   <script>
     // 顶栏语言切换：点击切换中/EN（小标签 + 持久化）
