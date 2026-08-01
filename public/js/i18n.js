@@ -150,7 +150,7 @@
   function buildSwitcher() {
     const s = document.createElement('div');
     s.id = 'i18n-switcher';
-    s.innerHTML = '<button type="button" data-l="zh">中</button><button type="button" data-l="en">EN</button>';
+    s.innerHTML = '<button type="button" data-l="zh" class="lang-btn">中</button><button type="button" data-l="en" class="lang-btn">EN</button>';
     s.querySelectorAll('button').forEach(function (b) {
       b.addEventListener('click', function () {
         const l = b.getAttribute('data-l');
@@ -164,8 +164,9 @@
     switcher = s;
   }
   function updateSwitcher() {
-    if (!switcher) return;
-    switcher.querySelectorAll('button').forEach(function (b) {
+    // 同步所有 .lang-btn（顶栏 + 右下角浮动），保证任何页面任何切换器都一致
+    const btns = document.querySelectorAll('.lang-btn');
+    btns.forEach(function (b) {
       b.classList.toggle('active', b.getAttribute('data-l') === lang);
     });
   }

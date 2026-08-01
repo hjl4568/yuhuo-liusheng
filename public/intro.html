@@ -30,6 +30,11 @@
         <a href="/join.html">加入我们</a>
         <a href="/support.html">支持我们</a>
       </nav>
+      <!-- 顶栏语言切换：随时可见，不依赖右下角浮动 -->
+      <div class="lang-switch" id="lang-switch-top">
+        <button type="button" data-l="zh" class="lang-btn">中</button>
+        <button type="button" data-l="en" class="lang-btn">EN</button>
+      </div>
   </div>
 
   <header class="nf-hero">
@@ -47,6 +52,21 @@
     </div>
     <a href="#panel-about" class="nf-scrollcue" aria-label="向下滚动了解更多">↓</a>
   </header>
+
+  <!-- 最新留言墙：置顶预览，第一时间看到同行者 -->
+  <section class="nf-section msg-preview" id="msg-preview">
+    <div class="reveal">
+      <div class="nf-eyebrow">最新留言 · RECENT WORDS</div>
+      <h2 class="nf-title">陪伴我们的火苗</h2>
+      <p class="nf-lead">下面这些是最近赞赏我们的人留下的匿名留言（金额与留言皆可空）。如果你也想留下点什么，欢迎支持我们。</p>
+      <div class="msg-cards" id="msg-cards">
+        <div class="msg-empty">正在加载大家的留言…</div>
+      </div>
+      <div class="msg-more">
+        <a href="#panel-data" class="nf-btn nf-btn-ghost">查看完整留言墙 · 实时数据</a>
+      </div>
+    </div>
+  </section>
 
   <!-- 一页滚动叙事：吸顶分节导航 -->
   <nav class="nf-scrollnav" id="scrollnav">
@@ -104,7 +124,30 @@
           长夜余火正处在验证想法的早期，产品免费使用。如果你也被这个念头打动，
           欢迎以<b>自愿赞赏</b>的方式支持我们——所有支持均出于自愿，我们不承诺任何对价回报。
         </p>
-        <a href="/support.html" class="nf-btn nf-btn-primary">去支持我们 💛</a>
+
+        <!-- 二维码与账户直接内嵌（不需要跳转） -->
+        <div class="pay-grid">
+          <div class="pay-card">
+            <div class="pay-icon wechat">微</div>
+            <div class="pay-name">微信赞赏</div>
+            <div class="pay-sub">扫码支持</div>
+            <img class="pay-qr" src="/images/wechat-qr.png" alt="微信赞赏二维码">
+          </div>
+          <div class="pay-card">
+            <div class="pay-icon alipay">支</div>
+            <div class="pay-name">支付宝</div>
+            <div class="pay-sub">扫码或转账</div>
+            <div class="pay-account" id="pay-account" data-account="935382253@qq.com">935382253@qq.com</div>
+            <button class="pay-copy" type="button" onclick="(function(btn){var acc=document.getElementById('pay-account').getAttribute('data-account');navigator.clipboard.writeText(acc).then(function(){var o=btn.textContent;btn.textContent='✓ 已复制';btn.classList.add('copied');setTimeout(function(){btn.textContent=o;btn.classList.remove('copied');},2400);}).catch(function(){btn.textContent='复制失败，请手动';});})(this)">复制账号</button>
+          </div>
+        </div>
+        <div class="pay-note">
+          <span class="pay-note-tag">备注</span>
+          目前仅是概念设计阶段，捐赠看个人偏好，活动群之后会放上去。
+        </div>
+        <div class="pay-actions">
+          <a href="/support.html" class="nf-btn nf-btn-ghost">查看完整支持页</a>
+        </div>
       </section>
     </section>
 
@@ -655,6 +698,37 @@
     // 访问计数（后端存在时才有效；失败静默）
     try { fetch('/api/visit', { method: 'POST' }).catch(() => {}); } catch (e) {}
 
+    // 顶部留言墙预览：拉取最新赞赏，取有留言的展示
+    (function () {
+      const wrap = document.getElementById('msg-cards');
+      if (!wrap) return;
+      function esc(s){ return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+      function render(list) {
+        const withMsg = (list || []).filter(x => x && x.message && x.message.trim());
+        if (!withMsg.length) {
+          wrap.innerHTML = '<div class="msg-empty">还没有人留下留言，期待你的第一束火光 🔥</div>';
+          return;
+        }
+        const top = withMsg.slice(0, 6);
+        wrap.innerHTML = top.map(x => (
+          '<div class="msg-card">' +
+            '<div class="msg-text">' + esc(x.message) + '</div>' +
+            '<div class="msg-meta">' +
+              (x.amount ? ('¥' + esc(String(x.amount))) + ' · ' : '') +
+              esc(x.created_at ? new Date(x.created_at).toLocaleDateString('zh-CN') : '近期') +
+            '</div>' +
+          '</div>'
+        )).join('');
+      }
+      function load() {
+        fetch('/api/stats/public').then(r => r.json()).then(d => render(d && d.recentDonors)).catch(() => {
+          wrap.innerHTML = '<div class="msg-empty">留言加载中…</div>';
+        });
+      }
+      load();
+      setInterval(load, 30000);
+    })();
+
     // ---------- 实时数据 ----------
     let statsTimer = null, typeChart = null, visitChart = null;
     function fmt(n){ return (n == null ? 0 : n).toLocaleString('zh-CN'); }
@@ -923,9 +997,34 @@
       }
     });
   </script>
-  <script src="/js/i18n-data.js?v=20260801"></script>
-  <script src="/js/i18n.js?v=20260801"></script>
-  <script src="/js/tree-viz.js?v=20260801"></script>
+  <script src="/js/i18n-data.js?v=20260801b"></script>
+  <script src="/js/i18n.js?v=20260801b"></script>
+  <script src="/js/tree-viz.js?v=20260801b"></script>
   <script src="/js/share.js"></script>
+  <script>
+    // 顶栏语言切换：点击切换中/EN（小标签 + 持久化）
+    (function () {
+      const topSwitch = document.getElementById('lang-switch-top');
+      if (!topSwitch) return;
+      const apply = function () {
+        const cur = (window.I18N && window.I18N.lang) || 'zh';
+        topSwitch.querySelectorAll('.lang-btn').forEach(function (b) {
+          b.classList.toggle('active', b.getAttribute('data-l') === cur);
+        });
+      };
+      topSwitch.addEventListener('click', function (e) {
+        const btn = e.target.closest('.lang-btn');
+        if (!btn) return;
+        const l = btn.getAttribute('data-l');
+        if (window.I18N && typeof window.I18N.setLang === 'function') {
+          window.I18N.setLang(l);
+        }
+        apply();
+      });
+      apply();
+      // 监听引擎派发的事件，保持顶栏与右下角同步
+      window.addEventListener('i18n-lang-change', apply);
+    })();
+  </script>
 </body>
 </html>
