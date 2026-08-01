@@ -2,11 +2,27 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { db } = require('../db');
-const { adminAuth } = require('../middleware/auth');
+const { adminAuth, mainAdminAuth } = require('../middleware/auth');
 const { deliverCapsule } = require('../services/scheduler');
 const { getMailStatus, sendTestMail } = require('../services/email');
 
 const router = express.Router();
+
+// 操作日志辅助函数
+function logAction(req, action, target = '', detail = '') {
+  try {
+    db.prepare('INSERT INTO admin_action_logs (admin_id, admin_name, action, target, detail, ip) VALUES (?, ?, ?, ?, ?, ?)').run(
+      req.adminId,
+      req.adminDisplayName || req.adminUsername || `#${req.adminId}`,
+      action,
+      target,
+      detail,
+      req.ip || ''
+    );
+  } catch (e) {
+    console.error('[admin logAction error]', e.message);
+  }
+}
 
 router.post('/login', (req, res) => {
   const { username, password } = req.body;
@@ -18,9 +34,40 @@ router.post('/login', (req, res) => {
   if (!admin || !bcrypt.compareSync(password, admin.password)) {
     return res.status(401).json({ error: '用户名或密码错误' });
   }
+  if (admin.is_active === 0) {
+    return res.status(403).json({ error: '该账号已被停用，请联系主管理员' });
+  }
 
-  const token = jwt.sign({ adminId: admin.id, role: 'admin' }, process.env.JWT_SECRET, { expiresIn: '7d' });
-  res.json({ message: '登录成功', token });
+  const token = jwt.sign({
+    adminId: admin.id,
+    role: 'admin',
+    adminRole: admin.role || 'main',
+    adminUsername: admin.username,
+    adminDisplayName: admin.display_name || admin.username,
+  }, process.env.JWT_SECRET, { expiresIn: '7d' });
+
+  // 记录登录
+  try {
+    db.prepare('INSERT INTO admin_action_logs (admin_id, admin_name, action, target, detail, ip) VALUES (?, ?, ?, ?, ?, ?)').run(
+      admin.id,
+      admin.display_name || admin.username,
+      'login',
+      '',
+      '登录管理后台',
+      req.ip || ''
+    );
+  } catch (e) { /* ignore */ }
+
+  res.json({
+    message: '登录成功',
+    token,
+    adminInfo: {
+      id: admin.id,
+      username: admin.username,
+      displayName: admin.display_name || admin.username,
+      role: admin.role || 'main',
+    },
+  });
 });
 
 router.get('/dashboard', adminAuth, (req, res) => {
@@ -100,9 +147,36 @@ router.get('/users/export', adminAuth, (req, res) => {
   ].map(escapeCsv).join(','));
 
   const csv = '﻿' + header.map(escapeCsv).join(',') + '\n' + rows.join('\n');
+  logAction(req, 'export_csv', 'users', `导出 ${users.length} 条用户数据(CSV)`);
   res.setHeader('Content-Type', 'text/csv; charset=utf-8');
   res.setHeader('Content-Disposition', 'attachment; filename="users-export.csv"');
   res.send(csv);
+});
+
+// 导出全量用户 Excel（HTML表格格式，Excel/WPS直接打开；必须在 /users/:id 之前）
+router.get('/users/export-excel', adminAuth, (req, res) => {
+  const users = db.prepare(`
+    SELECT u.id, u.phone, u.name, u.email, u.emergency_contact, u.emergency_phone, u.created_at,
+      (SELECT COUNT(*) FROM capsules WHERE user_id = u.id) as capsule_count
+    FROM users u ORDER BY u.created_at DESC
+  `).all();
+
+  const rows = users.map(u => `<tr>
+    <td>${u.id}</td><td>${u.phone || ''}</td><td>${u.name || ''}</td><td>${u.email || ''}</td>
+    <td>${u.emergency_contact || ''}</td><td>${u.emergency_phone || ''}</td><td>${u.capsule_count || 0}</td><td>${u.created_at || ''}</td>
+  </tr>`).join('');
+
+  const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="UTF-8"><style>td,th{font-size:12px;border:1px solid #ccc;padding:4px 8px;white-space:nowrap;}th{background:#4472C4;color:#fff;}</style></head>
+<body><table>
+<thead><tr><th>编号</th><th>手机号</th><th>姓名</th><th>邮箱</th><th>紧急联系人</th><th>紧急联系电话</th><th>胶囊数</th><th>注册时间</th></tr></thead>
+<tbody>${rows}</tbody>
+</table></body></html>`;
+
+  logAction(req, 'export_excel', 'users', `导出 ${users.length} 条用户数据(Excel)`);
+  res.setHeader('Content-Type', 'application/vnd.ms-excel; charset=utf-8');
+  res.setHeader('Content-Disposition', 'attachment; filename="users-export.xls"');
+  res.send(html);
 });
 
 // 用户详情：完整信息 + 其所有胶囊 + 投递日志
@@ -191,6 +265,7 @@ router.post('/capsules/:id/trigger', adminAuth, async (req, res) => {
   }
 
   const result = await deliverCapsule(capsule, `admin#${req.adminId}`);
+  logAction(req, 'trigger_capsule', `capsule:${capsule.id}`, `后台触发胶囊"${capsule.title}"`);
   if (result.success) {
     res.json({ message: '后台触发成功', previewUrl: result.previewUrl });
   } else {
@@ -246,5 +321,121 @@ router.post('/mail-test', adminAuth, async (req, res) => {
     res.json({ ok: false, error: e.message });
   }
 });
+
+// ==================== 管理账号系统（仅主账号） ====================
+
+// 获取所有管理员账号
+router.get('/admins', mainAdminAuth, (req, res) => {
+  const admins = db.prepare(`
+    SELECT a.id, a.username, a.display_name, a.role, a.is_active, a.created_at, a.created_by,
+      creator.username as created_by_name
+    FROM admin_users a
+    LEFT JOIN admin_users creator ON a.created_by = creator.id
+    ORDER BY a.role DESC, a.created_at ASC
+  `).all();
+
+  // 统计每个管理员的操作数
+  const result = admins.map(a => {
+    const logCount = db.prepare('SELECT COUNT(*) as count FROM admin_action_logs WHERE admin_id = ?').get(a.id).count;
+    const lastAction = db.prepare('SELECT created_at FROM admin_action_logs WHERE admin_id = ? ORDER BY created_at DESC LIMIT 1').get(a.id);
+    return { ...a, action_count: logCount, last_action_at: lastAction ? lastAction.created_at : null };
+  });
+
+  res.json({ admins: result });
+});
+
+// 创建子管理员账号
+router.post('/admins', mainAdminAuth, (req, res) => {
+  const { username, password, display_name } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ error: '用户名和密码不能为空' });
+  }
+  if (password.length < 6) {
+    return res.status(400).json({ error: '密码至少6位' });
+  }
+
+  const existing = db.prepare('SELECT id FROM admin_users WHERE username = ?').get(username);
+  if (existing) {
+    return res.status(400).json({ error: '用户名已存在' });
+  }
+
+  const hashed = bcrypt.hashSync(password, 10);
+  const result = db.prepare('INSERT INTO admin_users (username, password, role, display_name, created_by) VALUES (?, ?, ?, ?, ?)').run(
+    username, hashed, 'sub', display_name || username, req.adminId
+  );
+
+  logAction(req, 'create_admin', `sub:${username}`, `创建子管理员 ${display_name || username} (${username})`);
+
+  res.json({ message: '子管理员创建成功', id: result.lastInsertRowid });
+});
+
+// 删除子管理员账号（不能删主账号、不能删自己）
+router.delete('/admins/:id', mainAdminAuth, (req, res) => {
+  const id = parseInt(req.params.id);
+  if (id === req.adminId) {
+    return res.status(400).json({ error: '不能删除自己' });
+  }
+
+  const target = db.prepare('SELECT * FROM admin_users WHERE id = ?').get(id);
+  if (!target) {
+    return res.status(404).json({ error: '账号不存在' });
+  }
+  if (target.role === 'main') {
+    return res.status(400).json({ error: '不能删除主管理员账号' });
+  }
+
+  db.prepare('DELETE FROM admin_users WHERE id = ?').run(id);
+  logAction(req, 'delete_admin', `sub:${target.username}`, `删除子管理员 ${target.display_name || target.username}`);
+
+  res.json({ message: '子管理员已删除' });
+});
+
+// 启用/停用子管理员
+router.put('/admins/:id/toggle', mainAdminAuth, (req, res) => {
+  const id = parseInt(req.params.id);
+  if (id === req.adminId) {
+    return res.status(400).json({ error: '不能停用自己' });
+  }
+
+  const target = db.prepare('SELECT * FROM admin_users WHERE id = ?').get(id);
+  if (!target) {
+    return res.status(404).json({ error: '账号不存在' });
+  }
+  if (target.role === 'main') {
+    return res.status(400).json({ error: '不能停用主管理员账号' });
+  }
+
+  const newState = target.is_active ? 0 : 1;
+  db.prepare('UPDATE admin_users SET is_active = ? WHERE id = ?').run(newState, id);
+  logAction(req, 'toggle_admin', `sub:${target.username}`, newState ? '启用' : '停用');
+
+  res.json({ message: newState ? '已启用' : '已停用', is_active: newState });
+});
+
+// 管理员操作日志
+router.get('/admin-logs', mainAdminAuth, (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = 30;
+  const offset = (page - 1) * limit;
+  const adminFilter = req.query.admin_id || '';
+
+  let query = 'SELECT * FROM admin_action_logs';
+  let countQuery = 'SELECT COUNT(*) as count FROM admin_action_logs';
+  const params = [];
+
+  if (adminFilter) {
+    query += ' WHERE admin_id = ?';
+    countQuery += ' WHERE admin_id = ?';
+    params.push(adminFilter);
+  }
+
+  query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
+  const logs = db.prepare(query).all(...params, limit, offset);
+  const total = db.prepare(countQuery).get(...params).count;
+
+  res.json({ logs, total, page, totalPages: Math.ceil(total / limit) });
+});
+
+// ==================== Excel 导出（已移到 /users/:id 之前） ====================
 
 module.exports = router;

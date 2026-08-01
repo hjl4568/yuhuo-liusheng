@@ -27,10 +27,23 @@ function adminAuth(req, res, next) {
       return res.status(403).json({ error: '无管理员权限' });
     }
     req.adminId = decoded.adminId;
+    req.adminRole = decoded.adminRole || 'main'; // 兼容旧 token
+    req.adminUsername = decoded.adminUsername || 'admin';
+    req.adminDisplayName = decoded.adminDisplayName || '';
     next();
   } catch {
     return res.status(401).json({ error: '管理员登录已过期' });
   }
 }
 
-module.exports = { auth, adminAuth };
+// 仅主账号可访问
+function mainAdminAuth(req, res, next) {
+  adminAuth(req, res, () => {
+    if (req.adminRole !== 'main') {
+      return res.status(403).json({ error: '仅主管理员可执行此操作' });
+    }
+    next();
+  });
+}
+
+module.exports = { auth, adminAuth, mainAdminAuth };

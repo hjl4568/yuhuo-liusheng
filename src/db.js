@@ -147,13 +147,36 @@ function init() {
   // 回填历史数据：为没有 view_token 的胶囊生成随机令牌
   db.prepare(`UPDATE capsules SET view_token = lower(hex(randomblob(16))) WHERE view_token IS NULL OR view_token = ''`).run();
 
+  // 管理员账号系统：角色（main主账号 / sub子账号）、显示名、启用状态、创建者
+  try { db.exec("ALTER TABLE admin_users ADD COLUMN role TEXT DEFAULT 'sub'"); } catch (e) {}
+  try { db.exec("ALTER TABLE admin_users ADD COLUMN display_name TEXT DEFAULT ''"); } catch (e) {}
+  try { db.exec("ALTER TABLE admin_users ADD COLUMN is_active INTEGER DEFAULT 1"); } catch (e) {}
+  try { db.exec("ALTER TABLE admin_users ADD COLUMN created_by INTEGER"); } catch (e) {}
+
+  // 管理员操作日志表
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS admin_action_logs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      admin_id INTEGER NOT NULL,
+      admin_name TEXT DEFAULT '',
+      action TEXT NOT NULL,
+      target TEXT DEFAULT '',
+      detail TEXT DEFAULT '',
+      ip TEXT DEFAULT '',
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+  `);
+
   const adminUsername = process.env.ADMIN_USERNAME || 'admin';
   const adminPassword = process.env.ADMIN_PASSWORD || 'admin123456';
   const existing = db.prepare('SELECT id FROM admin_users WHERE username = ?').get(adminUsername);
   if (!existing) {
     const hashed = bcrypt.hashSync(adminPassword, 10);
-    db.prepare('INSERT INTO admin_users (username, password) VALUES (?, ?)').run(adminUsername, hashed);
-    console.log(`[DB] Admin user created: ${adminUsername}`);
+    db.prepare('INSERT INTO admin_users (username, password, role, display_name) VALUES (?, ?, ?, ?)').run(adminUsername, hashed, 'main', '主管理员');
+    console.log(`[DB] Admin user created: ${adminUsername} (main)`);
+  } else {
+    // 确保默认管理员是 main 角色
+    db.prepare("UPDATE admin_users SET role = 'main' WHERE username = ? AND (role IS NULL OR role = '' OR role = 'sub')").run(adminUsername);
   }
 
   console.log('[DB] Database initialized');
