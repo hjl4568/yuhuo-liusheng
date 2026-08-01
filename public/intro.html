@@ -53,6 +53,7 @@
     <a href="#panel-about" class="nf-anchor active">关于</a>
     <a href="#panel-founder" class="nf-anchor">创始人</a>
     <a href="#panel-design" class="nf-anchor">核心设计</a>
+    <a href="#panel-scenes" class="nf-anchor">理想场景</a>
     <a href="#panel-vision" class="nf-anchor">产品愿景</a>
     <a href="#panel-compliance" class="nf-anchor">合规 · e签宝</a>
     <a href="#panel-trust" class="nf-anchor">信任背书</a>
@@ -196,6 +197,90 @@
         <div class="nf-board-foot">
           <div class="nf-board-dots" id="boardDots" role="tablist" aria-label="展板导航"></div>
           <div class="nf-board-count"><span id="boardCur">1</span><span class="nf-board-sep">/</span><span id="boardTotal">6</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 理想场景 · 手绘分镜 ============ -->
+    <section class="nf-section" id="panel-scenes">
+      <div class="reveal">
+        <div class="nf-eyebrow">理想场景 · SCENES</div>
+        <h2 class="nf-title">理想场景 · 手绘分镜</h2>
+        <p class="nf-lead">这只是我们工作方式的一种展示，不是营销。像翻小时候零食里送的小贴画，几张图，一个故事——你可以滑动着看完。</p>
+      </div>
+
+      <div class="vision-board" id="visionBoard" aria-roledescription="手绘分镜轮播">
+        <div class="vision-stage">
+          <button type="button" class="vision-nav vision-prev" id="visionPrev" aria-label="上一张">‹</button>
+          <div class="vision-viewport">
+            <div class="vision-track" id="visionTrack">
+              <figure class="vision-slide">
+                <span class="vision-no">①</span>
+                <div class="vision-card">
+                  <img src="/images/storyboard-1.png" alt="帧1 录入：一个人坐在桌前录下或写下想留给某人的话" loading="lazy">
+                </div>
+                <figcaption class="vision-cap">想对谁说点什么，现在就能写下来或录下来。几句话，或一封信，都可以。<span class="vision-sub">媒介很轻——文字、一段录音、一张照片。</span></figcaption>
+              </figure>
+              <figure class="vision-slide">
+                <span class="vision-no">②</span>
+                <div class="vision-card">
+                  <img src="/images/storyboard-2.png" alt="帧2 托付：把信放进余火信使盒，标上触发条件与接收人" loading="lazy">
+                </div>
+                <figcaption class="vision-cap">你设定一个触发条件，和一个接收人。剩下的，交给系统安静地存着。</figcaption>
+              </figure>
+              <figure class="vision-slide">
+                <span class="vision-no">③</span>
+                <div class="vision-card">
+                  <img src="/images/storyboard-3.png" alt="帧3 托管：盒子静静在架上，日历与四季流过" loading="lazy">
+                </div>
+                <figcaption class="vision-cap">之后它一直待着，不打扰你，你也不用总想着它。</figcaption>
+              </figure>
+              <figure class="vision-slide">
+                <span class="vision-no">④</span>
+                <div class="vision-card">
+                  <img src="/images/storyboard-4.png" alt="帧4 触发：某个名字从在变为不在" loading="lazy">
+                </div>
+                <figcaption class="vision-cap">当那个条件被识别——我们称之为「存在性的退场」——流程启动。</figcaption>
+              </figure>
+              <figure class="vision-slide">
+                <span class="vision-no">⑤</span>
+                <div class="vision-card">
+                  <img src="/images/storyboard-5.png" alt="帧5 核验：亲友、医生、信使确认后发送" loading="lazy">
+                </div>
+                <figcaption class="vision-cap">发送前，我们让可信的人确认，并做多重验证。不会仅凭「被打开」就发。</figcaption>
+              </figure>
+              <figure class="vision-slide">
+                <span class="vision-no">⑥</span>
+                <div class="vision-card">
+                  <img src="/images/storyboard-6.png" alt="帧6 送达：一封信悄悄放进信箱，不经意间送到" loading="lazy">
+                </div>
+                <figcaption class="vision-cap">内容在不经意间、用最简单的方式送到。不一定是我们亲手，也可能经亲友，或一封普通的信。重点始终是「交还」，不是「宣发」。</figcaption>
+              </figure>
+              <figure class="vision-slide">
+                <span class="vision-no">⑦</span>
+                <div class="vision-card">
+                  <img src="/images/storyboard-7.png" alt="帧7 收讫与可退出：收到内容，一角有修改或取消的开关" loading="lazy">
+                </div>
+                <figcaption class="vision-cap">内容到了该到的人手里。而你，任何时候都可以回来改，或者取消——这不是绑定的关系。<span class="vision-sub">如果有一天你不再需要它，注销就好。我们本来就希望你用不上。</span></figcaption>
+              </figure>
+            </div>
+          </div>
+          <button type="button" class="vision-nav vision-next" id="visionNext" aria-label="下一张">›</button>
+        </div>
+        <div class="vision-foot">
+          <div class="vision-dots" id="visionDots" role="tablist" aria-label="分镜导航"></div>
+          <div class="vision-count"><span id="visionCur">1</span><span class="vision-sep">/</span><span id="visionTotal">7</span></div>
+        </div>
+      </div>
+
+      <div class="vision-video" id="visionVideo">
+        <div class="vision-video-inner">
+          <button type="button" class="vision-play" aria-label="播放（筹备中）" disabled>
+            <span class="vision-play-ico">▶</span>
+          </button>
+          <div class="vision-video-tag">工作方式短片</div>
+          <div class="vision-video-state">筹备中</div>
+          <p class="vision-video-note">视频制作完成后，会替换到这组手绘分镜的下方；手绘分镜作为「漫画预览」保留。只想直观看看我们怎么工作？翻完上面七张就好。</p>
         </div>
       </div>
     </section>
@@ -566,6 +651,55 @@
         dotsWrap.appendChild(d);
       });
       document.getElementById('boardTotal').textContent = total;
+
+      function go(i) {
+        index = (i + total) % total;
+        if (reduce) track.classList.add('no-anim');
+        track.style.transform = 'translateX(' + (-index * 100) + '%)';
+        if (reduce) { void track.offsetWidth; track.classList.remove('no-anim'); }
+        curEl.textContent = index + 1;
+        Array.from(dotsWrap.children).forEach((d, k) => d.classList.toggle('active', k === index));
+      }
+      prev.addEventListener('click', () => go(index - 1));
+      next.addEventListener('click', () => go(index + 1));
+      board.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') { go(index - 1); e.preventDefault(); }
+        else if (e.key === 'ArrowRight') { go(index + 1); e.preventDefault(); }
+      });
+      let sx = 0, dx = 0, touching = false;
+      track.addEventListener('touchstart', (e) => { sx = e.touches[0].clientX; touching = true; }, { passive: true });
+      track.addEventListener('touchmove', (e) => { if (touching) dx = e.touches[0].clientX - sx; }, { passive: true });
+      track.addEventListener('touchend', () => {
+        if (touching && Math.abs(dx) > 40) go(index + (dx < 0 ? 1 : -1));
+        touching = false; dx = 0;
+      });
+    })();
+
+    // 理想场景 · 手绘分镜轮播
+    (function () {
+      const board = document.getElementById('visionBoard');
+      if (!board) return;
+      const track = document.getElementById('visionTrack');
+      const slides = Array.from(track.children);
+      const total = slides.length;
+      if (!total) return;
+      const dotsWrap = document.getElementById('visionDots');
+      const curEl = document.getElementById('visionCur');
+      const prev = document.getElementById('visionPrev');
+      const next = document.getElementById('visionNext');
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let index = 0;
+
+      slides.forEach((s, i) => {
+        const d = document.createElement('button');
+        d.type = 'button';
+        d.className = 'vision-dot' + (i === 0 ? ' active' : '');
+        d.setAttribute('role', 'tab');
+        d.setAttribute('aria-label', (window.I18N && window.I18N.lang === 'en' ? 'Panel ' : '第 ') + (i + 1) + (window.I18N && window.I18N.lang === 'en' ? '' : ' 张分镜'));
+        d.addEventListener('click', () => go(i));
+        dotsWrap.appendChild(d);
+      });
+      document.getElementById('visionTotal').textContent = total;
 
       function go(i) {
         index = (i + total) % total;

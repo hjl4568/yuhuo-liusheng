@@ -570,7 +570,25 @@
     "公众号": "Official Account",
     "开戎界域（微信搜索）": "Kai Rong Jie Yu (search on WeChat)",
     "选一种你方便的方式，把我介绍给你自己，或者把你的想法告诉我。": "Pick whatever's convenient — introduce me to you, or tell me your ideas.",
-    "本页为构想展示与意向收集，不构成任何合作承诺。": "This page is a concept showcase and intention collection; it implies no partnership commitment."
+    "本页为构想展示与意向收集，不构成任何合作承诺。": "This page is a concept showcase and intention collection; it implies no partnership commitment.",
+
+    // ===== 介绍页 · 理想场景手绘分镜 =====
+    "理想场景": "Scenes",
+    "理想场景 · SCENES": "Scenes",
+    "理想场景 · 手绘分镜": "Scenes · Hand-drawn Storyboard",
+    "这只是我们工作方式的一种展示，不是营销。像翻小时候零食里送的小贴画，几张图，一个故事——你可以滑动着看完。": "This is just a showcase of how we work, not marketing. Like flipping through the little sticker cards that came with childhood snacks — a few panels, one story. You can swipe through it.",
+    "想对谁说点什么，现在就能写下来或录下来。几句话，或一封信，都可以。": "Want to say something to someone? You can write it down or record it now — a few sentences, or a whole letter.",
+    "媒介很轻——文字、一段录音、一张照片。": "The medium is light — text, a voice clip, a photo.",
+    "你设定一个触发条件，和一个接收人。剩下的，交给系统安静地存着。": "You set a trigger and a recipient. The rest is stored quietly by the system.",
+    "之后它一直待着，不打扰你，你也不用总想着它。": "After that it just sits there, not bothering you, and you don't have to keep thinking about it.",
+    "当那个条件被识别——我们称之为「存在性的退场」——流程启动。": "When that condition is recognized — we call it the 'exit of presence' — the process starts.",
+    "发送前，我们让可信的人确认，并做多重验证。不会仅凭「被打开」就发。": "Before sending, we have trusted people confirm and run multiple checks. We never send just because something was 'opened'.",
+    "内容在不经意间、用最简单的方式送到。不一定是我们亲手，也可能经亲友，或一封普通的信。重点始终是「交还」，不是「宣发」。": "The content is delivered quietly, in the simplest way. Not necessarily by us in person — maybe through a friend, family, or an ordinary letter. The point is always 'returning', not 'promoting'.",
+    "内容到了该到的人手里。而你，任何时候都可以回来改，或者取消——这不是绑定的关系。": "The content reaches the right person. And you can come back anytime to edit or cancel — this isn't a binding arrangement.",
+    "如果有一天你不再需要它，注销就好。我们本来就希望你用不上。": "If one day you no longer need it, just cancel. We actually hope you never need to use it.",
+    "工作方式短片": "How We Work",
+    "筹备中": "In the works",
+    "视频制作完成后，会替换到这组手绘分镜的下方；手绘分镜作为「漫画预览」保留。只想直观看看我们怎么工作？翻完上面七张就好。": "When the video is ready, it will replace this placeholder below the hand-drawn storyboard, which stays as a 'comic preview'. Want a quick sense of how we work? Flip through the seven panels above."
   };
 
   // 输入框占位符 / 标题等属性翻译
@@ -579,7 +597,18 @@
     "方便我们后续联系你": "So we can reach you later",
     "用于发送确认与体验邀请": "For confirmation and trial invites",
     "随便聊聊你的想法、顾虑，或你想留给谁的话……": "Share your thoughts, concerns, or words for someone…",
-    "如 20": "e.g. 20"
+    "如 20": "e.g. 20",
+    "帧1 录入：一个人坐在桌前录下或写下想留给某人的话": "Frame 1 Record: a person sitting at a desk recording or writing words for someone",
+    "帧2 托付：把信放进余火信使盒，标上触发条件与接收人": "Frame 2 Entrust: placing a letter into the Ember box, tagged with trigger and recipient",
+    "帧3 托管：盒子静静在架上，日历与四季流过": "Frame 3 Safekeep: the box rests quietly while calendars and seasons pass",
+    "帧4 触发：某个名字从在变为不在": "Frame 4 Trigger: a name fading from present to absent",
+    "帧5 核验：亲友、医生、信使确认后发送": "Frame 5 Verify: friend, doctor, messenger confirm before sending",
+    "帧6 送达：一封信悄悄放进信箱，不经意间送到": "Frame 6 Deliver: a letter quietly slipped into a mailbox",
+    "帧7 收讫与可退出：收到内容，一角有修改或取消的开关": "Frame 7 Received and cancellable: content received, with an edit/cancel toggle",
+    "上一张": "Previous",
+    "下一张": "Next",
+    "分镜导航": "Storyboard navigation",
+    "播放（筹备中）": "Play (in the works)"
   };
 
   // 这些容器里的文本是“用户生成内容”，不翻译，避免串改用户留言
