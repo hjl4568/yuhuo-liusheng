@@ -444,6 +444,56 @@
           我们想先认识你，也请你告诉我们：你最想留下的是什么？提交后，登记会直接发到项目邮箱
           <b>changyeyuhuo2026@163.com</b>。
         </p>
+
+        <!-- ============ 参与流程图 ============ -->
+        <div class="nf-flow" id="lead-flow">
+          <div class="flow-title">怎么参与 · HOW TO JOIN</div>
+          <div class="flow-track">
+            <div class="flow-step">
+              <div class="flow-no">1</div>
+              <div class="flow-ico" aria-hidden="true">🌐</div>
+              <div class="flow-h">访问官网</div>
+              <div class="flow-b">翻一翻项目说明，了解我们想做什么</div>
+            </div>
+            <div class="flow-arrow" aria-hidden="true">→</div>
+            <div class="flow-step">
+              <div class="flow-no">2</div>
+              <div class="flow-ico" aria-hidden="true">✉️</div>
+              <div class="flow-h">填表登记</div>
+              <div class="flow-b">填下面的表单，告诉我们你想留下什么</div>
+            </div>
+            <div class="flow-arrow" aria-hidden="true">→</div>
+            <div class="flow-step">
+              <div class="flow-no">3</div>
+              <div class="flow-ico" aria-hidden="true">🔑</div>
+              <div class="flow-h">注册账户</div>
+              <div class="flow-b">用邮箱或手机号创建账户，登录应用</div>
+            </div>
+            <div class="flow-arrow" aria-hidden="true">→</div>
+            <div class="flow-step">
+              <div class="flow-no">4</div>
+              <div class="flow-ico" aria-hidden="true">📝</div>
+              <div class="flow-h">写下内容</div>
+              <div class="flow-b">文字 / 录音 / 照片 / 视频，留在这一刻</div>
+            </div>
+            <div class="flow-arrow" aria-hidden="true">→</div>
+            <div class="flow-step">
+              <div class="flow-no">5</div>
+              <div class="flow-ico" aria-hidden="true">⏰</div>
+              <div class="flow-h">设定未来</div>
+              <div class="flow-b">指定未来的触发时刻和收件人</div>
+            </div>
+            <div class="flow-arrow" aria-hidden="true">→</div>
+            <div class="flow-step flow-step-final">
+              <div class="flow-no">6</div>
+              <div class="flow-ico" aria-hidden="true">🔥</div>
+              <div class="flow-h">我们主动送达</div>
+              <div class="flow-b">触发条件满足时，替你交还到对的人手里</div>
+            </div>
+          </div>
+          <div class="flow-hint">现在 → 第一步就开始：</div>
+        </div>
+
         <form id="lead-form">
           <label>怎么称呼你 *</label>
           <input type="text" id="name" placeholder="昵称或真名都可以" maxlength="40">
@@ -493,7 +543,7 @@
       <div class="reveal">
         <div class="nf-eyebrow">生长之树 · DATA TREE</div>
         <h2 class="nf-title">这棵树，和我们一起长</h2>
-        <p class="nf-lead">访问、注册、胶囊——三个数字决定它的样子。人来了，树干就粗一点；有人登记了，枝叶就密一层；有人创建胶囊了，枝头就结出一颗小小的果实。现在它还小，但每一天都在长。</p>
+        <p class="nf-lead">访问、注册、胶囊——三个数字决定它的样子，但权重不同：<b>访问 = 1，注册 = 10，胶囊 = 100</b>。一次胶囊创建 = 一百次普通访问。我们更在意真正留下内容的人，而不是匆匆过客。</p>
         <div class="nf-tree-wrap">
           <div class="nf-tree-stage" id="tree-stage-info">
             <span class="era-badge era-0" id="tree-era-badge">萌芽期</span>
@@ -507,13 +557,17 @@
             <div class="ts-card"><div class="ts-num" id="ts-visits">0</div><div class="ts-lab">累计访问 → 树干</div></div>
             <div class="ts-card"><div class="ts-num" id="ts-regs">0</div><div class="ts-lab">注册人数 → 枝叶</div></div>
             <div class="ts-card"><div class="ts-num" id="ts-caps">0</div><div class="ts-lab">已建胶囊 → 果实</div></div>
+            <div class="ts-card ts-card-weighted"><div class="ts-num" id="ts-weighted">0</div><div class="ts-lab">加权值（决定量级）</div></div>
+            <div class="ts-card ts-card-engagement"><div class="ts-num" id="ts-engagement">0%</div><div class="ts-lab">实际参与度</div></div>
           </div>
           <div class="nf-tree-legend">
             <div class="lg-item"><span class="lg-dot lg-trunk"></span>树干粗细 = 访问量</div>
             <div class="lg-item"><span class="lg-dot lg-leaf"></span>枝叶疏密 = 注册量</div>
             <div class="lg-item"><span class="lg-dot lg-fruit"></span>果实数量 = 胶囊数</div>
+            <div class="lg-item lg-rule"><b>权重：</b>访问 × 1 ｜ 注册 × 10 ｜ 胶囊 × 100</div>
+            <div class="lg-item lg-rule"><b>实际参与度：</b>（注册 × 10 + 胶囊 × 100）÷ 加权值</div>
           </div>
-          <div class="nf-tree-scale" id="tree-scale-text">当前量级：0 — 100</div>
+          <div class="nf-tree-scale" id="tree-scale-text">当前量级：0 — 500</div>
         </div>
       </div>
     </section>
@@ -869,9 +923,9 @@
       }
     });
   </script>
-  <script src="/js/i18n-data.js"></script>
-  <script src="/js/i18n.js"></script>
-  <script src="/js/tree-viz.js"></script>
+  <script src="/js/i18n-data.js?v=20260801"></script>
+  <script src="/js/i18n.js?v=20260801"></script>
+  <script src="/js/tree-viz.js?v=20260801"></script>
   <script src="/js/share.js"></script>
 </body>
 </html>

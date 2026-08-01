@@ -617,6 +617,9 @@
     "生长之树": "Growth Tree",
     "生长之树 · DATA TREE": "Growth Tree · DATA TREE",
     "这棵树，和我们一起长": "This tree grows with us",
+    "访问、注册、胶囊——三个数字决定它的样子，但权重不同：": "Visits, registrations, capsules — three numbers shape it, but with different weights:",
+    "访问 = 1，注册 = 10，胶囊 = 100": "Visits = 1, Registrations = 10, Capsules = 100",
+    "。一次胶囊创建 = 一百次普通访问。我们更在意真正留下内容的人，而不是匆匆过客。": ". One capsule = a hundred visits. We care more about those who truly leave something than passers-by.",
     "访问、注册、胶囊——三个数字决定它的样子。人来了，树干就粗一点；有人登记了，枝叶就密一层；有人创建胶囊了，枝头就结出一颗小小的果实。现在它还小，但每一天都在长。": "Visits, registrations, capsules — three numbers shape it. People visit, the trunk thickens; someone registers, branches grow denser; a capsule is created, a small fruit appears. It's still small now, but growing every day.",
     "萌芽期": "Sprout Era",
     "种子": "Seed",
@@ -627,6 +630,35 @@
     "枝叶疏密 = 注册量": "Foliage density = Registrations",
     "果实数量 = 胶囊数": "Fruit count = Capsules",
     "当前量级：0 — 100": "Current scale: 0 — 100",
+    "当前量级：100 — 1000": "Current scale: 100 — 1,000",
+    "当前量级：1000 — 10000": "Current scale: 1,000 — 10,000",
+    "当前量级：10000 — 100000": "Current scale: 10,000 — 100,000",
+    "当前量级：0 — 500": "Current scale: 0 — 500",
+    "当前量级：500 — 5000": "Current scale: 500 — 5,000",
+    "当前量级：5000 — 50000": "Current scale: 5,000 — 50,000",
+    "当前量级：50000 — 500000": "Current scale: 50,000 — 500,000",
+    "加权值（决定量级）": "Weighted Total (sets the era)",
+    "实际参与度": "Real Engagement",
+    "权重：": "Weights: ",
+    "访问 × 1 ｜ 注册 × 10 ｜ 胶囊 × 100": "Visits × 1 ｜ Registrations × 10 ｜ Capsules × 100",
+    "实际参与度：": "Real engagement: ",
+    "（注册 × 10 + 胶囊 × 100）÷ 加权值": "(Registrations × 10 + Capsules × 100) ÷ Weighted total",
+
+    // ===== 登记意向 · 参与流程图 =====
+    "怎么参与 · HOW TO JOIN": "HOW TO JOIN",
+    "访问官网": "Visit the Site",
+    "翻一翻项目说明，了解我们想做什么": "Browse the project and learn what we're building",
+    "填表登记": "Sign Up",
+    "填下面的表单，告诉我们你想留下什么": "Fill the form below and tell us what you want to leave",
+    "注册账户": "Create Account",
+    "用邮箱或手机号创建账户，登录应用": "Sign up with email or phone, then log in",
+    "写下内容": "Write Content",
+    "文字 / 录音 / 照片 / 视频，留在这一刻": "Text, voice, photo, or video — capture this moment",
+    "设定未来": "Set the Future",
+    "指定未来的触发时刻和收件人": "Choose the future moment and the recipient",
+    "我们主动送达": "We Deliver",
+    "触发条件满足时，替你交还到对的人手里": "When the trigger fires, we return it to the right person",
+    "现在 → 第一步就开始：": "Start with step 1 →",
     "生长期": "Growth Era",
     "繁茂期": "Flourishing Era",
     "森林期": "Forest Era",
@@ -634,15 +666,26 @@
     "树苗": "Sapling",
     "小树": "Young Tree",
     "大树": "Mature Tree",
-    "当前量级：100 — 1000": "Current scale: 100 — 1,000",
-    "当前量级：1000 — 10000": "Current scale: 1,000 — 10,000",
-    "当前量级：10000 — 100000": "Current scale: 10,000 — 100,000",
     "你的档案": "Your Profile",
     "0 / 2000 字（选填）": "0 / 2000 chars (optional)",
     "一封胶囊可以发给多个人。每位收件人可以选择不同的投递方式：邮件、短信、实物寄递，或者自定义方式（我们会联系你沟通安排）。": "A capsule can be sent to multiple people. Each recipient can choose a different delivery method: email, SMS, physical mail, or custom (we will contact you to arrange).",
     "+ 添加收件人": "+ Add Recipient",
     "定制投递说明": "Custom Delivery Instructions",
-    "选填。仅当你选择了\"自定义方式\"投递时需要填写。": "Optional. Only needed when you chose \"Custom\" delivery."
+    "选填。仅当你选择了\"自定义方式\"投递时需要填写。": "Optional. Only needed when you chose \"Custom\" delivery.",
+
+    // ===== create.html · 补全 =====
+    "影像/视频（需邮箱联系）": "Video (contact via email)",
+    "实物/纸质（需邮箱联系）": "Physical / paper (contact via email)",
+    "固定日期触发": "Fixed date trigger",
+    "立即发送（测试用）": "Send immediately (for testing)",
+    "手动触发（保存后随时发送）": "Manual trigger (send anytime after saving)",
+    "给这封胶囊起个名字": "Give this capsule a title",
+    "写下你想说的话...": "Write what you want to say...",
+    "简单写写你自己——你的名字、你和收件人的故事、你想让对方知道的背景。这些信息会随胶囊一起保存，帮助收件人在未来的某一天更好地理解你的心意。": "Briefly write about yourself — your name, your story with the recipient, the context you want them to know. This is saved with the capsule to help the recipient understand your intent when it arrives.",
+    "如果你有特殊的投递需求——比如希望以某种特定的媒介、仪式或方式送达给对方——在这里描述，我们会通过邮箱与你联系，一起想办法实现。": "If you have a special delivery need — e.g. a particular medium, ceremony, or way of arriving — describe it here; we'll email you to figure it out together.",
+
+    // ===== 通用文本 · 补全 =====
+    "悬停暂停 · 横向滑动": "Hover to pause · slides horizontally"
   };
 
   // 输入框占位符 / 标题等属性翻译
@@ -664,7 +707,12 @@
     "分镜导航": "Storyboard navigation",
     "播放（筹备中）": "Play (in the works)",
     "数据生长树": "Data Growth Tree",
-    "悬停暂停 · 横向滑动": "Hover to pause · slides horizontally"
+    "向下滚动了解更多": "Scroll down to learn more",
+    "上一块展板": "Previous panel",
+    "下一块展板": "Next panel",
+    "展板导航": "Panel navigation",
+    "微信": "WeChat",
+    "公众号": "Official Account"
   };
 
   // 这些容器里的文本是“用户生成内容”，不翻译，避免串改用户留言

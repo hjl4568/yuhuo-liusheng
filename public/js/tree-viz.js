@@ -24,12 +24,17 @@
     return (window.I18N && typeof window.I18N.t === 'function') ? window.I18N.t(s) : s;
   }
 
-  /* ---- 量级判定 ---- */
-  function getEra(maxVal) {
-    if (maxVal < 100) return { ceiling: 100, name: '萌芽期', index: 0 };
-    if (maxVal < 1000) return { ceiling: 1000, name: '生长期', index: 1 };
-    if (maxVal < 10000) return { ceiling: 10000, name: '繁茂期', index: 2 };
-    return { ceiling: 100000, name: '森林期', index: 3 };
+  /* ---- 量级判定（按加权后数值）
+   * 权重：访问=1，登记=10，胶囊=100
+   * ——让"真正创建胶囊"的人，权重远高于"随手访问"；
+   *    "登记意向"是中间层。
+   * 量级：萌芽(0-500) / 生长(500-5k) / 繁茂(5k-50k) / 森林(50k+)
+   */
+  function getEra(weighted) {
+    if (weighted < 500) return { ceiling: 500, name: '萌芽期', index: 0 };
+    if (weighted < 5000) return { ceiling: 5000, name: '生长期', index: 1 };
+    if (weighted < 50000) return { ceiling: 50000, name: '繁茂期', index: 2 };
+    return { ceiling: 500000, name: '森林期', index: 3 };
   }
 
   /* ---- 生长阶段 ---- */
@@ -228,10 +233,12 @@
     var visits = data.totalVisits || 0;
     var regs = (data.usersTotal || 0) + (data.leadsTotal || 0);
     var caps = data.capsulesTotal || 0;
-    var maxVal = Math.max(visits, regs, caps);
 
-    var era = getEra(maxVal);
-    var ratio = maxVal / era.ceiling;
+    // === 加权：访问=1，登记=10，胶囊=100 ===
+    // 真正创建胶囊的人，权重是普通访客的 100 倍
+    var weighted = visits * 1 + regs * 10 + caps * 100;
+    var era = getEra(weighted);
+    var ratio = weighted / era.ceiling;
     var stage = getStage(ratio);
 
     // 种子用于确定性随机
@@ -249,23 +256,28 @@
     var cx = 200, gy = 290;
 
     if (stage.depth === 0) {
-      // 种子阶段
+      // 种子阶段（weighted 太小，连芽都没冒）
       drawSeed(treeGroup, cx, gy, rng);
     } else {
-      // 绘制根
+      // 绘制根（强度按 weighted 在 era 中的占比）
       drawRoots(treeGroup, cx, gy, rng, Math.min(ratio * 2, 1));
 
-      // 计算 trunk 的实际尺寸（受 visits 调制）
-      var visitRatio = visits / era.ceiling;
-      var trunkLen = stage.trunkLen * (0.65 + 0.35 * Math.min(visitRatio, 1));
-      var trunkW = stage.trunkW * (0.65 + 0.35 * Math.min(visitRatio, 1));
+      // 树干：粗细由 visits 决定（独立换算，按对数缩放避免量级悬殊）
+      // log10(1)=0, log10(10)=1, log10(100)=2, log10(1000)=3, log10(10000)=4
+      var visitScore = Math.log10(visits + 1);     // 0..n
+      var visitLevel = Math.min(visitScore / 4, 1); // 4=10000 访问视为满
+      var trunkLen = stage.trunkLen * (0.55 + 0.45 * visitLevel);
+      var trunkW = stage.trunkW * (0.55 + 0.45 * visitLevel);
 
-      // 计算 leaf 和 fruit 数量
-      var regRatio = regs / era.ceiling;
-      var capRatio = caps / era.ceiling;
-      var leafCount = Math.round(stage.baseLeaves * (0.4 + 0.6 * Math.min(regRatio, 1)));
-      var fruitCount = Math.round(stage.baseFruit * (0.3 + 0.7 * Math.min(capRatio, 1)));
-      // 如果有胶囊但 stage 允许果实，至少有 1 颗
+      // 枝叶：数量由 regs 决定
+      var regScore = Math.log10(regs + 1);
+      var regLevel = Math.min(regScore / 3, 1); // 3=1000 登记视为满
+      var leafCount = Math.round(stage.baseLeaves * (0.3 + 0.7 * regLevel));
+
+      // 果实：数量由 caps 决定（线性，胶囊最珍贵所以 1 个也算）
+      var capScore = Math.log10(caps + 1);
+      var capLevel = Math.min(capScore / 2, 1); // 2=100 胶囊视为满
+      var fruitCount = Math.round(stage.baseFruit * (0.3 + 0.7 * capLevel));
       if (caps > 0 && stage.depth >= 2 && fruitCount < 1) fruitCount = 1;
 
       var params = { leafCount: leafCount, fruitCount: fruitCount };
@@ -280,6 +292,12 @@
     setText('ts-regs', regs.toLocaleString(locale));
     setText('ts-caps', caps.toLocaleString(locale));
 
+    // 加权值 + 实际参与度
+    setText('ts-weighted', weighted.toLocaleString(locale));
+    // 实际参与度 = (登记*10 + 胶囊*100) / (加权值)，反映"非纯访问"的占比
+    var engagement = weighted > 0 ? Math.round((regs * 10 + caps * 100) / weighted * 100) : 0;
+    setText('ts-engagement', engagement + '%');
+
     // 更新阶段信息
     var badge = document.getElementById('tree-era-badge');
     if (badge) {
@@ -289,7 +307,7 @@
     setText('tree-stage-name', t(stage.name));
 
     // 量级文字
-    var lower = era.index === 0 ? 0 : [100, 1000, 10000][era.index - 1];
+    var lower = era.index === 0 ? 0 : [500, 5000, 50000][era.index - 1];
     setText('tree-scale-text', t('当前量级：' + lower + ' — ' + era.ceiling));
 
     // 粒子（大树阶段才有）

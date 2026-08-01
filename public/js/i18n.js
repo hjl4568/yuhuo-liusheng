@@ -32,7 +32,9 @@
 
   const SKIP_IDS = window.I18N_SKIP_IDS || [];
 
-  const SKIP_TAGS = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'CODE', 'INPUT', 'TEXTAREA', 'SELECT', 'OPTION']);
+  const SKIP_TAGS = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'CODE']);
+  // 注：INPUT/TEXTAREA/SELECT/OPTION 不再 skip 整个元素——只 skip 其内部 text node（用户输入值）。
+  //       walkAttrs 仍要翻译它们的 placeholder / title / aria-label。
   let lang = (function () { try { return localStorage.getItem(STORE_KEY) || 'zh'; } catch (e) { return 'zh'; } })();
   let applying = false;
 
@@ -72,7 +74,8 @@
       if (el.__i18n_attr_orig[a] === undefined) el.__i18n_attr_orig[a] = v;
       const orig = el.__i18n_attr_orig[a];
       if (lang === 'en') {
-        const tr = ATTR[norm(orig)];
+        // 优先查 attrMap（属性专译），再回退到 zh2en（兼容早期混放）
+        const tr = ATTR[norm(orig)] || MAP[norm(orig)];
         if (tr !== undefined && el.getAttribute(a) !== tr) el.setAttribute(a, tr);
       } else {
         if (el.getAttribute(a) !== orig) el.setAttribute(a, orig);
@@ -205,6 +208,21 @@
   window.I18N = {
     t: function (s) { return (lang === 'en' && MAP[norm(s)]) ? MAP[norm(s)] : s; },
     apply: apply,
-    get lang() { return lang; }
+    setLang: function (l) {
+      if (l !== 'zh' && l !== 'en') return false;
+      if (l === lang) return true;
+      lang = l;
+      try { localStorage.setItem(STORE_KEY, l); } catch (e) {}
+      apply();
+      return true;
+    },
+    get lang() { return lang; },
+    // 调试用：导出字典 key 集合和已知 attr key 集合
+    get knownTextKeys() {
+      return Object.keys(RAW_MAP);
+    },
+    get knownAttrKeys() {
+      return Object.keys(RAW_ATTR);
+    }
   };
 })();
