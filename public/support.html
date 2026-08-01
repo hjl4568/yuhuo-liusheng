@@ -3,111 +3,268 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>支持长夜余火 — 余火·留声</title>
+  <title>支持我们 · 长夜余火</title>
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/nightfire.css">
+  <style>
+    /* support 页独立小补丁（继承 nightfire.css） */
+    body{background:var(--bg, #0a0c14);color:var(--text, #e6dccb);}
+    .sp-wrap{max-width:880px;margin:0 auto;padding:80px 24px 100px;position:relative;z-index:2;}
+    .sp-back{position:fixed;top:18px;left:18px;z-index:40;font-size:13px;color:var(--text-light);text-decoration:none;
+      padding:8px 14px;border-radius:20px;background:rgba(8,10,18,.7);backdrop-filter:blur(10px);
+      border:1px solid var(--border);}
+    .sp-back:hover{color:var(--primary-strong);border-color:var(--primary);}
+
+    .sp-hero{text-align:center;margin-bottom:64px;}
+    .sp-eyebrow{font-size:12px;letter-spacing:6px;color:var(--primary-strong);text-transform:uppercase;margin-bottom:16px;}
+    .sp-h1{font-family:var(--serif);font-size:clamp(36px,7vw,64px);font-weight:700;line-height:1.2;
+      color:var(--primary-strong);margin:0 0 18px;letter-spacing:2px;}
+    .sp-lead{font-size:16px;line-height:1.85;color:var(--text-light);max-width:620px;margin:0 auto;}
+
+    /* 备注框：金色描边，柔光 */
+    .sp-note{margin:48px auto 64px;max-width:680px;padding:22px 26px;border-radius:14px;
+      background:linear-gradient(155deg,rgba(240,179,90,0.08),rgba(217,131,53,0.04));
+      border:1px solid rgba(240,179,90,0.35);position:relative;}
+    .sp-note::before{content:"";position:absolute;left:24px;right:24px;top:0;height:2px;
+      background:linear-gradient(90deg,transparent,var(--primary-strong),transparent);}
+    .sp-note-tag{font-size:11px;letter-spacing:3px;color:var(--primary-strong);margin-bottom:10px;
+      font-family:var(--sans);text-transform:uppercase;}
+    .sp-note-text{font-size:15px;line-height:1.9;color:var(--text);font-family:var(--serif);}
+
+    /* 两个收款方式并排 */
+    .sp-pay-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:8px;}
+    @media (max-width:640px){.sp-pay-grid{grid-template-columns:1fr;}}
+    .sp-pay-card{background:var(--card-solid);border:1px solid var(--border);border-radius:16px;
+      padding:28px 24px;backdrop-filter:blur(10px);text-align:center;position:relative;
+      transition:transform .25s ease, border-color .25s ease, box-shadow .25s ease;}
+    .sp-pay-card:hover{transform:translateY(-4px);border-color:var(--primary);
+      box-shadow:0 8px 28px rgba(240,179,90,0.18);}
+    .sp-pay-icon{width:54px;height:54px;margin:0 auto 14px;border-radius:14px;display:flex;
+      align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;}
+    .sp-pay-icon.wechat{background:linear-gradient(135deg,#07c160,#00a854);}
+    .sp-pay-icon.alipay{background:linear-gradient(135deg,#1677ff,#0958d9);}
+    .sp-pay-name{font-family:var(--serif);font-size:22px;font-weight:600;color:var(--primary-strong);
+      margin-bottom:6px;letter-spacing:1px;}
+    .sp-pay-sub{font-size:12.5px;color:var(--text-light);margin-bottom:18px;letter-spacing:.5px;}
+
+    .sp-qr{width:240px;height:240px;margin:0 auto 18px;background:#fff;border-radius:12px;
+      padding:10px;display:flex;align-items:center;justify-content:center;}
+    .sp-qr img{width:100%;height:100%;object-fit:contain;display:block;}
+
+    .sp-account{font-family:var(--serif);font-size:18px;color:var(--text);letter-spacing:1px;
+      background:rgba(8,10,18,0.45);padding:10px 14px;border-radius:8px;border:1px dashed var(--border);
+      display:inline-block;cursor:pointer;user-select:all;transition:all .2s;}
+    .sp-account:hover{border-color:var(--primary);color:var(--primary-strong);}
+    .sp-copy-hint{font-size:11.5px;color:var(--faint);margin-top:10px;letter-spacing:.5px;}
+    .sp-copy-hint.copied{color:#07c160;}
+
+    .sp-footer{margin-top:80px;padding-top:32px;border-top:1px solid var(--border);text-align:center;
+      font-size:12.5px;color:var(--faint);line-height:1.9;}
+    .sp-footer b{color:var(--text-light);}
+
+    /* 滑动桌板（留言墙） */
+    .sp-ticker{margin-top:64px;background:linear-gradient(155deg,rgba(46,34,20,0.45),rgba(18,16,28,0.55));
+      border:1px solid var(--border);border-radius:18px;padding:22px 0 26px;overflow:hidden;
+      position:relative;}
+    .sp-ticker::before,.sp-ticker::after{content:"";position:absolute;top:0;bottom:0;width:60px;
+      z-index:2;pointer-events:none;}
+    .sp-ticker::before{left:0;background:linear-gradient(90deg,rgba(10,12,20,0.95),transparent);}
+    .sp-ticker::after{right:0;background:linear-gradient(-90deg,rgba(10,12,20,0.95),transparent);}
+    .sp-ticker-head{display:flex;justify-content:space-between;align-items:center;
+      padding:0 28px 14px;font-family:var(--serif);color:var(--primary-strong);font-size:15px;}
+    .sp-ticker-head .ti-tag{font-size:10.5px;letter-spacing:3px;color:var(--primary);
+      font-family:var(--sans);text-transform:uppercase;margin-right:10px;}
+    .sp-ticker-head .ti-hint{font-size:11.5px;color:var(--faint);font-family:var(--sans);}
+    .sp-ticker-track{display:flex;gap:18px;padding:0 28px;
+      animation:spMarquee 60s linear infinite;will-change:transform;}
+    .sp-ticker:hover .sp-ticker-track{animation-play-state:paused;}
+    @keyframes spMarquee{
+      0%{transform:translateX(0);}
+      100%{transform:translateX(-50%);}
+    }
+    .sp-card{flex:0 0 280px;padding:18px 20px;background:rgba(8,10,18,0.55);
+      border:1px solid var(--border);border-radius:12px;transition:border-color .2s ease;}
+    .sp-card:hover{border-color:var(--primary);}
+    .sp-card-msg{font-family:var(--serif);font-size:14.5px;line-height:1.75;color:var(--text);
+      margin-bottom:12px;min-height:48px;word-break:break-word;}
+    .sp-card-msg.empty{color:var(--faint);font-style:italic;}
+    .sp-card-foot{display:flex;justify-content:space-between;align-items:center;
+      font-size:11.5px;color:var(--faint);font-family:var(--sans);}
+    .sp-card-amt{color:var(--primary-strong);font-weight:700;font-family:var(--serif);
+      font-size:14px;letter-spacing:.5px;}
+    .sp-empty{padding:18px 28px;color:var(--faint);font-size:13.5px;font-style:italic;
+      font-family:var(--serif);}
+
+    @media (prefers-reduced-motion:reduce){
+      .sp-ticker-track{animation:none;flex-wrap:wrap;justify-content:center;}
+    }
+  </style>
 </head>
 <body>
-  <div class="app-container">
-    <div class="hero">
-      <img class="hero-mark" src="/brand-mark.svg" alt="长夜余火">
-      <h2>长夜余火</h2>
-      <p style="opacity:.9;font-size:13px;letter-spacing:2px;margin-top:4px;">余火 · 留声</p>
-      <p style="margin-top:8px;">让此刻的声音，抵达未来</p>
+  <a class="sp-back" href="/intro.html">← 返回首页</a>
+
+  <div class="sp-wrap" id="sp-wrap">
+    <!-- ============ 顶部 ============ -->
+    <div class="sp-hero">
+      <div class="sp-eyebrow">支持我们 · SUPPORT</div>
+      <h1 class="sp-h1">让这束火，再多烧一会儿</h1>
+      <p class="sp-lead">我们是一支还在构想阶段的小队伍，没有融资、没有商业化，只靠一个个愿意留下「火苗」的人继续。你愿意支持，多少都好——这是真正让项目活下来的方式。</p>
     </div>
 
-    <div class="page">
-      <div class="card">
-        <div class="card-title">为什么需要你的支持</div>
-        <p style="font-size:14px;color:var(--text-light);line-height:1.95;">
-          长夜余火，是一个让人把"不敢说、来不及说、总有一天要说"的话，安放下来、并在对的时间交还给对的人的地方。<br><br>
-          我们坚持：<b>不是宣发，是交还</b>；不碰财产，只走叙事。现在产品免费使用，我们正处在验证想法的阶段。<br><br>
-          如果你也被这个念头打动，欢迎以<b>自愿赞赏</b>的方式支持我们——用于服务器、存储，以及未来实物交付与线下体验的研发。<b>这并非购买任何商品或服务，不承诺任何对价回报。</b>
-        </p>
-      </div>
+    <!-- ============ 备注框 ============ -->
+    <div class="sp-note">
+      <div class="sp-note-tag">📌 一句实话</div>
+      <div class="sp-note-text">目前仅是<strong>概念设计阶段</strong>，所以捐赠<strong>完全看个人偏好</strong>，我们不承诺任何对价回报；活动群目前还在筹备，<strong>之后会放上去</strong>——我们想让每一步都走扎实，不透支任何一份信任。</div>
+    </div>
 
-      <div class="card" style="text-align:center;">
-        <div class="card-title">扫码支持我们</div>
-        <div style="margin:16px 0;display:flex;justify-content:center;">
-          <div style="position:relative;">
-            <img id="donate-qr" src="/images/donate-qr.png" alt="支持二维码"
-                 style="width:200px;height:200px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,0.04);"
-                 onerror="this.style.display='none';document.getElementById('qr-tip').style.display='flex';">
-            <div id="qr-tip" style="display:none;width:200px;height:200px;border:2px dashed var(--border);border-radius:14px;color:var(--text-light);font-size:12px;align-items:center;justify-content:center;text-align:center;padding:14px;box-sizing:border-box;">
-              收款码待运营者上传<br>（命名为 donate-qr.png 放入 images/）
-            </div>
-          </div>
-        </div>
-        <p style="font-size:13px;color:var(--text-light);">微信 / 支付宝 收款码均可（由运营者提供）</p>
+    <!-- ============ 两种收款方式 ============ -->
+    <div class="sp-pay-grid">
+      <!-- 微信 -->
+      <div class="sp-pay-card">
+        <div class="sp-pay-icon wechat">微</div>
+        <div class="sp-pay-name">微信支付</div>
+        <div class="sp-pay-sub">扫一扫，长按识别二维码</div>
+        <div class="sp-qr"><img src="/images/wechat-qr.png" alt="微信收款二维码 · 微信扫一扫"></div>
+        <div style="font-size:12px;color:var(--faint);font-family:var(--sans);letter-spacing:.5px;">推荐使用微信支付</div>
       </div>
-
-      <div class="card">
-        <div class="card-title">我们的小目标</div>
-        <p style="font-size:13px;color:var(--text-light);margin-bottom:10px;">第一阶段：凑齐一年服务器与存储成本</p>
-        <div style="background:rgba(10,12,20,0.6);border:1px solid var(--border);border-radius:10px;height:14px;overflow:hidden;">
-          <div style="width:18%;height:100%;background:linear-gradient(90deg,var(--primary),var(--primary-dark));box-shadow:0 0 12px var(--glow);"></div>
-        </div>
-        <p style="font-size:12px;color:var(--text-light);margin-top:8px;text-align:right;">¥1,800 / ¥10,000（示例，可改）</p>
-      </div>
-
-      <div class="card">
-        <div class="card-title">留下你的火光（匿名记录）</div>
-        <p style="font-size:13px;color:var(--text-light);line-height:1.8;margin-bottom:12px;">
-          扫码赞赏后，可在这里留下金额与一句话，我们会匿名展示在介绍页的「实时数据」里，让火苗被看见。
-        </p>
-        <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
-          <div style="flex:1;min-width:120px;">
-            <div class="form-label" style="font-size:13px;margin-bottom:6px;">赞赏金额（元）</div>
-            <input id="donate-amount" type="number" min="1" step="0.01" placeholder="如 20" class="form-input">
-          </div>
-          <button id="donate-submit" class="btn btn-primary" style="white-space:nowrap;">记录这一束火光</button>
-        </div>
-        <textarea id="donate-msg" placeholder="想留给团队或世界的一句话（选填，匿名展示）" class="form-textarea" style="margin-top:10px;"></textarea>
-        <div id="donate-result" style="font-size:13px;margin-top:10px;min-height:16px;"></div>
-      </div>
-
-      <div class="card" style="text-align:center;font-size:12px;color:var(--text-light);line-height:1.95;">
-        所有支持均出于自愿，可随时停止。<br>我们不承诺任何对价回报，只把这份心意记在心里。
+      <!-- 支付宝 -->
+      <div class="sp-pay-card">
+        <div class="sp-pay-icon alipay">支</div>
+        <div class="sp-pay-name">支付宝</div>
+        <div class="sp-pay-sub">账号转账，备注留个称呼方便致谢</div>
+        <div class="sp-account" id="alipay-acct" data-copy="935382253@qq.com">935382253@qq.com</div>
+        <div class="sp-copy-hint" id="copy-hint">点击账号即可复制</div>
       </div>
     </div>
 
-    <div class="bottom-nav">
-      <a href="/app.html">
-        <span class="nav-icon">🏠</span>
-        首页
-      </a>
-      <a href="/create.html">
-        <span class="nav-icon">✏️</span>
-        创建
-      </a>
-      <a href="/capsules.html">
-        <span class="nav-icon">📦</span>
-        我的胶囊
-      </a>
-      <a href="/profile.html">
-        <span class="nav-icon">👤</span>
-        账户
-      </a>
+    <!-- ============ 滑动桌板：实时留言 ============ -->
+    <div class="sp-ticker">
+      <div class="sp-ticker-head">
+        <div><span class="ti-tag">留言墙</span>那些留下火苗的人</div>
+        <div class="ti-hint">悬停暂停滚动</div>
+      </div>
+      <div class="sp-ticker-track" id="ticker-track">
+        <div class="sp-empty" id="ticker-loading">正在加载留言…</div>
+      </div>
+    </div>
+
+    <!-- ============ 收尾 ============ -->
+    <div class="sp-footer">
+      <b>长夜余火 · 余火留声</b><br>
+      每一次打赏都会出现在「实时数据」板块，<br>
+      我们也会在合适的时候，以你的名义为你认识的某个人写下一封胶囊。
     </div>
   </div>
 
+  <!-- 星空 + 余火粒子（复用 intro 的视觉语言） -->
   <script>
-    const dBtn = document.getElementById('donate-submit');
-    dBtn && dBtn.addEventListener('click', async () => {
-      const amt = parseFloat(document.getElementById('donate-amount').value);
-      const msg = document.getElementById('donate-msg').value.trim();
-      const r = document.getElementById('donate-result');
-      if (!amt || amt <= 0){ r.style.color = 'var(--danger)'; r.textContent = '请填写大于 0 的金额'; return; }
-      r.style.color = 'var(--text-light)'; r.textContent = '记录中…';
-      try {
-        const res = await fetch('/api/donors', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ amount: amt, message: msg }) });
-        if (res.ok){ r.style.color = 'var(--success)'; r.textContent = '已匿名记录，谢谢你的火光 🔥'; document.getElementById('donate-amount').value = ''; document.getElementById('donate-msg').value = ''; }
-        else throw new Error('fail');
-      } catch (e) {
-        r.style.color = 'var(--warning)'; r.textContent = '记录接口暂不可用（需后端部署），但你的心意已收到 ❤';
+    (function(){
+      const stars=document.createElement('div');
+      stars.className='nf-stars';
+      stars.id='stars';
+      document.body.appendChild(stars);
+      for(let i=0;i<60;i++){
+        const s=document.createElement('span');
+        const size=Math.random()*2+0.5;
+        s.style.cssText=`position:absolute;left:${Math.random()*100}%;top:${Math.random()*100}%;width:${size}px;height:${size}px;border-radius:50%;background:#fff;opacity:${Math.random()*0.5+0.15};`;
+        stars.appendChild(s);
       }
-    });
+      for(let i=0;i<10;i++){
+        const e=document.createElement('span');
+        e.className='nf-ember';
+        e.style.left=Math.random()*100+'vw';
+        const dur=10+Math.random()*10;
+        e.style.animationDuration=dur+'s';
+        e.style.animationDelay=-Math.random()*dur+'s';
+        const sc=0.6+Math.random()*1.2;
+        e.style.transform=`scale(${sc})`;
+        e.style.opacity=0.4+Math.random()*0.4;
+        document.body.appendChild(e);
+      }
+    })();
+
+    // 复制支付宝账号
+    (function(){
+      const el=document.getElementById('alipay-acct');
+      const hint=document.getElementById('copy-hint');
+      if(!el)return;
+      el.addEventListener('click',function(){
+        const txt=el.getAttribute('data-copy')||el.textContent.trim();
+        const done=function(){
+          hint.textContent='已复制 ✓ 去支付宝转账吧';
+          hint.classList.add('copied');
+          setTimeout(function(){hint.textContent='点击账号即可复制';hint.classList.remove('copied');},2400);
+        };
+        if(navigator.clipboard && navigator.clipboard.writeText){
+          navigator.clipboard.writeText(txt).then(done).catch(()=>{
+            // fallback
+            const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
+            document.body.appendChild(ta);ta.select();
+            try{document.execCommand('copy');done();}catch(e){hint.textContent='请手动复制：'+txt;}
+            document.body.removeChild(ta);
+          });
+        }else{
+          const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
+          document.body.appendChild(ta);ta.select();
+          try{document.execCommand('copy');done();}catch(e){hint.textContent='请手动复制：'+txt;}
+          document.body.removeChild(ta);
+        }
+      });
+    })();
+
+    // 加载最新留言（仅展示留了言的捐赠者；空留言的人不上墙）
+    function esc(s){return (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+    function fmt(n){return (n==null?0:n).toLocaleString('zh-CN');}
+    function timeAgo(iso){
+      if(!iso)return '';
+      const d=new Date(iso);if(isNaN(d.getTime()))return (iso+'').slice(5,10);
+      const diff=Date.now()-d.getTime();
+      const m=Math.floor(diff/60000);
+      if(m<1)return '刚刚';
+      if(m<60)return m+'分钟前';
+      const h=Math.floor(m/60);
+      if(h<24)return h+'小时前';
+      const day=Math.floor(h/24);
+      if(day<30)return day+'天前';
+      return (iso+'').slice(0,10);
+    }
+
+    function buildCard(x){
+      const div=document.createElement('div');
+      div.className='sp-card';
+      const amt=Math.round(Number(x.amount)||0);
+      const msg=esc((x.message||'').toString().trim());
+      div.innerHTML=
+        '<div class="sp-card-msg'+(msg?'':' empty')+'">'+(msg||'（未留言，但火苗已收到）')+'</div>'+
+        '<div class="sp-card-foot"><span class="sp-card-amt">¥ '+fmt(amt)+'</span><span>'+timeAgo(x.created_at)+'</span></div>';
+      return div;
+    }
+
+    function renderTicker(donors){
+      const track=document.getElementById('ticker-track');
+      if(!track)return;
+      // 仅展示留了言的；如全空，则显示默认占位
+      const withMsg=(donors||[]).filter(x=>(x.message||'').toString().trim().length>0);
+      track.innerHTML='';
+      if(!withMsg.length){
+        const div=document.createElement('div');
+        div.className='sp-empty';
+        div.textContent='还没有人留下赞赏，期待你的第一束火光 🔥';
+        track.appendChild(div);
+        return;
+      }
+      // 内容复制一份做无缝循环
+      const all=[].concat(withMsg,withMsg);
+      all.forEach(x=>track.appendChild(buildCard(x)));
+    }
+
+    function loadTicker(){
+      fetch('/api/stats/public').then(r=>r.json()).then(d=>{
+        renderTicker(d.recentDonors||[]);
+      }).catch(()=>{});
+    }
+    loadTicker();
+    setInterval(loadTicker, 15000);
   </script>
-  <script src="/js/i18n-data.js"></script>
-  <script src="/js/i18n.js"></script>
 </body>
 </html>

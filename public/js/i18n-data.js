@@ -663,11 +663,12 @@
     "下一张": "Next",
     "分镜导航": "Storyboard navigation",
     "播放（筹备中）": "Play (in the works)",
-    "数据生长树": "Data Growth Tree"
+    "数据生长树": "Data Growth Tree",
+    "悬停暂停 · 横向滑动": "Hover to pause · slides horizontally"
   };
 
   // 这些容器里的文本是“用户生成内容”，不翻译，避免串改用户留言
-  const skipIds = ["donor-list", "lead-msg", "compliance-doc"];
+  const skipIds = ["donor-list", "lead-msg", "compliance-doc", "sp-wrap", "ticker-track"];
 
   window.I18N_MAP = zh2en;
   window.I18N_ATTR = attrMap;

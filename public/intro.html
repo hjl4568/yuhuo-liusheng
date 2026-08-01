@@ -535,9 +535,12 @@
           <div class="nf-chart-box"><h4>登记内容类型</h4><canvas id="chart-type" height="200"></canvas></div>
           <div class="nf-chart-box"><h4>近 7 日访问</h4><canvas id="chart-visit" height="200"></canvas></div>
         </div>
-        <div class="nf-donor-feed">
-          <h4>最新赞赏（匿名）</h4>
-          <div id="donor-list"><div class="nf-empty">还没有人留下赞赏，期待你的第一束火光 🔥</div></div>
+        <div class="nf-ticker">
+          <div class="nf-ticker-head">
+            <h4>最新赞赏（匿名）</h4>
+            <span class="ti-hint">悬停暂停 · 横向滑动</span>
+          </div>
+          <div class="nf-ticker-track" id="donor-list"><div class="nf-empty">还没有人留下赞赏，期待你的第一束火光 🔥</div></div>
         </div>
         <p class="nf-data-note" id="data-note">数据每 10 秒自动刷新。</p>
       </div>
@@ -613,11 +616,13 @@
       if (!d.recentDonors || !d.recentDonors.length){
         list.innerHTML = '<div class="nf-empty">还没有人留下赞赏，期待你的第一束火光 🔥</div>';
       } else {
-        list.innerHTML = d.recentDonors.map(x => {
+        const cards = d.recentDonors.map(x => {
           const t = (x.created_at || '').replace('T',' ').slice(0, 16);
-          const msg = x.message ? esc(x.message) : '默默支持了火苗';
-          return '<div class="nf-donor"><span class="amt">¥' + fmt(Math.round(x.amount)) + '</span><span class="msg">' + msg + '</span><span class="time">' + t + '</span></div>';
+          const msg = x.message ? esc(x.message) : '（未留言，但火苗已收到）';
+          return '<div class="nf-tcard"><div class="nf-tcard-msg' + (x.message ? '' : ' empty') + '">' + msg + '</div><div class="nf-tcard-foot"><span class="nf-tcard-amt">¥' + fmt(Math.round(x.amount)) + '</span><span>' + t + '</span></div></div>';
         }).join('');
+        // 复制一份做无缝循环
+        list.innerHTML = cards + cards;
       }
       const labels = Object.keys(d.byType || {}), vals = labels.map(k => d.byType[k]);
       if (typeChart){ typeChart.data.labels = labels; typeChart.data.datasets[0].data = vals; typeChart.update(); }
