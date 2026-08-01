@@ -25,10 +25,11 @@
 
   <div class="nf-topbar">
     <span class="logo"><img class="nf-logo-mark" src="/favicon.svg" alt="">长夜余火<small>余火 · 留声</small></span>
-    <nav>
-      <a href="/app.html">进入应用</a>
-      <a href="/support.html">支持我们</a>
-    </nav>
+      <nav>
+        <a href="/app.html">进入应用</a>
+        <a href="/join.html">加入我们</a>
+        <a href="/support.html">支持我们</a>
+      </nav>
   </div>
 
   <header class="nf-hero">
@@ -87,7 +88,7 @@
         <div class="nf-quotes">
           <div class="nf-quote">我不是在做宣发，是把它交还给目标对象，这里的重点是<em>交还，是传递</em>。
             <span class="who">— 项目构想</span></div>
-          <div class="nf-quote">当我的客户出现死亡的迹象或结果，触发这个条件，我就可以去执行我的动作——<em>向指定的目标对象发送一段讯息</em>。
+          <div class="nf-quote">当我在意的人不再出现于我的世界——我们称之为「存在性的退场」，触发这个条件，我就可以去执行我的动作——<em>向指定的目标对象发送一段讯息</em>。
             <span class="who">— 项目构想</span></div>
           <div class="nf-quote">对现实感的强化：<em>活在当下，不问前生，不求来世</em>。
             <span class="who">— 项目构想</span></div>
@@ -114,26 +115,33 @@
 
         <div class="nf-founder reveal">
           <div class="nf-fd-avatar">
-            <!-- 想换成真实照片：把照片命名为 founder.jpg 放进 public/images/，并取消下一行注释 -->
-            <!-- <img src="/images/founder.jpg" alt="创始人照片"> -->
-            <img src="/brand-mark.svg" alt="长夜余火 标志">
+            <img src="/images/founder.jpg" alt="大魔王">
             <span class="nf-fd-ring" aria-hidden="true"></span>
           </div>
           <div class="nf-fd-body">
-            <div class="nf-fd-name">长夜余火 · 主理人</div>
-            <div class="nf-fd-role">产品构想 / 设计 / 运营</div>
+            <div class="nf-fd-name">大魔王</div>
+            <div class="nf-fd-role">产品构想 · 设计 · 一人团队</div>
             <p class="nf-fd-bio">有些话、有些物，我们想留给未来的某个人，却苦于没有一个稳妥、克制、不打扰的方式。于是我把它从想法做成了现在的样子——一个人，从头到尾。</p>
             <p class="nf-fd-bio">我崇尚「活在当下，不问前生，不求来世」。余火想做的，只是把此刻的声音，安静地交还到对的人手里。如果你愿意，我们可以一起把它做得更稳、更好。</p>
             <div class="nf-fd-contact">
-              <a class="nf-fd-link" href="mailto:changyeyuhuo2026@163.com">
+              <a class="nf-fd-link" href="mailto:935382253@qq.com">
                 <svg class="nf-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
-                写信给我
+                邮箱 · 935382253@qq.com
               </a>
+              <span class="nf-fd-link" title="微信">
+                <svg class="nf-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.5A8 8 0 1 1 21 12z"/><path d="M8.5 11.5v.01M12 11.5v.01M15.5 11.5v.01"/></svg>
+                微信 · Transteria
+              </span>
+              <span class="nf-fd-link" title="公众号">
+                <svg class="nf-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l18-8-8 18-2-8z"/><path d="M3 11l8-2"/></svg>
+                公众号 · 开戎界域（微信搜索）
+              </span>
               <a class="nf-fd-link" href="/support.html">
                 <svg class="nf-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-4.5-9.5-9A4.8 4.8 0 0 1 12 6a4.8 4.8 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg>
                 支持我们
               </a>
             </div>
+            <a href="/join.html" class="nf-fd-cta">一起把它做下去 ›</a>
           </div>
         </div>
       </div>
@@ -146,36 +154,48 @@
         <h2 class="nf-title">六个核心设计</h2>
         <p class="nf-lead">不是功能清单，而是我们对"把话说出去、把物交还回去"这件事的全部坚持。</p>
       </div>
-      <div class="nf-design-grid">
-        <div class="nf-design reveal"><i class="di-shine"></i>
-          <div class="di-no">①</div>
-          <div class="di-title">表达与交还，不是信托</div>
-          <div class="di-body">不托管财产，只托管一段表达。我们的全部价值，是"把话说出去、把物交还回去"。</div>
+      <div class="nf-board" id="designBoard" aria-roledescription="展板轮播">
+        <div class="nf-board-stage">
+          <button type="button" class="nf-board-nav nf-board-prev" id="boardPrev" aria-label="上一块展板">‹</button>
+          <div class="nf-board-viewport">
+            <div class="nf-board-track" id="boardTrack">
+              <article class="nf-board-slide nf-design"><i class="di-shine"></i>
+                <div class="di-no">①</div>
+                <div class="di-title">表达与交还，不是信托</div>
+                <div class="di-body">不托管财产，只托管一段表达。我们的全部价值，是"把话说出去、把物交还回去"。</div>
+              </article>
+              <article class="nf-board-slide nf-design"><i class="di-shine"></i>
+                <div class="di-no">②</div>
+                <div class="di-title">主动送达，像快递公司</div>
+                <div class="di-body">是我们把内容发给对方，而不是对方来领。从根源规避冒领、诈骗与伦理风险——重点永远是"交还"，不是"宣发"。</div>
+              </article>
+              <article class="nf-board-slide nf-design"><i class="di-shine"></i>
+                <div class="di-no">③</div>
+                <div class="di-title">存在性触发 + 替补执行链</div>
+                <div class="di-body">以「一个人不再出现在你的世界里」作为终极发令枪——我们称之为存在性的退场；亲友、医生、法医察觉后可作替补执行，发送前多方验证，绝不凭「被打开」就发。</div>
+              </article>
+              <article class="nf-board-slide nf-design"><i class="di-shine"></i>
+                <div class="di-no">④</div>
+                <div class="di-title">纸与物的记忆价值</div>
+                <div class="di-body">纸有线性、平面、弯曲、折叠的回忆；一件轻物，承载说不清的重量。这也是未来"实物交付"的情感内核与收费依据。</div>
+              </article>
+              <article class="nf-board-slide nf-design"><i class="di-shine"></i>
+                <div class="di-no">⑤</div>
+                <div class="di-title">定期陪伴：常更常新</div>
+                <div class="di-body">推荐并提醒你定期更新内容；临近到期，提醒频率逐年递增，避免遗忘，也避免家庭矛盾。</div>
+              </article>
+              <article class="nf-board-slide nf-design"><i class="di-shine"></i>
+                <div class="di-no">⑥</div>
+                <div class="di-title">匿名公开与改编</div>
+                <div class="di-body">经你授权，内容可匿名用于公益陈列；也鼓励改编成动漫、小说、电影，收益分配写进合同。</div>
+              </article>
+            </div>
+          </div>
+          <button type="button" class="nf-board-nav nf-board-next" id="boardNext" aria-label="下一块展板">›</button>
         </div>
-        <div class="nf-design reveal"><i class="di-shine"></i>
-          <div class="di-no">②</div>
-          <div class="di-title">主动送达，像快递公司</div>
-          <div class="di-body">是我们把内容发给对方，而不是对方来领。从根源规避冒领、诈骗与伦理风险——重点永远是"交还"，不是"宣发"。</div>
-        </div>
-        <div class="nf-design reveal"><i class="di-shine"></i>
-          <div class="di-no">③</div>
-          <div class="di-title">死亡触发 + 替补执行链</div>
-          <div class="di-body">以"客户离世"作为终极发令枪；亲友、医生、法医发现后可作替补执行，发送前多方验证，绝不凭"被打开"就发。</div>
-        </div>
-        <div class="nf-design reveal"><i class="di-shine"></i>
-          <div class="di-no">④</div>
-          <div class="di-title">纸与物的记忆价值</div>
-          <div class="di-body">纸有线性、平面、弯曲、折叠的回忆；一件轻物，承载说不清的重量。这也是未来"实物交付"的情感内核与收费依据。</div>
-        </div>
-        <div class="nf-design reveal"><i class="di-shine"></i>
-          <div class="di-no">⑤</div>
-          <div class="di-title">长期陪伴：每 5 年更新</div>
-          <div class="di-body">推荐并提醒定期更新内容；临近到期，提醒频率逐年递增，避免遗忘，也避免家庭矛盾。</div>
-        </div>
-        <div class="nf-design reveal"><i class="di-shine"></i>
-          <div class="di-no">⑥</div>
-          <div class="di-title">匿名公开与改编</div>
-          <div class="di-body">经你授权，内容可匿名用于公益陈列；也鼓励改编成动漫、小说、电影，收益分配写进合同。</div>
+        <div class="nf-board-foot">
+          <div class="nf-board-dots" id="boardDots" role="tablist" aria-label="展板导航"></div>
+          <div class="nf-board-count"><span id="boardCur">1</span><span class="nf-board-sep">/</span><span id="boardTotal">6</span></div>
         </div>
       </div>
     </section>
@@ -185,31 +205,29 @@
       <div class="reveal">
         <div class="nf-eyebrow">产品愿景 · ROADMAP</div>
         <h2 class="nf-title">产品愿景时间线</h2>
-        <p class="nf-lead">我们不想一次做满，而想沿着"轻量化、走叙事"的路线，一步步把"用现在设定未来"做实。下面是从此刻到远期的五段路。</p>
+        <p class="nf-lead">我们不想一次做满，而想沿着"轻量化、走叙事"的路线，一步步把"用现在设定未来"做实。下面是从此刻到一两年试水的三段路。</p>
       </div>
       <div class="nf-timeline">
         <div class="nf-tl-item reveal">
           <div class="nf-tl-dot"></div>
-          <div class="nf-tl-stage">阶段一 · 此刻（MVP 试水）</div>
-          <h3 class="nf-tl-head">电子内容免费，用现在设定未来</h3>
+          <div class="nf-tl-stage">阶段一 · 此刻（0–3 个月，MVP 试水）</div>
+          <h3 class="nf-tl-head">文字 + 小音频，用现在设定未来</h3>
           <div class="nf-tl-body">
-            文字、录音、影像——你设定未来的时刻和收件人，到了那一刻，我们替你<b>主动送达</b>到对的人手里。
-            我们主张用简单普通的媒介留存心意，<em>不铺张</em>。此阶段以自愿赞赏验证付费意愿——出于自愿，不承诺对价。
+            轻量内容（文字、小体积录音）免费托管；你设定未来的时刻和收件人，到了那一刻，我们替你主动送达到对的人手里。我们主张用简单普通的媒介留存心意，不铺张。此阶段以自愿赞赏验证意愿——出于自愿，不承诺对价。
           </div>
           <div>
-            <span class="nf-tl-tag">邮件/短信主动送达</span>
-            <span class="nf-tl-tag">轻量化内容服务</span>
+            <span class="nf-tl-tag">文字 / 小音频</span>
+            <span class="nf-tl-tag">主动送达</span>
             <span class="nf-tl-tag">自愿赞赏试水</span>
           </div>
         </div>
 
         <div class="nf-tl-item reveal">
           <div class="nf-tl-dot"></div>
-          <div class="nf-tl-stage">阶段二 · 媒介回归（实物交付）</div>
+          <div class="nf-tl-stage">阶段二 · 半年内（轻量实物交付）</div>
           <h3 class="nf-tl-head">纸与物的记忆价值，是收费的依据</h3>
           <div class="nf-tl-body">
-            纸有<em>线性、平面、弯曲、折叠</em>的回忆；一件轻物，承载说不清的重量。纸与物的回归，是"实物交付"的情感内核，也是合理的收费依据。
-            实物交付走具备资质的民营合作方或 EMS，<b>规避邮政专营</b>；我们不碰重资产，只做轻量寄递。
+            纸有线性、平面、弯曲、折叠的回忆；一件轻物，承载说不清的重量。手写信件、随身小物件走具备资质的民营合作方或 EMS 交付，规避邮政专营；我们不碰重资产，只做轻量寄递。
           </div>
           <div>
             <span class="nf-tl-tag">手写信件</span>
@@ -220,49 +238,19 @@
 
         <div class="nf-tl-item reveal">
           <div class="nf-tl-dot"></div>
-          <div class="nf-tl-stage">阶段三 · 长期陪伴（周期运营）</div>
-          <h3 class="nf-tl-head">每 5 年更新，提醒越来越密</h3>
+          <div class="nf-tl-stage">阶段三 · 一到两年（试水与合规）</div>
+          <h3 class="nf-tl-head">把「交还」做稳、做规范</h3>
           <div class="nf-tl-body">
-            默认<em>每 5 年</em>一个周期提醒你更新；临近到期，频率逐年递增，直到每月、每周——你不会"失忆"到处理不了，也避免家庭矛盾。
-            同时建立<em>安全池 / 敏感池</em>严格隔离，配套规范的用户手册。
+            临近到期递增提醒、安全池 / 敏感池隔离、用户手册规范；并对接 e签宝 等合规电子签名，让每一份交还都有据可依。这一步是试水期的目标，不是终点。
           </div>
           <div>
-            <span class="nf-tl-tag">5年更新周期</span>
-            <span class="nf-tl-tag">到期递增提醒</span>
+            <span class="nf-tl-tag">周期提醒</span>
             <span class="nf-tl-tag">内容池隔离</span>
+            <span class="nf-tl-tag">合规电子签</span>
           </div>
         </div>
 
-        <div class="nf-tl-item reveal">
-          <div class="nf-tl-dot"></div>
-          <div class="nf-tl-stage">阶段四 · 价值放大（公开与改编）</div>
-          <h3 class="nf-tl-head">匿名公开 + 改编，让故事不止昙花一现</h3>
-          <div class="nf-tl-body">
-            经你授权，内容可匿名用于<em>公益陈列</em>——你个人并不渺小，这些故事值得被更多人看见。
-            我们也鼓励改编成动漫、小说、电影；收益分配（给对象 / 捐公益 / 留平台）<b>写进合同</b>。
-          </div>
-          <div>
-            <span class="nf-tl-tag">匿名公益陈列</span>
-            <span class="nf-tl-tag">改编授权</span>
-            <span class="nf-tl-tag">收益分成进合同</span>
-          </div>
-        </div>
-
-        <div class="nf-tl-item reveal">
-          <div class="nf-tl-dot"></div>
-          <div class="nf-tl-stage">阶段五 · 社会网络（远期）</div>
-          <h3 class="nf-tl-head">志愿者、展馆与跨界共生</h3>
-          <div class="nf-tl-body">
-            建立<em>志愿者公益配送网络</em>（认证证书 + 适度补贴）；办脱口秀式倾诉舞台；与养老院 / 临终关怀机构做 B 端合作；
-            并和法律、编导、出版、媒体跨界协作，办展览、办书展、做公共演讲。
-          </div>
-          <div>
-            <span class="nf-tl-tag">志愿者网络</span>
-            <span class="nf-tl-tag">公益展馆</span>
-            <span class="nf-tl-tag">临终关怀 B 端</span>
-            <span class="nf-tl-tag">跨界合作</span>
-          </div>
-        </div>
+        <p class="nf-tl-note">更远的可能（公开陈列、跨界合作等），我们边走边看，不画大饼——先把眼前这一程走稳。</p>
       </div>
     </section>
 
@@ -340,14 +328,14 @@
             <span class="nf-tc-more">了解合规方案 ›</span>
           </a>
 
-          <div class="nf-trust-card">
+          <a class="nf-trust-card" href="https://github.com/hjl4568/yuhuo-liusheng" target="_blank" rel="noopener">
             <span class="nf-tc-ico">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 8l-4 4 4 4"/><path d="M15 8l4 4-4 4"/></svg>
             </span>
             <div class="nf-tc-title">代码开源</div>
-            <div class="nf-tc-body">核心代码公开可查，欢迎审计，安全不靠「黑箱」。</div>
-            <span class="nf-tc-more">公开可查</span>
-          </div>
+            <div class="nf-tc-body">核心代码已在 GitHub 开源，欢迎审计，安全不靠「黑箱」。</div>
+            <span class="nf-tc-more">在 GitHub 查看 ›</span>
+          </a>
 
           <div class="nf-trust-card">
             <span class="nf-tc-ico">
@@ -380,15 +368,24 @@
           <label>邮箱</label>
           <input type="email" id="email" placeholder="用于发送确认与体验邀请" maxlength="80">
 
+          <label>代表谁登记？</label>
+          <div class="nf-pill-row">
+            <label class="nf-chk"><input type="radio" name="entity" value="个人" checked> 个人</label>
+            <label class="nf-chk"><input type="radio" name="entity" value="一群人"> 一群人</label>
+            <label class="nf-chk"><input type="radio" name="entity" value="团体"> 团体</label>
+            <label class="nf-chk"><input type="radio" name="entity" value="机构"> 机构</label>
+          </div>
+
           <label>你最想留下哪类内容？（可多选）</label>
           <div class="nf-pill-row">
             <label class="nf-chk"><input type="checkbox" name="ctype" value="文字"> 文字</label>
-            <label class="nf-chk"><input type="checkbox" name="ctype" value="录音"> 录音</label>
-            <label class="nf-chk"><input type="checkbox" name="ctype" value="影像/视频"> 影像/视频</label>
-            <label class="nf-chk"><input type="checkbox" name="ctype" value="照片"> 照片</label>
-            <label class="nf-chk"><input type="checkbox" name="ctype" value="实物信件或物件"> 实物信件/物件</label>
+            <label class="nf-chk"><input type="checkbox" name="ctype" value="小音频"> 小音频（录音）</label>
+            <label class="nf-chk"><input type="checkbox" name="ctype" value="照片"> 照片（轻量）</label>
+            <label class="nf-chk"><input type="checkbox" name="ctype" value="影像/视频"> 影像/视频（大体积走邮箱）</label>
+            <label class="nf-chk"><input type="checkbox" name="ctype" value="实物信件或物件"> 实物信件/物件（走邮箱）</label>
             <label class="nf-chk"><input type="checkbox" name="ctype" value="其他"> 其他</label>
           </div>
+          <p class="nf-form-note">目前 MVP 支持文字 + 小音频上传；大体积视频、纸质/实物物品请通过项目邮箱 changyeyuhuo2026@163.com 联系我们。</p>
 
           <label>是否愿意参与早期免费体验？</label>
           <div class="nf-pill-row">
@@ -544,6 +541,55 @@
       } else { start(); }
     })();
 
+    // 核心设计 · 展板轮播（上一块/下一块 + 圆点 + 键盘 + 触摸）
+    (function () {
+      const board = document.getElementById('designBoard');
+      if (!board) return;
+      const track = document.getElementById('boardTrack');
+      const slides = Array.from(track.children);
+      const total = slides.length;
+      if (!total) return;
+      const dotsWrap = document.getElementById('boardDots');
+      const curEl = document.getElementById('boardCur');
+      const prev = document.getElementById('boardPrev');
+      const next = document.getElementById('boardNext');
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let index = 0;
+
+      slides.forEach((s, i) => {
+        const d = document.createElement('button');
+        d.type = 'button';
+        d.className = 'nf-board-dot' + (i === 0 ? ' active' : '');
+        d.setAttribute('role', 'tab');
+        d.setAttribute('aria-label', '第 ' + (i + 1) + ' 块展板');
+        d.addEventListener('click', () => go(i));
+        dotsWrap.appendChild(d);
+      });
+      document.getElementById('boardTotal').textContent = total;
+
+      function go(i) {
+        index = (i + total) % total;
+        if (reduce) track.classList.add('no-anim');
+        track.style.transform = 'translateX(' + (-index * 100) + '%)';
+        if (reduce) { void track.offsetWidth; track.classList.remove('no-anim'); }
+        curEl.textContent = index + 1;
+        Array.from(dotsWrap.children).forEach((d, k) => d.classList.toggle('active', k === index));
+      }
+      prev.addEventListener('click', () => go(index - 1));
+      next.addEventListener('click', () => go(index + 1));
+      board.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') { go(index - 1); e.preventDefault(); }
+        else if (e.key === 'ArrowRight') { go(index + 1); e.preventDefault(); }
+      });
+      let sx = 0, dx = 0, touching = false;
+      track.addEventListener('touchstart', (e) => { sx = e.touches[0].clientX; touching = true; }, { passive: true });
+      track.addEventListener('touchmove', (e) => { if (touching) dx = e.touches[0].clientX - sx; }, { passive: true });
+      track.addEventListener('touchend', () => {
+        if (touching && Math.abs(dx) > 40) go(index + (dx < 0 ? 1 : -1));
+        touching = false; dx = 0;
+      });
+    })();
+
     // 滚动揭示
     (function () {
       const els = document.querySelectorAll('.reveal');
@@ -573,6 +619,7 @@
       msg.textContent = '提交中…';
       const ctypes = Array.from(document.querySelectorAll('input[name=ctype]:checked')).map(c => c.value);
       const early = document.querySelector('input[name=early]:checked')?.value || '0';
+      const entity = document.querySelector('input[name=entity]:checked')?.value || '个人';
       const payload = {
         name: document.getElementById('name').value,
         phone: document.getElementById('phone').value,
@@ -580,6 +627,7 @@
         content_types: ctypes.join('、'),
         want_early: early === '1' ? '愿意' : '先了解',
         message: document.getElementById('message').value,
+        entity_type: entity,
       };
       if (!payload.name.trim() && !payload.phone.trim() && !payload.email.trim()) {
         msg.className = 'nf-lead-msg err';
@@ -619,6 +667,7 @@
           body: JSON.stringify({
             name: payload.name, phone: payload.phone, email: payload.email,
             content_types: ctypes, want_early: early === '1', message: payload.message, source: 'intro',
+            entity_type: entity,
           }),
         });
         if (res.ok) {
@@ -635,6 +684,7 @@
           '称呼：' + (payload.name || '（未填）'),
           '手机：' + (payload.phone || '（未填）'),
           '邮箱：' + (payload.email || '（未填）'),
+          '代表对象：' + entity,
           '想留下的内容：' + (ctypes.join('、') || '（未选）'),
           '是否愿意早期体验：' + payload.want_early,
           '留言：' + (payload.message || '（无）'),

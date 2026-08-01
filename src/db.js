@@ -98,6 +98,7 @@ function init() {
       want_early INTEGER DEFAULT 0,
       message TEXT DEFAULT '',
       source TEXT DEFAULT '',
+      entity_type TEXT DEFAULT '',
       ip_address TEXT DEFAULT '',
       created_at TEXT DEFAULT (datetime('now'))
     );
@@ -126,6 +127,12 @@ function init() {
     db.exec('ALTER TABLE capsules ADD COLUMN view_token TEXT DEFAULT \'\'');
   } catch (e) {
     // 列已存在则忽略（SQLite 对重复列报错）
+  }
+  // 意向登记：代表对象（个人/一群人/团体/机构）
+  try {
+    db.exec('ALTER TABLE leads ADD COLUMN entity_type TEXT DEFAULT \'\'');
+  } catch (e) {
+    // 列已存在则忽略
   }
   // 回填历史数据：为没有 view_token 的胶囊生成随机令牌
   db.prepare(`UPDATE capsules SET view_token = lower(hex(randomblob(16))) WHERE view_token IS NULL OR view_token = ''`).run();

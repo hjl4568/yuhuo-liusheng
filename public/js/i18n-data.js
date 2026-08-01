@@ -61,6 +61,8 @@
     "主动送达，像快递公司": "Active Delivery, Like a Courier",
     "是我们把内容发给对方，而不是对方来领。从根源规避冒领、诈骗与伦理风险——重点永远是“交还”，不是“宣发”。": "We send content to the recipient, not the other way around — eliminating impersonation, fraud, and ethical risk at the root. The focus is always “return,” never “promotion.”",
     "死亡触发 + 替补执行链": "Death Trigger + Backup Execution Chain",
+    "存在性触发 + 替补执行链": "Existential Trigger + Backup Execution Chain",
+    "以「一个人不再出现在你的世界里」作为终极发令枪——我们称之为存在性的退场；亲友、医生、法医察觉后可作替补执行，发送前多方验证，绝不凭「被打开」就发。": "A person's no-longer-being-in-your-world is the ultimate starting gun — what we call the exit of presence; family, doctors, or coroners who notice may act as backup executors, with multi-party verification before sending — never fired merely because something was 'opened.'",
     "以“客户离世”作为终极发令枪；亲友、医生、法医发现后可作替补执行，发送前多方验证，绝不凭“被打开”就发。": "A client's passing is the ultimate starting gun; family, doctors, or coroners may act as backup executors, with multi-party verification before sending — never fired merely because something was “opened.”",
     "纸与物的记忆价值": "The Memory Value of Paper & Objects",
     "纸有线性、平面、弯曲、折叠的回忆；一件轻物，承载说不清的重量。这也是未来“实物交付”的情感内核与收费依据。": "Paper holds linear, flat, curved, folded memories; a small object carries indescribable weight. This is also the emotional core — and the pricing basis — of future physical delivery.",
@@ -252,6 +254,7 @@
     "我不是在做宣发，是把它交还给目标对象，这里的重点是": "I'm not promoting; I'm returning it to the intended recipient. The point is",
     "交还，是传递": "return, is delivery",
     "当我的客户出现死亡的迹象或结果，触发这个条件，我就可以去执行我的动作——": "When my client shows signs or confirmation of death, this condition triggers, and I can act —",
+    "当我在意的人不再出现于我的世界——我们称之为「存在性的退场」，触发这个条件，我就可以去执行我的动作——": "When the person I care about no longer appears in my world — what we call the 'exit of presence' — this condition triggers, and I can act —",
     "向指定的目标对象发送一段讯息": "sending a message to the designated recipient",
     "对现实感的强化：": "A grounding in reality:",
     "活在当下，不问前生，不求来世": "Live in the present; ask not of the past, hope not for the afterlife",
@@ -495,7 +498,79 @@
     "如果你对隐私有任何疑问，或想行使上述权利，写信给我们：": "If you have any privacy questions, or wish to exercise the rights above, write to us:",
     "我们会认真回应。": "We will respond seriously.",
     "本政策随产品迭代更新，重大变更会在介绍页与站内通知。": "This policy updates as the product evolves; major changes are announced on the intro page and in-app.",
-    "本页为构想展示，最终以正式上线版本为准。": "This page is a concept showcase; the live version prevails."
+    "本页为构想展示，最终以正式上线版本为准。": "This page is a concept showcase; the live version prevails.",
+
+    // ===== 介绍页 · 时间线 / 愿景（补译） =====
+    "我们不想一次做满，而想沿着\"轻量化、走叙事\"的路线，一步步把\"用现在设定未来\"做实。下面是从此刻到一两年试水的三段路。": "We won't overbuild at once. Along a 'lightweight, narrative-driven' path, we make 'setting the future with the present' real — step by step. Here are the three stages from now to a one-to-two-year trial.",
+    "阶段一 · 此刻（0–3 个月，MVP 试水）": "Stage 1 · Now (0–3 months, MVP trial)",
+    "阶段二 · 半年内（轻量实物交付）": "Stage 2 · Within half a year (light physical delivery)",
+    "阶段三 · 一到两年（试水与合规）": "Stage 3 · One to two years (trial & compliance)",
+    "文字 + 小音频，用现在设定未来": "Text + short audio — set the future with the present",
+    "文字 / 小音频": "Text / Short audio",
+    "轻量内容（文字、小体积录音）免费托管；你设定未来的时刻和收件人，到了那一刻，我们替你主动送达到对的人手里。我们主张用简单普通的媒介留存心意，不铺张。此阶段以自愿赞赏验证意愿——出于自愿，不承诺对价。": "Light content (text, small audio) is hosted free. You set the future moment and recipient; when it comes, we actively deliver it to the right person. We favor simple, ordinary media to keep your intent — no extravagance. This stage tests willingness through voluntary support — freely given, with no promised return.",
+    "把「交还」做稳、做规范": "Make 'return' steady and well-governed",
+    "临近到期递增提醒、安全池 / 敏感池隔离、用户手册规范；并对接 e签宝 等合规电子签名，让每一份交还都有据可依。这一步是试水期的目标，不是终点。": "Escalating reminders near expiry, safe-pool / sensitive-pool isolation, user-guide standards; and integration with compliant e-signatures (e.g. e签宝), so every return is accountable. This is a goal of the trial phase, not the end.",
+    "更远的可能（公开陈列、跨界合作等），我们边走边看，不画大饼——先把眼前这一程走稳。": "Further possibilities (public exhibitions, cross-sector collaboration, etc.) — we'll see as we go. No empty promises; first we steady the step right in front of us.",
+    "周期提醒": "Periodic reminders",
+    "合规电子签": "Compliant e-sign",
+
+    // ===== 介绍页 · 核心设计 ⑤ / ④补充 =====
+    "定期陪伴：常更常新": "Steady companionship: keep it fresh",
+    "推荐并提醒你定期更新内容；临近到期，提醒频率逐年递增，避免遗忘，也避免家庭矛盾。": "We recommend and remind you to refresh content regularly; as expiry nears, reminder frequency rises year by year — avoiding forgetfulness and family conflict.",
+    "纸有线性、平面、弯曲、折叠的回忆；一件轻物，承载说不清的重量。手写信件、随身小物件走具备资质的民营合作方或 EMS 交付，规避邮政专营；我们不碰重资产，只做轻量寄递。": "Paper holds linear, planar, curved, folded memories; a small object carries an unspeakable weight. Handwritten letters and keepsakes are delivered via qualified private partners or EMS, avoiding postal monopolies; we touch no heavy assets, only light delivery.",
+
+    // ===== 介绍页 · 创始人 / 信任墙 =====
+    "产品构想 · 设计 · 一人团队": "Product concept · Design · Solo team",
+    "大魔王": "Da Mo Wang",
+    "一起把它做下去 ›": "Keep building it with us ›",
+    "加入我们": "Join us",
+    "在 GitHub 查看 ›": "View on GitHub ›",
+    "核心代码已在 GitHub 开源，欢迎审计，安全不靠「黑箱」。": "Core code is open source on GitHub — audits welcome; security isn't built on 'black boxes'.",
+    "微信 · Transteria": "WeChat · Transteria",
+    "公众号 · 开戎界域（微信搜索）": "Official Account · Kai Rong Jie Yu (search on WeChat)",
+    "邮箱 · 935382253@qq.com": "Email · 935382253@qq.com",
+
+    // ===== 介绍页 · 登记意向表单 =====
+    "代表谁登记？": "Who are you registering for?",
+    "个人": "Individual",
+    "一群人": "A group of people",
+    "团体": "Community",
+    "机构": "Institution",
+    "小音频（录音）": "Short audio (recording)",
+    "照片（轻量）": "Photos (light)",
+    "影像/视频（大体积走邮箱）": "Video / footage (large, via email)",
+    "实物信件/物件（走邮箱）": "Letters / objects (via email)",
+    "目前 MVP 支持文字 + 小音频上传；大体积视频、纸质/实物物品请通过项目邮箱 changyeyuhuo2026@163.com 联系我们。": "Our MVP supports text + short-audio uploads; for large videos, paper, or physical items, please reach us via the project email changyeyuhuo2026@163.com.",
+
+    // ===== 创建页 · 内容类型提示 =====
+    "大体积视频 / 实物纸质物品无法在应用内上传，请通过项目邮箱": "Large videos / physical items can't be uploaded in-app; please use the project email:",
+    "目前 MVP 支持文字 + 小音频上传；大体积视频、实物/纸质物品请通过项目邮箱联系安排。": "Our MVP supports text + short-audio uploads; for large videos or paper/physical items, contact us via the project email.",
+    "联系我们安排。点击下方按钮即可发邮件。": "Contact us to arrange. Click the button below to send an email.",
+
+    // ===== 合伙人 / 招募页 join.html =====
+    "一 起 把 余 火 燃 得 更 稳": "Keep the ember burning steadier, together",
+    "长夜余火目前只有我一个人。": "Right now, Long Night Ember is just me, alone.",
+    "如果你也相信「把话说出去、把物交还回去」这件事，": "If you too believe in 'sending words out, returning things' —",
+    "欢迎以任何方式加入。": "you're welcome to join in any way.",
+    "我们需要这些伙伴 · PARTNERS": "Partners we need · PARTNERS",
+    "一个人走得快，一群人走得远": "One goes fast; a group goes far",
+    "下面四类伙伴，都是现在最缺的。不一定要全职，有爱好、有时间、有想法，都可以来搭把手。": "These four kinds of partners are what we lack most right now. Not necessarily full-time — if you have a hobby, time, or ideas, you can lend a hand.",
+    "不一定要全职，有爱好、有时间、有想法，都可以来搭把手。": "Not necessarily full-time — if you have a hobby, time, or ideas, you can lend a hand.",
+    "技术合伙人": "Tech partner",
+    "一起把产品做稳、做安全。前端 / 后端 / 运维皆可，开源协作优先。": "Help make the product solid and safe. Frontend / backend / ops all welcome; open-source collaboration preferred.",
+    "运营合伙人": "Operations partner",
+    "把项目讲给对的人听，做内容、做社区、做用户沟通。": "Tell the right people about the project; do content, community, and user communication.",
+    "资本洽谈": "Capital & partnerships",
+    "如果你看好这件事的长期价值，欢迎来聊合作与可能性。": "If you see its long-term value, let's talk about collaboration and possibilities.",
+    "兴趣参与者": "Enthusiast participant",
+    "我想试试这个 ›": "I'd like to try ›",
+    "怎么联系 · CONTACT": "How to reach us · CONTACT",
+    "直接找到我": "Reach me directly",
+    "直接联系我": "Contact me directly",
+    "公众号": "Official Account",
+    "开戎界域（微信搜索）": "Kai Rong Jie Yu (search on WeChat)",
+    "选一种你方便的方式，把我介绍给你自己，或者把你的想法告诉我。": "Pick whatever's convenient — introduce me to you, or tell me your ideas.",
+    "本页为构想展示与意向收集，不构成任何合作承诺。": "This page is a concept showcase and intention collection; it implies no partnership commitment."
   };
 
   // 输入框占位符 / 标题等属性翻译

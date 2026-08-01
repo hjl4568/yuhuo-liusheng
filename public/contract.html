@@ -53,6 +53,12 @@
       line-height: 1.95;
     }
     .contract-text p.no-indent { text-indent: 0; }
+    .contract-text p.clause {
+      text-indent: 0;
+      padding-left: 1.1em;
+      margin: 0 0 9px;
+      line-height: 1.9;
+    }
     .contract-text strong {
       color: #2D1810;
       font-weight: 700;
@@ -176,6 +182,7 @@
     if (!requireAuth()) throw new Error('redirect');
 
     let templateCache = '';
+    let templateTitle = '';
     let hasDrawn = false;
 
     async function init() {
@@ -188,9 +195,11 @@
     async function loadTemplate() {
       try {
         const data = await request('/contracts/template');
-        templateCache = data.body;
+        templateCache = data.body || '';
+        templateTitle = data.title || '';
       } catch (e) {
         templateCache = '（协议加载失败，请稍后重试）';
+        templateTitle = '';
       }
     }
 
@@ -198,7 +207,7 @@
       const page = document.getElementById('contract-page');
       page.innerHTML = `
         <div class="card" style="padding:0;overflow:hidden;">
-          <div class="contract-text" id="contract-text">${renderMarkdown(templateCache)}</div>
+          <div class="contract-text" id="contract-text">${renderMarkdown(templateCache, templateTitle)}</div>
           <div class="form-hint" style="margin:10px 16px 14px;">请完整阅读以上条款后再签署。</div>
         </div>
 
@@ -351,25 +360,41 @@
       return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
 
-    function renderMarkdown(md = '') {
-      const blocks = md.split(/\n\s*\n/).filter(s => s.trim());
-      let html = '<div class="contract-header">《余火·留声 数字遗产托管及内容授权服务协议》</div><div class="contract-body">';
-      blocks.forEach(block => {
-        const trimmed = block.trim();
-        if (trimmed.startsWith('## ')) {
-          html += `<h2>${fmtInline(trimmed.slice(3))}</h2>`;
-        } else if (/^第[一二三四五六七八九十百零\d]+条/.test(trimmed)) {
-          html += `<h2>${fmtInline(trimmed)}</h2>`;
-        } else if (trimmed === '前言') {
-          html += `<p class="contract-preface">${fmtInline(trimmed)}</p>`;
-        } else if (trimmed.startsWith('——') && trimmed.endsWith('——')) {
-          html += `<p class="contract-divider">${fmtInline(trimmed)}</p>`;
-        } else {
-          // 段内保留手动换行（如甲乙方信息被写成多行）
-          const withBr = trimmed.split('\n').map(l => fmtInline(l)).join('<br>');
-          html += `<p>${withBr}</p>`;
+    // 逐行解析，避免「条款标题 + 正文」被误判为同一块而整段塞进 <h2>
+    function renderMarkdown(md = '', title = '') {
+      const headerTitle = title ? '《' + title + '》' : '《长夜余火（余火·留声）数字遗产托管及内容授权服务协议》';
+      const lines = (md || '').split('\n');
+      let html = '<div class="contract-header">' + escapeHtml(headerTitle) + '</div><div class="contract-body">';
+      let para = [];
+      function flush() {
+        if (para.length) {
+          html += '<p>' + para.map(l => fmtInline(l)).join('<br>') + '</p>';
+          para = [];
         }
-      });
+      }
+      for (const raw of lines) {
+        const line = raw.trim();
+        if (!line) { flush(); continue; }
+        if (/^第[一二三四五六七八九十百零\d]+条/.test(line)) {
+          flush();
+          html += '<h2>' + fmtInline(line) + '</h2>';
+        } else if (line === '前言') {
+          flush();
+          html += '<p class="contract-preface">' + fmtInline(line) + '</p>';
+        } else if (/^——.*——$/.test(line)) {
+          flush();
+          html += '<p class="contract-divider">' + fmtInline(line) + '</p>';
+        } else if (/^\d+\.\d+/.test(line) || /^（\d+）/.test(line)) {
+          flush();
+          html += '<p class="clause">' + fmtInline(line) + '</p>';
+        } else if (/^(甲方|乙方)/.test(line)) {
+          flush();
+          html += '<p class="no-indent">' + fmtInline(line) + '</p>';
+        } else {
+          para.push(line);
+        }
+      }
+      flush();
       html += '</div>';
       return html;
     }

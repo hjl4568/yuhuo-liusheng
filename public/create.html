@@ -28,10 +28,16 @@
           <label class="form-label">内容类型</label>
           <select class="form-select" id="content_type">
             <option value="text">文字</option>
-            <option value="audio">录音</option>
-            <option value="image">图片</option>
-            <option value="video">视频</option>
+            <option value="audio">小音频（录音）</option>
+            <option value="video">影像/视频（需邮箱联系）</option>
+            <option value="physical">实物/纸质（需邮箱联系）</option>
           </select>
+          <div class="form-hint" id="ct-hint">目前 MVP 支持文字 + 小音频上传；大体积视频、实物/纸质物品请通过项目邮箱联系安排。</div>
+          <div class="form-hint" id="contact-notice" style="display:none;color:var(--primary-strong);">
+            大体积视频 / 实物纸质物品无法在应用内上传，请通过项目邮箱
+            <a href="mailto:changyeyuhuo2026@163.com" style="color:var(--primary-strong);">changyeyuhuo2026@163.com</a>
+            联系我们安排。点击下方按钮即可发邮件。
+          </div>
         </div>
 
         <div class="form-group" id="text-area">
@@ -133,17 +139,31 @@
     const fileInfoDisplay = document.getElementById('file-info-display');
     const triggerTypeSelect = document.getElementById('trigger_type');
     const triggerDateGroup = document.getElementById('trigger-date-group');
+    const ctHint = document.getElementById('ct-hint');
+    const contactNotice = document.getElementById('contact-notice');
 
-    contentTypeSelect.addEventListener('change', () => {
+    function syncContentType() {
       const type = contentTypeSelect.value;
       if (type === 'text') {
         textArea.style.display = '';
         fileArea.style.display = 'none';
-      } else {
+        contactNotice.style.display = 'none';
+        ctHint.style.display = '';
+      } else if (type === 'audio') {
         textArea.style.display = 'none';
         fileArea.style.display = '';
+        contactNotice.style.display = 'none';
+        ctHint.style.display = '';
+      } else {
+        // 影像/视频、实物/纸质：走邮箱联系，不在应用内上传
+        textArea.style.display = 'none';
+        fileArea.style.display = 'none';
+        contactNotice.style.display = '';
+        ctHint.style.display = 'none';
       }
-    });
+    }
+    contentTypeSelect.addEventListener('change', syncContentType);
+    syncContentType();
 
     textContent.addEventListener('input', () => {
       charCount.textContent = `${textContent.value.length} / 5000 字`;
@@ -193,6 +213,12 @@
       const agreeTerms = document.getElementById('agree_terms').checked;
 
       if (!title) { showToast('请填写标题'); return; }
+      if (contentType === 'video' || contentType === 'physical') {
+        window.location.href = 'mailto:changyeyuhuo2026@163.com?subject=' +
+          encodeURIComponent('【长夜余火】' + (contentType === 'video' ? '大体积视频' : '实物/纸质物品') + '交付安排 — ' + title) +
+          '&body=' + encodeURIComponent('我想了解一下' + (contentType === 'video' ? '大体积视频' : '实物/纸质物品') + '的交付安排。\n标题：' + title);
+        return;
+      }
       if (contentType === 'text' && !textVal) { showToast('请填写文字内容'); return; }
       if (contentType !== 'text' && !selectedFile) { showToast('请上传文件'); return; }
       if (!recipientName) { showToast('请填写收件人姓名'); return; }
