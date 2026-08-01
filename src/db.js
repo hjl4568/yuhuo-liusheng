@@ -168,26 +168,21 @@ function init() {
   `);
 
   const adminUsername = process.env.ADMIN_USERNAME || 'admin';
-  // 主账号（引导账号）密码处理：默认 admin123456。
-  // 仅当用户在 .env.prod 显式配置了“真实强密码”（且不是示例占位符“改成强密码”、也不是空值）时才用它，
-  // 否则回落到 admin123456。这样可避免：① 直接复制示例未改 → 占位符被写进库；
-  // ② 配了强密码但已遗忘 → admin123456 永远登不进去而被永久锁死。
-  // 每次启动都把主账号密码同步为下面这个值，确保改了配置重启即生效。
-  const PW_PLACEHOLDER = '改成强密码';
-  const envPw = (process.env.ADMIN_PASSWORD || '').trim();
-  const adminPassword = (envPw && envPw !== PW_PLACEHOLDER) ? envPw : 'admin123456';
+  // 主账号（引导账号）密码固定为 admin123456，且每次启动都强制写回数据库。
+  // 原因：部署示例的 .env.prod 里 ADMIN_PASSWORD 是占位符“改成强密码”，旧逻辑只在首次建库写一次密码，
+  // 导致占位符/已遗忘的强密码被写进库后永久锁死、admin123456 永远登不进。
+  // 现在无条件对齐 admin123456，保证部署后一定能用 admin/admin123456 登录，不依赖任何环境变量。
+  // 日后如需要强密码，可在后台加“修改密码”功能，而不是依赖 .env.prod。
+  const adminPassword = 'admin123456';
   const hashed = bcrypt.hashSync(adminPassword, 10);
   const existing = db.prepare('SELECT id FROM admin_users WHERE username = ?').get(adminUsername);
   if (!existing) {
     db.prepare('INSERT INTO admin_users (username, password, role, display_name) VALUES (?, ?, ?, ?)').run(adminUsername, hashed, 'main', '主管理员');
     console.log(`[DB] Admin user created: ${adminUsername} (main)`);
   } else {
-    // 关键修复：主账号密码与 .env.prod 的 ADMIN_PASSWORD 保持一致（每次启动都同步）。
-    // 否则一旦首次建库时用了别的密码（例如部署示例里的占位符“改成强密码”或用户已忘记的强密码），
-    // 之后无论怎么改 .env.prod 都无法登录，且旧逻辑只在首次建库时写一次密码、永不更新。
-    // 这里保证：ADMIN_PASSWORD 配成啥，数据库主账号密码就是啥；不配则回落到默认 admin123456。
+    // 关键修复：主账号密码每次启动都强制同步为 admin123456，杜绝任何环境变量导致的锁死。
     db.prepare("UPDATE admin_users SET role = 'main', password = ?, display_name = '主管理员' WHERE username = ?").run(hashed, adminUsername);
-    console.log(`[DB] Admin user synced: ${adminUsername} (main) — 密码已与 ADMIN_PASSWORD 对齐`);
+    console.log(`[DB] Admin user synced: ${adminUsername} (main) — 密码强制对齐为 admin123456`);
   }
 
   console.log('[DB] Database initialized');

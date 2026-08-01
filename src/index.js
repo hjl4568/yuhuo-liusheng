@@ -1,4 +1,10 @@
 require('dotenv').config();
+// JWT_SECRET 兜底：若生产 .env.prod 未配置（或仍是示例占位符），切勿让其为空/undefined，
+// 否则 jwt.sign/verify 会直接抛 "secret or public key must be provided"，导致登录返回 500、前端“没反应”。
+if (!process.env.JWT_SECRET || !String(process.env.JWT_SECRET).trim()) {
+  process.env.JWT_SECRET = 'yuhuo-liusheng-default-jwt-secret-2026';
+  console.warn('[WARN] JWT_SECRET 未配置，已使用内置默认值；建议在生产 .env.prod 中设置随机字符串以保证安全。');
+}
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
