@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>支持我们 · 长夜余火</title>
-  <link rel="stylesheet" href="/css/style.css?v=20260802">
-  <link rel="stylesheet" href="/css/nightfire.css?v=20260802">
+  <link rel="stylesheet" href="/css/style.css?v=20260802c">
+  <link rel="stylesheet" href="/css/nightfire.css?v=20260802c">
   <style>
     /* support 页独立小补丁（继承 nightfire.css） */
     body{background:var(--bg, #0a0c14);color:var(--text, #e6dccb);}
@@ -51,11 +51,15 @@
       padding:10px;display:flex;align-items:center;justify-content:center;}
     .sp-qr img{width:100%;height:100%;object-fit:contain;display:block;}
 
-    .sp-account{font-family:var(--serif);font-size:18px;color:var(--text);letter-spacing:1px;
-      background:rgba(8,10,18,0.45);padding:10px 14px;border-radius:8px;border:1px dashed var(--border);
-      display:inline-block;cursor:pointer;user-select:all;transition:all .2s;}
+    .sp-account-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;}
+    .sp-account{font-family:var(--serif);font-size:20px;color:var(--text);letter-spacing:1px;
+      background:rgba(8,10,18,0.45);padding:12px 18px;border-radius:10px;border:1px dashed var(--border);
+      display:inline-block;cursor:pointer;user-select:all;transition:all .2s;font-weight:600;}
     .sp-account:hover{border-color:var(--primary);color:var(--primary-strong);}
-    .sp-copy-hint{font-size:11.5px;color:var(--faint);margin-top:10px;letter-spacing:.5px;}
+    .sp-copy-btn{font-family:var(--sans);font-size:12px;color:var(--text);background:rgba(240,179,90,0.12);
+      border:1px solid rgba(240,179,90,0.4);border-radius:20px;padding:7px 16px;cursor:pointer;transition:all .2s;}
+    .sp-copy-btn:hover{background:rgba(240,179,90,0.22);border-color:var(--primary);color:var(--primary-strong);}
+    .sp-copy-hint{font-size:11.5px;color:var(--faint);margin-top:8px;letter-spacing:.5px;}
     .sp-copy-hint.copied{color:#07c160;}
 
     .sp-footer{margin-top:80px;padding-top:32px;border-top:1px solid var(--border);text-align:center;
@@ -132,8 +136,11 @@
         <div class="sp-pay-icon alipay">支</div>
         <div class="sp-pay-name">支付宝</div>
         <div class="sp-pay-sub">账号转账，备注留个称呼方便致谢</div>
-        <div class="sp-account" id="alipay-acct" data-copy="935382253@qq.com">935382253@qq.com</div>
-        <div class="sp-copy-hint" id="copy-hint">点击账号即可复制</div>
+        <div class="sp-account-wrap">
+          <div class="sp-account" id="alipay-acct" data-copy="935382253@qq.com" title="点击复制支付宝账号">935382253@qq.com</div>
+          <button class="sp-copy-btn" type="button" id="copy-btn" onclick="(function(btn){var el=document.getElementById('alipay-acct');var txt=el.getAttribute('data-copy')||el.textContent.trim();var hint=document.getElementById('copy-hint');var ok=function(){hint.textContent='✓ 已复制：'+txt;hint.classList.add('copied');setTimeout(function(){hint.textContent='点击账号或按钮即可复制';hint.classList.remove('copied');},2400);};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(ok).catch(function(){var ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');ok();}catch(e){hint.textContent='请手动复制：'+txt;}document.body.removeChild(ta);});}else{var ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');ok();}catch(e){hint.textContent='请手动复制：'+txt;}document.body.removeChild(ta);}})(this)">复制账号</button>
+        </div>
+        <div class="sp-copy-hint" id="copy-hint">点击账号或上方按钮即可复制</div>
       </div>
     </div>
 

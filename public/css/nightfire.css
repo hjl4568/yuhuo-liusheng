@@ -107,6 +107,11 @@
   background:rgba(20,22,32,0.4);border:1px dashed var(--border);border-radius:12px;
   grid-column:1/-1;}
 .msg-more{display:flex;justify-content:center;margin-top:22px;}
+/* 实时数据板块内的留言墙：与图表/统计视觉上融合 */
+#panel-data .msg-preview{margin-top:36px;padding:28px;border:1px solid rgba(232,178,110,0.12);border-radius:18px;
+  background:linear-gradient(155deg,rgba(46,34,20,0.12),rgba(18,16,28,0.12));}
+#panel-data .msg-preview .nf-title{margin-bottom:6px;}
+#panel-data .msg-preview .nf-lead{margin-bottom:0;}
 
 /* ---------- 一页滚动叙事：吸顶分节导航 ---------- */
 html{scroll-behavior:smooth;}
@@ -117,6 +122,8 @@ html{scroll-behavior:smooth;}
 .nf-anchor{padding:8px 15px;border-radius:22px;font-size:13px;color:var(--text-light);text-decoration:none;
   border:1px solid transparent;transition:all .2s;font-family:var(--sans);letter-spacing:.5px;white-space:nowrap;}
 .nf-anchor:hover{color:var(--primary-strong);}
+.nf-anchor.nav-highlight{border-color:rgba(240,179,90,.5);color:var(--primary-strong);background:rgba(240,179,90,.1);}
+.nf-anchor.nav-highlight:hover{background:rgba(240,179,90,.18);}
 .nf-anchor.active{color:#1a1206;background:linear-gradient(135deg,var(--primary),var(--primary-dark));
   box-shadow:0 4px 14px var(--glow);font-weight:700;}
 
