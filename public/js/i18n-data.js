@@ -44,6 +44,14 @@
     "长夜余火正处在验证想法的早期，产品免费使用。如果你也被这个念头打动，欢迎以自愿赞赏的方式支持我们——所有支持均出于自愿，我们不承诺任何对价回报。": "Long Night Ember is early-stage and free to use. If this idea moves you, support us through voluntary tipping — all support is given freely, with no promise of any return.",
     "去支持我们 💛": "Support Us 💛",
 
+    // ===== 关于我们 · 三图标卡片 =====
+    "你留下话语": "You Leave Your Words",
+    "文字、录音、影像，甚至一封手写的信、一件随身的小物件": "Text, voice, video — even a handwritten letter or a small keepsake",
+    "你设定未来": "You Set the Future",
+    "指定一个未来的时刻与收件人，时间到了才送达": "Set a future moment and a recipient; it's delivered only when the time comes",
+    "我们主动交还": "We Return It Actively",
+    "替你把心意送达对的人手里，不是对方来领": "We deliver your intent to the right person — not the other way around",
+
     // ===== 核心设计 =====
     "核心设计 · DESIGN": "DESIGN",
     "六个核心设计": "Six Core Designs",
