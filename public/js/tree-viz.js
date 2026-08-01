@@ -25,9 +25,12 @@
   }
 
   /* ---- 量级判定（按加权后数值）
-   * 权重：访问=1，登记=10，胶囊=100
-   * ——让"真正创建胶囊"的人，权重远高于"随手访问"；
-   *    "登记意向"是中间层。
+   * 自然转化漏斗：访问 : 登记 : 胶囊 ≈ 10 : 5 : 1
+   *   - 访问（树干）：人人可来，体量最大、最随意
+   *   - 登记（枝叶）：愿意留下信息，是中间层、需要一点 commitment
+   *   - 胶囊（果实·树冠）：真正留内容的人最少，却是最难、最高的一级
+   * 权重：访问=1，登记=10，胶囊=100 —— 让"真正创建胶囊"的人，
+   *       权重远高于"随手访问"；登记是承上启下的中层。
    * 量级：萌芽(0-500) / 生长(500-5k) / 繁茂(5k-50k) / 森林(50k+)
    */
   function getEra(weighted) {
@@ -298,6 +301,9 @@
     var engagement = weighted > 0 ? Math.round((regs * 10 + caps * 100) / weighted * 100) : 0;
     setText('ts-engagement', engagement + '%');
 
+    // 转化漏斗：访问 → 登记 → 胶囊（目标 10 : 5 : 1，胶囊为最高一级）
+    renderFunnel(visits, regs, caps);
+
     // 更新阶段信息
     var badge = document.getElementById('tree-era-badge');
     if (badge) {
@@ -317,6 +323,37 @@
   function setText(id, text) {
     var e = document.getElementById(id);
     if (e) e.textContent = text;
+  }
+
+  /* ---- 转化漏斗可视化：访问 → 登记 → 胶囊 = 目标 10 : 5 : 1 ----
+   * 三个层级：访问（基础，最宽）、登记（中层）、胶囊（最高一级，最窄）。
+   * 用归一化宽度表现"越往上越难、越少"，并标注设计目标 10:5:1。
+   */
+  function renderFunnel(visits, regs, caps) {
+    var box = document.getElementById('tree-funnel');
+    if (!box) return;
+    var locale = (window.I18N && window.I18N.lang === 'en') ? 'en-US' : 'zh-CN';
+    // 归一化：以最大值为满宽（访问通常最大），体现漏斗收窄
+    var maxV = Math.max(visits, regs, caps, 1);
+    var wVisit = Math.round((visits / maxV) * 100);
+    var wReg = Math.round((regs / maxV) * 100);
+    var wCap = Math.round((caps / maxV) * 100);
+    // 漏斗达成度：实际胶囊占访问比 vs 目标 1/10；登记占访问比 vs 目标 5/10
+    var capRate = visits > 0 ? (caps / visits) : 0;     // 目标 0.10
+    var regRate = visits > 0 ? (regs / visits) : 0;     // 目标 0.50
+    var targetText = t('目标漏斗 10 : 5 : 1');
+    var rateText = visits > 0
+      ? (t('当前') + ' ' + (regRate * 100).toFixed(0) + '% / ' + (capRate * 100).toFixed(0) + '%')
+      : (t('当前 — / —'));
+
+    box.innerHTML =
+      '<div class="fn-row fn-visit"><div class="fn-bar" style="width:' + wVisit + '%"></div>' +
+        '<span class="fn-label">' + t('访问') + ' ' + visits.toLocaleString(locale) + '</span></div>' +
+      '<div class="fn-row fn-reg"><div class="fn-bar" style="width:' + wReg + '%"></div>' +
+        '<span class="fn-label">' + t('登记') + ' ' + regs.toLocaleString(locale) + '</span></div>' +
+      '<div class="fn-row fn-cap"><div class="fn-bar" style="width:' + wCap + '%"></div>' +
+        '<span class="fn-label">' + t('胶囊') + ' ' + caps.toLocaleString(locale) + '</span></div>' +
+      '<div class="fn-target">' + targetText + ' ｜ ' + rateText + '</div>';
   }
 
   /* ---- 数据获取 ---- */

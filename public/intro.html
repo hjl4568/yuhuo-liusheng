@@ -11,8 +11,19 @@
   <meta property="og:title" content="长夜余火（余火·留声）— 用现在，去设定一个未来">
   <meta property="og:description" content="表达与交还，不是信托；主动送达像快递；在指定的未来时刻，把此刻的声音安静交还。">
   <meta property="og:image" content="/og-cover.svg">
-  <link rel="stylesheet" href="/css/style.css?v=20260805">
-  <link rel="stylesheet" href="/css/nightfire.css?v=20260805">
+  <link rel="stylesheet" href="/css/style.css?v=20260806">
+  <link rel="stylesheet" href="/css/nightfire.css?v=20260806">
+  <style>
+    /* 转化漏斗（生长之树旁） */
+    .nf-tree-funnel { margin: 16px 0 4px; display: flex; flex-direction: column; gap: 6px; }
+    .fn-row { position: relative; height: 26px; display: flex; align-items: center; }
+    .fn-bar { position: absolute; left: 0; top: 0; height: 100%; border-radius: 6px; min-width: 6px; transition: width .8s ease; }
+    .fn-visit .fn-bar { background: linear-gradient(90deg, rgba(120,140,180,.55), rgba(120,140,180,.25)); }
+    .fn-reg   .fn-bar { background: linear-gradient(90deg, rgba(240,179,90,.7), rgba(240,179,90,.3)); }
+    .fn-cap   .fn-bar { background: linear-gradient(90deg, rgba(212,122,78,.85), rgba(212,122,78,.4)); }
+    .fn-label { position: relative; z-index: 1; padding-left: 10px; font-size: 12.5px; color: #f3ead6; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,.5); }
+    .fn-target { margin-top: 4px; font-size: 12px; color: #b3a78d; letter-spacing: .3px; }
+  </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
@@ -576,7 +587,7 @@
       <div class="reveal">
         <div class="nf-eyebrow">生长之树 · DATA TREE</div>
         <h2 class="nf-title">这棵树，和我们一起长</h2>
-        <p class="nf-lead">访问、注册、胶囊——三个数字决定它的样子，但权重不同：<b>访问 = 1，注册 = 10，胶囊 = 100</b>。一次胶囊创建 = 一百次普通访问。我们更在意真正留下内容的人，而不是匆匆过客。</p>
+        <p class="nf-lead">这棵树按一条自然的<b>转化漏斗</b>生长：<b>访问 : 登记 : 胶囊 ≈ 10 : 5 : 1</b>。访问是根基（人人可来、体量最大）；登记是中层（愿意留下信息）；胶囊是最高一级——真正留内容的人最少，却是<b>最难、最高</b>的果实。权重上，一次胶囊创建抵得上百次普通访问，所以我们更在意真正留下内容的人，而不是匆匆过客。</p>
         <div class="nf-tree-wrap">
           <div class="nf-tree-stage" id="tree-stage-info">
             <span class="era-badge era-0" id="tree-era-badge">萌芽期</span>
@@ -593,12 +604,14 @@
             <div class="ts-card ts-card-weighted"><div class="ts-num" id="ts-weighted">0</div><div class="ts-lab">加权值（决定量级）</div></div>
             <div class="ts-card ts-card-engagement"><div class="ts-num" id="ts-engagement">0%</div><div class="ts-lab">实际参与度</div></div>
           </div>
+          <div class="nf-tree-funnel" id="tree-funnel"></div>
           <div class="nf-tree-legend">
-            <div class="lg-item"><span class="lg-dot lg-trunk"></span>树干粗细 = 访问量</div>
-            <div class="lg-item"><span class="lg-dot lg-leaf"></span>枝叶疏密 = 注册量</div>
-            <div class="lg-item"><span class="lg-dot lg-fruit"></span>果实数量 = 胶囊数</div>
-            <div class="lg-item lg-rule"><b>权重：</b>访问 × 1 ｜ 注册 × 10 ｜ 胶囊 × 100</div>
-            <div class="lg-item lg-rule"><b>实际参与度：</b>（注册 × 10 + 胶囊 × 100）÷ 加权值</div>
+            <div class="lg-item"><span class="lg-dot lg-trunk"></span>树干粗细 = 访问量（基础，最宽）</div>
+            <div class="lg-item"><span class="lg-dot lg-leaf"></span>枝叶疏密 = 登记量（中层）</div>
+            <div class="lg-item"><span class="lg-dot lg-fruit"></span>果实数量 = 胶囊数（最高一级，最窄）</div>
+            <div class="lg-item lg-rule"><b>转化漏斗：</b>访问 : 登记 : 胶囊 = 10 : 5 : 1（胶囊最难最高）</div>
+            <div class="lg-item lg-rule"><b>权重：</b>访问 × 1 ｜ 登记 × 10 ｜ 胶囊 × 100</div>
+            <div class="lg-item lg-rule"><b>实际参与度：</b>（登记 × 10 + 胶囊 × 100）÷ 加权值</div>
           </div>
           <div class="nf-tree-scale" id="tree-scale-text">当前量级：0 — 500</div>
         </div>
@@ -1009,9 +1022,9 @@
       }
     });
   </script>
-  <script src="/js/i18n-data.js?v=20260805"></script>
-  <script src="/js/i18n.js?v=20260805"></script>
-  <script src="/js/tree-viz.js?v=20260805"></script>
+  <script src="/js/i18n-data.js?v=20260806"></script>
+  <script src="/js/i18n.js?v=20260806"></script>
+  <script src="/js/tree-viz.js?v=20260806"></script>
   <script src="/js/share.js"></script>
   <script>
     // 顶栏语言切换：点击切换中/EN（小标签 + 持久化）

@@ -103,6 +103,28 @@ router.get('/dashboard', adminAuth, (req, res) => {
   });
 });
 
+// 重置公开统计数据（主账号专属）：清空 visits / visit_dedup / leads / donors
+// 用途：让首页"实时数据 / 生长之树"从零开始累计真实数据（避免开发期测试数据污染展示）。
+// 注意：仅清空"公开聚合"类数据，不影响真实用户账户、胶囊、合同、投递记录。
+router.post('/reset-public-stats', mainAdminAuth, (req, res) => {
+  try {
+    const before = {
+      visits: db.prepare('SELECT COUNT(*) AS c FROM visits').get().c,
+      leads: db.prepare('SELECT COUNT(*) AS c FROM leads').get().c,
+      donors: db.prepare('SELECT COUNT(*) AS c FROM donors').get().c,
+    };
+    db.prepare('DELETE FROM visits').run();
+    db.prepare('DELETE FROM visit_dedup').run();
+    db.prepare('DELETE FROM leads').run();
+    db.prepare('DELETE FROM donors').run();
+    logAction(req, 'reset_public_stats', 'stats',
+      `清零公开统计：访问${before.visits} / 登记${before.leads} / 赞赏${before.donors}`);
+    res.json({ message: '公开统计已重置，将从此刻起重新累计真实数据', before });
+  } catch (e) {
+    res.status(500).json({ error: '重置失败：' + e.message });
+  }
+});
+
 router.get('/users', adminAuth, (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = 20;

@@ -819,7 +819,27 @@
     "子管理员已删除": "Sub admin deleted",
     "已启用": "Enabled",
     "已停用": "Disabled",
-    "创建": "Create"
+    "创建": "Create",
+    "访问": "Visits",
+    "登记": "Registrations",
+    "当前": "Current",
+    "当前 — / —": "Current — / —",
+    "目标漏斗 10 : 5 : 1": "Target funnel 10 : 5 : 1",
+    "转化漏斗：": "Conversion funnel:",
+    "树干粗细 = 访问量（基础，最宽）": "Trunk width = visits (base, widest)",
+    "枝叶疏密 = 登记量（中层）": "Leaf density = registrations (middle tier)",
+    "果实数量 = 胶囊数（最高一级，最窄）": "Fruit count = capsules (highest tier, narrowest)",
+    "访问 : 登记 : 胶囊 = 10 : 5 : 1（胶囊最难最高）": "Visits : Registrations : Capsules = 10 : 5 : 1 (capsules hardest & highest)",
+    "权重：": "Weight:",
+    "访问 × 1 ｜ 登记 × 10 ｜ 胶囊 × 100": "Visits × 1 ｜ Registrations × 10 ｜ Capsules × 100",
+    "实际参与度：": "Actual engagement:",
+    "（登记 × 10 + 胶囊 × 100）÷ 加权值": "(Registrations × 10 + Capsules × 100) ÷ weighted value",
+    "公开统计数据": "Public Statistics",
+    "清零公开统计（访问 / 登记 / 赞赏）": "Reset Public Stats (Visits / Registrations / Donations)",
+    "以下数据用于首页「实时数据/生长之树」展示。若想从现在开始重新累计真实数据（清空开发期测试记录），可一键清零。此操作不影响真实用户、胶囊、合同与投递记录。": "These stats power the homepage “Live Data / Growth Tree”. Clear dev/test records to start counting real data from now. Real users, capsules, contracts and delivery logs are unaffected.",
+    "这棵树按一条自然的": "This tree grows along a natural",
+    "生长：访问 : 登记 : 胶囊 ≈ 10 : 5 : 1。访问是根基（人人可来、体量最大）；登记是中层（愿意留下信息）；胶囊是最高一级——真正留内容的人最少，却是": "conversion funnel: Visits : Registrations : Capsules ≈ 10 : 5 : 1. Visits are the root (open to all, largest volume); registrations are the middle tier (willing to leave info); capsules are the highest tier — fewest who truly leave content, yet",
+    "的果实。权重上，一次胶囊创建抵得上百次普通访问，所以我们更在意真正留下内容的人，而不是匆匆过客。": "the hardest, highest fruit. By weight, one capsule equals a hundred casual visits, so we care more about those who truly leave content than passers-by."
   };
 
   // 这些容器里的文本是“用户生成内容”，不翻译，避免串改用户留言

@@ -21,7 +21,7 @@ router.post('/visit', (req, res) => {
 router.get('/stats/public', (req, res) => {
   const today = new Date().toISOString().slice(0, 10);
   const totalVisits = db.prepare('SELECT COALESCE(SUM(count),0) AS c FROM visits').get().c;
-  const todayVisits = db.prepare('SELECT COALESCE(count,0) AS c FROM visits WHERE date = ?').get(today).c;
+  const todayVisits = db.prepare('SELECT COALESCE((SELECT count FROM visits WHERE date = ?), 0) AS c').get(today).c;
   const leadsTotal = db.prepare('SELECT COUNT(*) AS c FROM leads').get().c;
   const d = db.prepare('SELECT COUNT(*) AS c, COALESCE(SUM(amount),0) AS s FROM donors').get();
   const recentDonors = db.prepare('SELECT amount, message, created_at FROM donors ORDER BY id DESC LIMIT 12').all();
