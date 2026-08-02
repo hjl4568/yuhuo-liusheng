@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 
 # 站点地图（拿到正式域名后请把下面的地址换成 https://你的域名/sitemap.xml）
-Sitemap: http://150.109.73.159:3000/sitemap.xml
+Sitemap: https://emberspeech.com/sitemap.xml
