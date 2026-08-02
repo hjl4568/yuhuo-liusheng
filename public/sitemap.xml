@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>http://150.109.73.159:3000/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>http://150.109.73.159:3000/app.html</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>http://150.109.73.159:3000/join.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>http://150.109.73.159:3000/support.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>http://150.109.73.159:3000/capsules.html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>http://150.109.73.159:3000/create.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>http://150.109.73.159:3000/view.html</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>http://150.109.73.159:3000/contract.html</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>http://150.109.73.159:3000/register.html</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
+  <url><loc>http://150.109.73.159:3000/login.html</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
+  <url><loc>http://150.109.73.159:3000/profile.html</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
+</urlset>
