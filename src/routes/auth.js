@@ -3,10 +3,15 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { db } = require('../db');
 const { auth } = require('../middleware/auth');
+const { rateLimit } = require('../middleware/ratelimit');
 
 const router = express.Router();
 
-router.post('/register', (req, res) => {
+// 公开写接口限流，防垃圾注册/刷接口
+const registerLimiter = rateLimit({ windowMs: 60 * 1000, max: 10, message: '注册过于频繁，请稍后再试' });
+const loginLimiter = rateLimit({ windowMs: 60 * 1000, max: 10, message: '登录过于频繁，请稍后再试' });
+
+router.post('/register', registerLimiter, (req, res) => {
   const { phone, password, name, email } = req.body;
 
   if (!phone || !password) {
@@ -35,7 +40,7 @@ router.post('/register', (req, res) => {
   });
 });
 
-router.post('/login', (req, res) => {
+router.post('/login', loginLimiter, (req, res) => {
   const { phone, password } = req.body;
 
   if (!phone || !password) {

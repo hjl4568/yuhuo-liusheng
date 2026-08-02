@@ -3,6 +3,10 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { db, getSetting, setSetting } = require('../db');
 const { adminAuth, mainAdminAuth } = require('../middleware/auth');
+const { rateLimit } = require('../middleware/ratelimit');
+
+// 登录限流：同一 IP 每分钟最多 8 次，防暴力破解弱密码
+const loginLimiter = rateLimit({ windowMs: 60 * 1000, max: 8, message: '登录尝试过于频繁，请 1 分钟后再试' });
 const { deliverCapsule } = require('../services/scheduler');
 const { getMailStatus, sendTestMail } = require('../services/email');
 
@@ -24,7 +28,7 @@ function logAction(req, action, target = '', detail = '') {
   }
 }
 
-router.post('/login', (req, res) => {
+router.post('/login', loginLimiter, (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
     return res.status(400).json({ error: '用户名和密码不能为空' });
@@ -44,7 +48,7 @@ router.post('/login', (req, res) => {
     adminRole: admin.role || 'main',
     adminUsername: admin.username,
     adminDisplayName: admin.display_name || admin.username,
-  }, process.env.JWT_SECRET, { expiresIn: '7d' });
+  }, process.env.JWT_SECRET, { expiresIn: '12h' });
 
   // 记录登录
   try {
@@ -537,8 +541,8 @@ router.get('/settings', adminAuth, (req, res) => {
   res.json({ donation_enabled: enabled });
 });
 
-// 更新站点设置：控制前台是否开放赞赏通道
-router.put('/settings', adminAuth, (req, res) => {
+// 更新站点设置：控制前台是否开放赞赏通道（写入为站点级控制，仅主账号可执行）
+router.put('/settings', mainAdminAuth, (req, res) => {
   const v = req.body && req.body.donation_enabled;
   const enabled = v === true || v === '1' || v === 1;
   setSetting('donation_enabled', enabled ? '1' : '0');

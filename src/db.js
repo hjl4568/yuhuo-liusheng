@@ -182,22 +182,44 @@ function init() {
   });
 
   const adminUsername = process.env.ADMIN_USERNAME || 'admin';
-  // 主账号（引导账号）密码固定为 admin123456，且每次启动都强制写回数据库。
-  // 原因：部署示例的 .env.prod 里 ADMIN_PASSWORD 是占位符“改成强密码”，旧逻辑只在首次建库写一次密码，
-  // 导致占位符/已遗忘的强密码被写进库后永久锁死、admin123456 永远登不进。
-  // 现在无条件对齐 admin123456，保证部署后一定能用 admin/admin123456 登录，不依赖任何环境变量。
-  // 日后如需要强密码，可在后台加“修改密码”功能，而不是依赖 .env.prod。
-  const adminPassword = 'admin123456';
-  const hashed = bcrypt.hashSync(adminPassword, 10);
-  const existing = db.prepare('SELECT id FROM admin_users WHERE username = ?').get(adminUsername);
+  // 主账号密码策略（兼顾「部署即用」与「不锁死」与「安全」）：
+  //  - 仅首次创建时使用默认弱密码 admin123456（便于部署后立刻登录，部署后请立即在后台改密）。
+  //  - 已存在主账号时，默认不再动其密码（密码由管理员在后台“修改密码”自行管理）。
+  //  - 防锁死：若库中主账号密码不是有效 bcrypt 哈希（早期占位符导致锁死），自动恢复默认密码，避免永久无法登录。
+  //  - 紧急重置：在 .env.prod 设置 ADMIN_RESET_PASSWORD（≥6位）并重启一次，即可强制把主账号密码改为该值（重置后请移除该变量并从后台改密）。
+  const DEFAULT_ADMIN_PASSWORD = 'admin123456';
+  const isBcryptHash = (s) => typeof s === 'string' && /^\$2[aby]\$/.test(s);
+  const existing = db.prepare('SELECT id, password, role FROM admin_users WHERE username = ?').get(adminUsername);
+
+  const ensureMainRole = (id) => db.prepare("UPDATE admin_users SET role = 'main' WHERE id = ? AND role <> 'main'").run(id);
+
   if (!existing) {
-    db.prepare('INSERT INTO admin_users (username, password, role, display_name) VALUES (?, ?, ?, ?)').run(adminUsername, hashed, 'main', '主管理员');
-    console.log(`[DB] Admin user created: ${adminUsername} (main) — 初始密码 admin123456（请尽快在后台“修改密码”）`);
+    const hashed = bcrypt.hashSync(DEFAULT_ADMIN_PASSWORD, 10);
+    const info = db.prepare('INSERT INTO admin_users (username, password, role, display_name) VALUES (?, ?, ?, ?)').run(adminUsername, hashed, 'main', '主管理员');
+    ensureMainRole(info.lastInsertRowid);
+    console.log(`[DB] 主管理员已创建: ${adminUsername} (main) — 初始密码 ${DEFAULT_ADMIN_PASSWORD}（请尽快在后台"修改密码"）`);
   } else {
-    // 不再强制覆盖密码：避免把管理员已修改的密码每次启动改回 admin123456（弱口令写死风险）。
-    // 仅确保主账号角色正确；密码由管理员自行在后台“修改密码”管理。
-    db.prepare("UPDATE admin_users SET role = 'main' WHERE username = ? AND role <> 'main'").run(adminUsername);
-    console.log(`[DB] Admin user synced: ${adminUsername} (main) — 密码不再被强制覆盖`);
+    ensureMainRole(existing.id);
+    let needReset = false;
+    let resetReason = '';
+    // 情况1：历史遗留的损坏/占位符密码（非有效 bcrypt 哈希）→ 自动恢复默认密码，避免永久锁死
+    if (!isBcryptHash(existing.password)) {
+      needReset = true;
+      resetReason = '检测到主账号密码哈希无效（可能由早期占位符导致锁死），已自动重置为默认密码';
+    }
+    // 情况2：运维紧急重置开关
+    const resetPwd = process.env.ADMIN_RESET_PASSWORD;
+    if (resetPwd && String(resetPwd).length >= 6) {
+      needReset = true;
+      resetReason = '检测到 ADMIN_RESET_PASSWORD 环境变量，已强制重置主账号密码（请重置后尽快移除该变量并从后台改密）';
+    }
+    if (needReset) {
+      const newPwd = (resetPwd && String(resetPwd).length >= 6) ? String(resetPwd) : DEFAULT_ADMIN_PASSWORD;
+      db.prepare('UPDATE admin_users SET password = ? WHERE id = ?').run(bcrypt.hashSync(newPwd, 10), existing.id);
+      console.warn(`[DB][安全] ${resetReason}`);
+    } else {
+      console.log(`[DB] 主管理员已就绪: ${adminUsername}（密码未被改动）`);
+    }
   }
 
   console.log('[DB] Database initialized');

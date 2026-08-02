@@ -10,9 +10,33 @@ const { start: startScheduler } = require('./services/scheduler');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
-app.use(express.json({ limit: '120mb' }));
-app.use(express.urlencoded({ extended: true, limit: '120mb' }));
+// CORS：仅允许同域及明确的部署域名，禁止任意站点跨域调用 API
+// （默认只放行 localhost:3000；部署到正式域名后，在 .env.prod 用 CORS_ORIGINS 逗号分隔配置，如 https://你的域名,https://www.你的域名）
+const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:3000')
+  .split(',').map(s => s.trim()).filter(Boolean);
+app.use(cors({
+  origin(origin, cb) {
+    if (!origin) return cb(null, true); // 同源或非浏览器请求（如 curl/服务间）放行
+    if (allowedOrigins.includes(origin)) return cb(null, true);
+    return cb(null, false); // 其他来源拒绝
+  },
+  credentials: false,
+}));
+
+// 安全响应头：防点击劫持、MIME 嗅探、反射型 XSS、referrer 泄露
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'no-referrer');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=(), payment=()');
+  res.setHeader('Content-Security-Policy',
+    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'");
+  next();
+});
+
+app.use(express.json({ limit: '20mb' }));
+app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 
 // 根路径固定展示项目介绍页（介绍页即首页），应用入口仍可通过 /index.html 访问
 app.get('/', (req, res) => {
