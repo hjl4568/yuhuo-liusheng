@@ -120,6 +120,11 @@ function init() {
       message TEXT DEFAULT '',
       created_at TEXT DEFAULT (datetime('now'))
     );
+
+    CREATE TABLE IF NOT EXISTS site_settings (
+      key TEXT PRIMARY KEY,
+      value TEXT DEFAULT ''
+    );
   `);
 
   // 收件人查看页所需的安全公开令牌（随机不可猜测）；兼容已存在的库，缺列则补
@@ -167,6 +172,15 @@ function init() {
     );
   `);
 
+  // 站点设置：键值表。前台捐赠（赞赏）通道默认关闭，由后台开关控制。
+  const seedSettings = [
+    ['donation_enabled', '0'], // '1' 表示向前台开放赞赏通道；'0' 表示隐藏
+  ];
+  seedSettings.forEach(([k, v]) => {
+    const ex = db.prepare('SELECT 1 FROM site_settings WHERE key = ?').get(k);
+    if (!ex) db.prepare('INSERT INTO site_settings (key, value) VALUES (?, ?)').run(k, v);
+  });
+
   const adminUsername = process.env.ADMIN_USERNAME || 'admin';
   // 主账号（引导账号）密码固定为 admin123456，且每次启动都强制写回数据库。
   // 原因：部署示例的 .env.prod 里 ADMIN_PASSWORD 是占位符“改成强密码”，旧逻辑只在首次建库写一次密码，
@@ -188,4 +202,15 @@ function init() {
   console.log('[DB] Database initialized');
 }
 
-module.exports = { db, init };
+// 站点设置读写辅助
+function getSetting(key, defaultValue = '') {
+  const row = db.prepare('SELECT value FROM site_settings WHERE key = ?').get(key);
+  return row ? row.value : defaultValue;
+}
+function setSetting(key, value) {
+  db.prepare(
+    'INSERT INTO site_settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value'
+  ).run(key, String(value));
+}
+
+module.exports = { db, init, getSetting, setSetting };

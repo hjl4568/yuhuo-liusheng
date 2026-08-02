@@ -23,10 +23,13 @@
     .fn-cap   .fn-bar { background: linear-gradient(90deg, rgba(212,122,78,.85), rgba(212,122,78,.4)); }
     .fn-label { position: relative; z-index: 1; padding-left: 10px; font-size: 12.5px; color: #f3ead6; font-weight: 600; text-shadow: 0 1px 2px rgba(0,0,0,.5); }
     .fn-target { margin-top: 4px; font-size: 12px; color: #b3a78d; letter-spacing: .3px; }
+
+    /* 捐赠通道：默认隐藏（donation-off），后台开启后由 JS 移除该 class 才显示 */
+    body.donation-off .donation-el { display: none !important; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
-<body>
+<body class="donation-off">
   <div class="nf-stars" id="stars"></div>
   <div class="nf-aurora" aria-hidden="true">
     <span class="nf-blob b1"></span>
@@ -39,7 +42,7 @@
       <nav>
         <a href="/app.html">进入应用</a>
         <a href="/join.html">加入我们</a>
-        <a href="/support.html">支持我们</a>
+        <a href="/support.html" class="donation-el">支持我们</a>
       </nav>
       <!-- 顶栏语言切换：随时可见，不依赖右下角浮动 -->
       <div class="lang-switch" id="lang-switch-top">
@@ -148,7 +151,7 @@
                 <svg class="nf-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l18-8-8 18-2-8z"/><path d="M3 11l8-2"/></svg>
                 公众号 · 开戎界域（微信搜索）
               </span>
-              <a class="nf-fd-link" href="/support.html">
+              <a class="nf-fd-link donation-el" href="/support.html">
                 <svg class="nf-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-4.5-9.5-9A4.8 4.8 0 0 1 12 6a4.8 4.8 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg>
                 支持我们
               </a>
@@ -546,8 +549,8 @@
           <div class="nf-lead-msg" id="lead-msg"></div>
         </form>
 
-        <!-- 自愿赞赏：登记之后，可选支持（已从「关于我们」并入本板块） -->
-        <section class="card nf-support" style="margin-top:38px;">
+        <!-- 自愿赞赏：登记之后，可选支持（已从「关于我们」并入本板块）；受后台开关控制 -->
+        <section class="card nf-support donation-el" style="margin-top:38px;">
           <div class="nf-eyebrow" style="justify-content:center;">陪我们走下去 · SUPPORT</div>
           <h2 class="nf-title" style="justify-content:center;">自愿赞赏，陪火苗走更远</h2>
           <p class="nf-desc">
@@ -626,8 +629,8 @@
           <div class="nf-stat"><div class="num" id="st-total">—</div><div class="lab">累计访问</div></div>
           <div class="nf-stat"><div class="num" id="st-today">—</div><div class="lab">今日访问</div></div>
           <div class="nf-stat"><div class="num" id="st-leads">—</div><div class="lab">登记人数</div></div>
-          <div class="nf-stat"><div class="num" id="st-donors">—</div><div class="lab">赞赏人次</div></div>
-          <div class="nf-stat wide"><div class="num" id="st-amount">—</div><div class="lab">赞赏总额（元）</div></div>
+          <div class="nf-stat donation-el"><div class="num" id="st-donors">—</div><div class="lab">赞赏人次</div></div>
+          <div class="nf-stat wide donation-el"><div class="num" id="st-amount">—</div><div class="lab">赞赏总额（元）</div></div>
         </div>
         <!-- 最新留言墙：放在可视化访问统计旁边 -->
         <div class="msg-preview" id="msg-preview">
@@ -646,7 +649,7 @@
           <div class="nf-chart-box"><h4>登记内容类型</h4><canvas id="chart-type" height="200"></canvas></div>
           <div class="nf-chart-box"><h4>近 7 日访问</h4><canvas id="chart-visit" height="200"></canvas></div>
         </div>
-        <div class="nf-ticker">
+        <div class="nf-ticker donation-el">
           <div class="nf-ticker-head">
             <h4>最新赞赏（匿名）</h4>
             <span class="ti-hint">悬停暂停 · 横向滑动</span>
@@ -1047,6 +1050,18 @@
       apply();
       // 监听引擎派发的事件，保持顶栏与右下角同步
       window.addEventListener('i18n-lang-change', apply);
+    })();
+  </script>
+  <script>
+    // 前台捐赠通道：body 默认带 donation-off（隐藏），后台开启后移除该 class 才显示
+    (function () {
+      try {
+        fetch('/api/settings/public').then(function (r) { return r.json(); }).then(function (d) {
+          if (d && d.donation_enabled) {
+            document.body.classList.remove('donation-off');
+          }
+        }).catch(function () {});
+      } catch (e) {}
     })();
   </script>
 </body>

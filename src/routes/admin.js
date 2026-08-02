@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { db } = require('../db');
+const { db, getSetting, setSetting } = require('../db');
 const { adminAuth, mainAdminAuth } = require('../middleware/auth');
 const { deliverCapsule } = require('../services/scheduler');
 const { getMailStatus, sendTestMail } = require('../services/email');
@@ -456,6 +456,67 @@ router.get('/admin-logs', mainAdminAuth, (req, res) => {
   const total = db.prepare(countQuery).get(...params).count;
 
   res.json({ logs, total, page, totalPages: Math.ceil(total / limit) });
+});
+
+// ==================== 捐赠管理（完整控制：汇总 / 列表 / 导出 / 前台开关） ====================
+
+// 捐赠汇总 + 全部记录（后台完整保留，便于财务与导出分析）
+router.get('/donations', adminAuth, (req, res) => {
+  const d = db.prepare('SELECT COUNT(*) AS c, COALESCE(SUM(amount),0) AS s FROM donors').get();
+  const donors = db.prepare('SELECT id, amount, message, created_at FROM donors ORDER BY id DESC').all();
+  res.json({ total: d.c, amount: d.s, donors });
+});
+
+// 导出捐赠 CSV
+router.get('/donations/export', adminAuth, (req, res) => {
+  const donors = db.prepare('SELECT id, amount, message, created_at FROM donors ORDER BY id DESC').all();
+  const header = ['编号', '金额(元)', '留言', '时间'];
+  const escapeCsv = (v) => {
+    const s = v == null ? '' : String(v);
+    return '"' + s.replace(/"/g, '""') + '"';
+  };
+  const rows = donors.map(x => [x.id, x.amount, x.message, x.created_at].map(escapeCsv).join(','));
+  const csv = '﻿' + header.map(escapeCsv).join(',') + '\n' + rows.join('\n');
+  logAction(req, 'export_csv', 'donations', `导出 ${donors.length} 条赞赏记录(CSV)`);
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', 'attachment; filename="donations-export.csv"');
+  res.send(csv);
+});
+
+// 导出捐赠 Excel
+router.get('/donations/export-excel', adminAuth, (req, res) => {
+  const donors = db.prepare('SELECT id, amount, message, created_at FROM donors ORDER BY id DESC').all();
+  const rows = donors.map(x => `<tr>
+    <td>${x.id}</td>
+    <td>${x.amount != null ? x.amount : 0}</td>
+    <td>${(x.message || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</td>
+    <td>${x.created_at || ''}</td>
+  </tr>`).join('');
+  const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="UTF-8"><style>td,th{font-size:12px;border:1px solid #ccc;padding:4px 8px;white-space:nowrap;}th{background:#4472C4;color:#fff;}</style></head>
+<body><table>
+<thead><tr><th>编号</th><th>金额(元)</th><th>留言</th><th>时间</th></tr></thead>
+<tbody>${rows}</tbody>
+</table></body></html>`;
+  logAction(req, 'export_excel', 'donations', `导出 ${donors.length} 条赞赏记录(Excel)`);
+  res.setHeader('Content-Type', 'application/vnd.ms-excel; charset=utf-8');
+  res.setHeader('Content-Disposition', 'attachment; filename="donations-export.xls"');
+  res.send(html);
+});
+
+// 读取站点设置（前台赞赏通道开关）
+router.get('/settings', adminAuth, (req, res) => {
+  const enabled = getSetting('donation_enabled', '0') === '1';
+  res.json({ donation_enabled: enabled });
+});
+
+// 更新站点设置：控制前台是否开放赞赏通道
+router.put('/settings', adminAuth, (req, res) => {
+  const v = req.body && req.body.donation_enabled;
+  const enabled = v === true || v === '1' || v === 1;
+  setSetting('donation_enabled', enabled ? '1' : '0');
+  logAction(req, 'update_setting', 'site', `前台赞赏通道：${enabled ? '开启' : '关闭'}`);
+  res.json({ ok: true, donation_enabled: enabled });
 });
 
 // ==================== Excel 导出（已移到 /users/:id 之前） ====================

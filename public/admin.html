@@ -91,6 +91,7 @@
         <button onclick="switchTab('users')">用户管理</button>
         <button onclick="switchTab('logs')">发送日志</button>
         <button onclick="switchTab('leads')">意向登记</button>
+        <button id="tab-donations" onclick="switchTab('donations')">捐赠管理</button>
         <button id="tab-admins" onclick="switchTab('admins')" style="display:none;">账号管理</button>
         <button id="tab-action-logs" onclick="switchTab('action-logs')" style="display:none;">操作日志</button>
       </div>
@@ -373,6 +374,47 @@
           }
           html += '</tbody></table></div>';
           content.innerHTML = html;
+        } else if (currentTab === 'donations') {
+          const data = await adminRequest('/donations');
+          const amount = Math.round(data.amount || 0);
+          let html = '';
+          html += '<div class="stat-grid" style="margin-bottom:14px;">';
+          html += `<div class="stat-card"><div class="stat-num">${data.total}</div><div class="stat-label">赞赏人次</div></div>`;
+          html += `<div class="stat-card"><div class="stat-num">¥${Number(amount).toLocaleString('zh-CN')}</div><div class="stat-label">赞赏总额（元）</div></div>`;
+          html += '</div>';
+          html += '<div class="admin-toolbar">';
+          html += '<button class="btn btn-primary" style="padding:8px 16px;font-size:13px;" onclick="downloadDonations()">导出CSV</button>';
+          html += '<button class="btn" style="padding:8px 16px;font-size:13px;border:1px solid var(--border);background:#E8F5E9;color:#2E7D32;" onclick="downloadDonationsExcel()">导出Excel</button>';
+          html += '</div>';
+          // 前台赞赏通道开关（由后台控制）
+          html += '<div class="card" style="margin-top:14px;margin-bottom:14px;">';
+          html += '<div class="card-title">前台赞赏通道（项目主页 / 支持页）</div>';
+          html += '<label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;">';
+          html += '<input type="checkbox" id="donation-toggle" style="width:18px;height:18px;">';
+          html += '<span>向前台开放捐赠 / 赞赏通道</span></label>';
+          html += '<div style="font-size:12px;color:var(--text-light);margin-top:8px;line-height:1.8;">关闭时，前台隐藏所有捐赠入口、赞赏数据与收款二维码；开启后前台恢复正常展示。此开关不影响本页的捐赠记录与导出。</div>';
+          html += '</div>';
+          html += '<div class="table-wrapper"><table class="admin-table"><thead><tr><th>ID</th><th>金额（元）</th><th>留言</th><th>时间</th></tr></thead><tbody>';
+          if (!data.donors.length) {
+            html += '<tr><td colspan="4" style="text-align:center;color:var(--text-light);padding:24px;">还没有任何赞赏记录</td></tr>';
+          } else {
+            for (const x of data.donors) {
+              const amt = Number(Math.round(x.amount || 0)).toLocaleString('zh-CN');
+              const msg = (x.message || '').toString().replace(/</g, '&lt;').replace(/>/g, '&gt;');
+              html += `<tr><td>${x.id}</td><td>¥${amt}</td><td style="max-width:360px;">${msg}</td><td style="font-size:12px;">${x.created_at || ''}</td></tr>`;
+            }
+          }
+          html += '</tbody></table></div>';
+          content.innerHTML = html;
+          // 加载开关状态并绑定
+          try {
+            const s = await adminRequest('/settings');
+            const tg = document.getElementById('donation-toggle');
+            if (tg) {
+              tg.checked = !!s.donation_enabled;
+              tg.onchange = function () { updateDonationSetting(tg.checked); };
+            }
+          } catch (e) { /* ignore */ }
         } else if (currentTab === 'action-logs') {
           // 操作日志（仅主管理员）
           const data = await adminRequest(`/admin-logs?page=${currentPage}`);
@@ -616,6 +658,54 @@
         URL.revokeObjectURL(url);
       } catch (err) {
         showToast(err.message);
+      }
+    };
+
+    // === 捐赠导出（CSV / Excel） ===
+    window.downloadDonations = async function() {
+      try {
+        const res = await fetch('/api/admin/donations/export', {
+          headers: { 'Authorization': `Bearer ${getAdminToken()}` },
+        });
+        if (!res.ok) throw new Error('导出失败');
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'donations-export.csv';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        showToast(err.message);
+      }
+    };
+    window.downloadDonationsExcel = async function() {
+      try {
+        const res = await fetch('/api/admin/donations/export-excel', {
+          headers: { 'Authorization': `Bearer ${getAdminToken()}` },
+        });
+        if (!res.ok) throw new Error('导出失败');
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'donations-export.xls';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        showToast(err.message);
+      }
+    };
+    window.updateDonationSetting = async function(enabled) {
+      try {
+        await adminRequest('/settings', { method: 'PUT', body: JSON.stringify({ donation_enabled: enabled }) });
+        showToast(enabled ? '已向前台开放赞赏通道' : '已关闭前台赞赏通道');
+      } catch (e) {
+        showToast('操作失败：' + e.message);
       }
     };
 

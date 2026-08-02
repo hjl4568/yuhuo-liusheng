@@ -102,9 +102,18 @@
     @media (prefers-reduced-motion:reduce){
       .sp-ticker-track{animation:none;flex-wrap:wrap;justify-content:center;}
     }
+
+    /* 捐赠通道：默认隐藏（donation-off），后台开启后由 JS 移除该 class 才显示 */
+    body.donation-off .donation-el { display: none !important; }
+    body:not(.donation-off) .donation-notice { display: none !important; }
+    .donation-notice{margin-top:48px;max-width:680px;padding:22px 26px;border-radius:14px;
+      background:linear-gradient(155deg,rgba(120,140,180,0.10),rgba(18,16,28,0.08));
+      border:1px solid var(--border);text-align:center;}
+    .donation-notice-title{font-family:var(--serif);font-size:20px;color:var(--primary-strong);margin-bottom:10px;}
+    .donation-notice-text{font-size:14.5px;line-height:1.9;color:var(--text-light);}
   </style>
 </head>
-<body>
+<body class="donation-off">
   <a class="sp-back" href="/intro.html">← 返回首页</a>
 
   <div class="sp-wrap" id="sp-wrap">
@@ -116,13 +125,19 @@
     </div>
 
     <!-- ============ 备注框 ============ -->
-    <div class="sp-note">
+    <div class="sp-note donation-el">
       <div class="sp-note-tag">📌 一句实话</div>
       <div class="sp-note-text">目前仅是<strong>概念设计阶段</strong>，所以捐赠<strong>完全看个人偏好</strong>，我们不承诺任何对价回报；活动群目前还在筹备，<strong>之后会放上去</strong>——我们想让每一步都走扎实，不透支任何一份信任。</div>
     </div>
 
+    <!-- ============ 赞赏通道暂未开放提示（受后台开关控制） ============ -->
+    <div class="donation-notice">
+      <div class="donation-notice-title">赞赏通道暂未开放</div>
+      <div class="donation-notice-text">感谢你愿意支持长夜余火 🔥 目前赞赏通道还在筹备中，暂未向前台开放。你仍可以在下方留言墙留下想说的话，我们会在开放后第一时间通知大家。</div>
+    </div>
+
     <!-- ============ 两种收款方式 ============ -->
-    <div class="sp-pay-grid">
+    <div class="sp-pay-grid donation-el">
       <!-- 微信 -->
       <div class="sp-pay-card">
         <div class="sp-pay-icon wechat">微</div>
@@ -272,6 +287,18 @@
     }
     loadTicker();
     setInterval(loadTicker, 15000);
+  </script>
+  <script>
+    // 前台捐赠通道：body 默认带 donation-off（隐藏收款区），后台开启后移除该 class 才显示
+    (function () {
+      try {
+        fetch('/api/settings/public').then(function (r) { return r.json(); }).then(function (d) {
+          if (d && d.donation_enabled) {
+            document.body.classList.remove('donation-off');
+          }
+        }).catch(function () {});
+      } catch (e) {}
+    })();
   </script>
 </body>
 </html>

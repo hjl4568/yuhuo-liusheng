@@ -1,8 +1,14 @@
 const express = require('express');
-const { db } = require('../db');
+const { db, getSetting } = require('../db');
 const { auth } = require('../middleware/auth');
 
 const router = express.Router();
+
+// 公开站点设置（供前台判断是否展示捐赠通道，无需登录）
+router.get('/settings/public', (req, res) => {
+  const enabled = getSetting('donation_enabled', '0') === '1';
+  res.json({ donation_enabled: enabled });
+});
 
 // 记录一次访问（按天计数，同一 IP 同日只计一次，避免自刷）
 router.post('/visit', (req, res) => {
