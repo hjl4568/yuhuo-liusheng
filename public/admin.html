@@ -162,6 +162,33 @@
       return data;
     }
 
+    // HTML 转义：所有来自服务端、可能被普通用户控制的数据，拼进 innerHTML 前必须转义，防存储型 XSS
+    function esc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+
+
+    // 修改当前登录管理员的密码
+    window.changeMyPassword = async function () {
+      const cur = document.getElementById('cp-current').value;
+      const neu = document.getElementById('cp-new').value;
+      const msg = document.getElementById('cp-msg');
+      msg.textContent = '提交中…'; msg.style.color = 'var(--text-light)';
+      try {
+        const r = await adminRequest('/change-password', {
+          method: 'POST',
+          body: JSON.stringify({ current_password: cur, new_password: neu }),
+        });
+        msg.textContent = '✅ ' + r.message; msg.style.color = '#388E3C';
+        document.getElementById('cp-current').value = '';
+        document.getElementById('cp-new').value = '';
+      } catch (e) {
+        msg.textContent = '❌ ' + e.message; msg.style.color = '#D32F2F';
+      }
+    };
+
     function showAdminUI() {
       document.getElementById('login-section').style.display = 'none';
       document.getElementById('admin-section').style.display = '';
@@ -301,9 +328,9 @@
             const trigger = c.trigger_type === 'immediate' ? '立即' : c.trigger_type === 'scheduled' ? (c.trigger_date ? new Date(c.trigger_date).toLocaleString('zh-CN').slice(5,16) : '未设置') : '手动';
             html += `<tr>
               <td>${c.id}</td>
-              <td>${c.title}</td>
-              <td>${c.user_name || c.user_phone}</td>
-              <td>${c.recipient_name}<br><span style="font-size:11px;color:var(--text-light);">${c.recipient_email}</span></td>
+              <td>${esc(c.title)}</td>
+              <td>${esc(c.user_name || c.user_phone)}</td>
+              <td>${esc(c.recipient_name)}<br><span style="font-size:11px;color:var(--text-light);">${esc(c.recipient_email)}</span></td>
               <td>${TYPE_MAP[c.content_type] || c.content_type}</td>
               <td>${statusTag(c.status)}</td>
               <td style="font-size:12px;">${trigger}</td>
@@ -326,11 +353,11 @@
           for (const u of data.users) {
             html += `<tr onclick="showUserDetail(${u.id})">
               <td>${u.id}</td>
-              <td>${u.phone}</td>
-              <td>${u.name || '-'}</td>
-              <td>${u.email || '-'}</td>
+              <td>${esc(u.phone)}</td>
+              <td>${esc(u.name) || '-'}</td>
+              <td>${esc(u.email) || '-'}</td>
               <td style="text-align:center;font-weight:600;color:var(--primary);">${u.capsule_count || 0}</td>
-              <td>${u.emergency_contact || '-'} ${u.emergency_phone || ''}</td>
+              <td>${esc(u.emergency_contact) || '-'} ${esc(u.emergency_phone) || ''}</td>
               <td style="font-size:12px;">${new Date(u.created_at).toLocaleString('zh-CN')}</td>
             </tr>`;
           }
@@ -343,13 +370,13 @@
           for (const l of data.logs) {
             html += `<tr>
               <td>${l.id}</td>
-              <td>${l.capsule_title || '#' + l.capsule_id}</td>
-              <td>${l.send_method}</td>
-              <td>${l.recipient}</td>
+              <td>${esc(l.capsule_title) || '#' + l.capsule_id}</td>
+              <td>${esc(l.send_method)}</td>
+              <td>${esc(l.recipient)}</td>
               <td>${statusTag(l.status)}</td>
-              <td>${l.operator}</td>
+              <td>${esc(l.operator)}</td>
               <td style="font-size:12px;">${l.sent_at ? new Date(l.sent_at).toLocaleString('zh-CN') : '-'}</td>
-              <td style="font-size:11px;color:var(--danger);">${l.error_message || '-'}</td>
+              <td style="font-size:11px;color:var(--danger);">${esc(l.error_message) || '-'}</td>
             </tr>`;
           }
           html += '</tbody></table></div>';
@@ -362,12 +389,12 @@
           for (const l of data.leads) {
             html += `<tr>
               <td>${l.id}</td>
-              <td>${l.name || '-'}</td>
-              <td>${l.phone || '-'}</td>
-              <td>${l.email || '-'}</td>
-              <td style="font-size:12px;">${l.content_types || '-'}</td>
+              <td>${esc(l.name) || '-'}</td>
+              <td>${esc(l.phone) || '-'}</td>
+              <td>${esc(l.email) || '-'}</td>
+              <td style="font-size:12px;">${esc(l.content_types) || '-'}</td>
               <td>${l.want_early ? '是' : '否'}</td>
-              <td style="font-size:12px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${l.message || ''}">${l.message || '-'}</td>
+              <td style="font-size:12px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${esc(l.message)}">${esc(l.message) || '-'}</td>
               <td style="font-size:12px;">${new Date(l.created_at).toLocaleString('zh-CN')}</td>
             </tr>`;
           }
@@ -376,7 +403,17 @@
         } else if (currentTab === 'admins') {
           // 账号管理（主管理员可添加/停用/删除子管理员）
           const data = await adminRequest('/admins');
-          let html = '<div style="margin-bottom:16px;">';
+          // 修改当前登录管理员的密码（替换初始弱口令）
+          let pwdCard = '<div class="card" style="margin-bottom:16px;">';
+          pwdCard += '<div class="card-title">修改我的密码</div>';
+          pwdCard += '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">';
+          pwdCard += '<input type="password" id="cp-current" class="form-input" style="max-width:200px;" placeholder="当前密码" autocomplete="off">';
+          pwdCard += '<input type="password" id="cp-new" class="form-input" style="max-width:200px;" placeholder="新密码（≥6位）" autocomplete="off">';
+          pwdCard += '<button class="btn btn-primary" style="padding:8px 18px;font-size:14px;" onclick="changeMyPassword()">修改密码</button>';
+          pwdCard += '<span id="cp-msg" style="font-size:13px;"></span>';
+          pwdCard += '</div></div>';
+          let html = pwdCard;
+          html += '<div style="margin-bottom:16px;">';
           html += '<button class="btn btn-primary" style="padding:8px 18px;font-size:14px;" onclick="showCreateAdminForm()">+ 添加子管理员</button>';
           html += '</div>';
           html += '<p style="font-size:12px;color:var(--text-light);margin:-4px 0 14px;line-height:1.6;">在此添加子管理员：他们可用账号密码登录后台、查看与管理用户/胶囊，其全部操作会实时记录到「操作动态」供所有管理员跟进。</p>';
@@ -393,8 +430,8 @@
               `<button class="btn" style="padding:4px 10px;font-size:12px;color:#C62828;border:1px solid #F5C6CB;" onclick="deleteAdmin(${a.id}, '${a.username}')">删除</button>`;
             html += `<tr>
               <td>${a.id}</td>
-              <td>${a.username}</td>
-              <td>${a.display_name || a.username}</td>
+              <td>${esc(a.username)}</td>
+              <td>${esc(a.display_name) || esc(a.username)}</td>
               <td>${roleBadge}</td>
               <td>${statusBadge}</td>
               <td style="text-align:center;">${a.action_count || 0}</td>
@@ -431,8 +468,8 @@
           } else {
             for (const x of data.donors) {
               const amt = Number(Math.round(x.amount || 0)).toLocaleString('zh-CN');
-              const msg = (x.message || '').toString().replace(/</g, '&lt;').replace(/>/g, '&gt;');
-              html += `<tr><td>${x.id}</td><td>¥${amt}</td><td style="max-width:360px;">${msg}</td><td style="font-size:12px;">${x.created_at || ''}</td></tr>`;
+              const msg = esc(x.message);
+              html += `<tr><td>${x.id}</td><td>¥${amt}</td><td style="max-width:360px;">${msg}</td><td style="font-size:12px;">${esc(x.created_at)}</td></tr>`;
             }
           }
           html += '</tbody></table></div>';
@@ -473,12 +510,12 @@
               const d = l.detail || '';
               if (/失败|删除|停用|错误/.test(d)) cls += ' fail';
               else if (/成功|新增|开启|启用|已发送/.test(d)) cls += ' ok';
-              const detailText = d.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+              const detailText = esc(d);
               html += `<tr>
                 <td style="font-size:12px;white-space:nowrap;">${new Date(l.created_at).toLocaleString('zh-CN')}</td>
-                <td>${l.admin_name}</td>
-                <td><span class="badge" style="background:#F0F4FF;color:#3B5998;">${label}</span></td>
-                <td style="font-size:12px;">${l.target || '-'}</td>
+              <td>${esc(l.admin_name)}</td>
+              <td><span class="badge" style="background:#F0F4FF;color:#3B5998;">${esc(label)}</span></td>
+              <td style="font-size:12px;">${esc(l.target) || '-'}</td>
                 <td class="${cls}">${detailText}</td>
                 <td style="font-size:11px;">${l.ip || '-'}</td>
               </tr>`;
@@ -597,14 +634,14 @@
       try {
         const data = await adminRequest(`/users/${id}`);
         const u = data.user;
-        let html = `<h3>${u.name || u.phone}</h3>`;
+        let html = `<h3>${esc(u.name || u.phone)}</h3>`;
         html += `<p style="font-size:13px;color:var(--text-light);">用户 #${u.id} · 注册于 ${new Date(u.created_at).toLocaleString('zh-CN')}</p>`;
         // 基本信息
         html += '<div class="detail-section"><h4>基本信息</h4><div class="detail-grid">';
-        html += `<div><span class="label">手机号</span></div><div>${u.phone}</div>`;
-        html += `<div><span class="label">邮箱</span></div><div>${u.email || '-'}</div>`;
-        html += `<div><span class="label">紧急联系人</span></div><div>${u.emergency_contact || '-'}</div>`;
-        html += `<div><span class="label">紧急联系电话</span></div><div>${u.emergency_phone || '-'}</div>`;
+        html += `<div><span class="label">手机号</span></div><div>${esc(u.phone)}</div>`;
+        html += `<div><span class="label">邮箱</span></div><div>${esc(u.email) || '-'}</div>`;
+        html += `<div><span class="label">紧急联系人</span></div><div>${esc(u.emergency_contact) || '-'}</div>`;
+        html += `<div><span class="label">紧急联系电话</span></div><div>${esc(u.emergency_phone) || '-'}</div>`;
         html += `<div><span class="label">更新时间</span></div><div>${u.updated_at ? new Date(u.updated_at).toLocaleString('zh-CN') : '-'}</div>`;
         html += '</div></div>';
         // 胶囊列表
@@ -616,7 +653,7 @@
           for (const c of data.capsules) {
             const trigger = c.trigger_type === 'immediate' ? '立即' : c.trigger_type === 'scheduled' ? (c.trigger_date ? new Date(c.trigger_date).toLocaleDateString('zh-CN') : '未设置') : '手动';
             html += `<tr>
-              <td>${c.title}</td>
+              <td>${esc(c.title)}</td>
               <td>${TYPE_MAP[c.content_type] || c.content_type}</td>
               <td>${statusTag(c.status)}</td>
               <td style="font-size:12px;">${trigger}</td>
@@ -632,8 +669,8 @@
           html += '<table class="detail-table"><thead><tr><th>合同编号</th><th>类型</th><th>状态</th><th>签署时间</th></tr></thead><tbody>';
           for (const ct of data.contracts) {
             html += `<tr>
-              <td style="font-size:12px;">${ct.contract_no}</td>
-              <td>${ct.contract_type}</td>
+              <td style="font-size:12px;">${esc(ct.contract_no)}</td>
+              <td>${esc(ct.contract_type)}</td>
               <td>${statusTag(ct.status)}</td>
               <td style="font-size:12px;">${ct.signed_at ? new Date(ct.signed_at).toLocaleString('zh-CN') : '-'}</td>
             </tr>`;
@@ -648,11 +685,11 @@
           html += '<table class="detail-table"><thead><tr><th>胶囊</th><th>方式</th><th>收件人</th><th>状态</th><th>操作人</th><th>时间</th></tr></thead><tbody>';
           for (const l of data.logs) {
             html += `<tr>
-              <td>${l.capsule_title || '#' + l.capsule_id}</td>
-              <td>${l.send_method}</td>
-              <td style="font-size:12px;">${l.recipient}</td>
+              <td>${esc(l.capsule_title) || '#' + l.capsule_id}</td>
+              <td>${esc(l.send_method)}</td>
+              <td style="font-size:12px;">${esc(l.recipient)}</td>
               <td>${statusTag(l.status)}</td>
-              <td style="font-size:12px;">${l.operator}</td>
+              <td style="font-size:12px;">${esc(l.operator)}</td>
               <td style="font-size:12px;">${l.sent_at ? new Date(l.sent_at).toLocaleString('zh-CN') : '-'}</td>
             </tr>`;
           }

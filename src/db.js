@@ -192,11 +192,12 @@ function init() {
   const existing = db.prepare('SELECT id FROM admin_users WHERE username = ?').get(adminUsername);
   if (!existing) {
     db.prepare('INSERT INTO admin_users (username, password, role, display_name) VALUES (?, ?, ?, ?)').run(adminUsername, hashed, 'main', '主管理员');
-    console.log(`[DB] Admin user created: ${adminUsername} (main)`);
+    console.log(`[DB] Admin user created: ${adminUsername} (main) — 初始密码 admin123456（请尽快在后台“修改密码”）`);
   } else {
-    // 关键修复：主账号密码每次启动都强制同步为 admin123456，杜绝任何环境变量导致的锁死。
-    db.prepare("UPDATE admin_users SET role = 'main', password = ?, display_name = '主管理员' WHERE username = ?").run(hashed, adminUsername);
-    console.log(`[DB] Admin user synced: ${adminUsername} (main) — 密码强制对齐为 admin123456`);
+    // 不再强制覆盖密码：避免把管理员已修改的密码每次启动改回 admin123456（弱口令写死风险）。
+    // 仅确保主账号角色正确；密码由管理员自行在后台“修改密码”管理。
+    db.prepare("UPDATE admin_users SET role = 'main' WHERE username = ? AND role <> 'main'").run(adminUsername);
+    console.log(`[DB] Admin user synced: ${adminUsername} (main) — 密码不再被强制覆盖`);
   }
 
   console.log('[DB] Database initialized');

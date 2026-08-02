@@ -442,6 +442,25 @@ router.put('/admins/:id/toggle', mainAdminAuth, (req, res) => {
   res.json({ message: newState ? '已启用' : '已停用', is_active: newState });
 });
 
+// 修改自身密码（所有登录的管理员均可，用于替换初始弱口令 admin123456）
+router.post('/change-password', adminAuth, (req, res) => {
+  const { current_password, new_password } = req.body || {};
+  if (!current_password || !new_password) {
+    return res.status(400).json({ error: '当前密码和新密码都不能为空' });
+  }
+  if (String(new_password).length < 6) {
+    return res.status(400).json({ error: '新密码至少 6 位' });
+  }
+  const admin = db.prepare('SELECT * FROM admin_users WHERE id = ?').get(req.adminId);
+  if (!admin) return res.status(404).json({ error: '管理员不存在' });
+  if (!bcrypt.compareSync(String(current_password), admin.password)) {
+    return res.status(401).json({ error: '当前密码错误' });
+  }
+  db.prepare('UPDATE admin_users SET password = ? WHERE id = ?').run(bcrypt.hashSync(String(new_password), 10), admin.id);
+  logAction(req, 'change_password', `admin:${admin.id}`, `管理员「${admin.username}」修改了登录密码`);
+  res.json({ message: '密码修改成功，下次登录请使用新密码' });
+});
+
 // 管理员操作日志（广播形式：所有管理员均可查看，便于跟进变化）
 router.get('/admin-logs', adminAuth, (req, res) => {
   const page = parseInt(req.query.page) || 1;
