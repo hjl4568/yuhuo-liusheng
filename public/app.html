@@ -5,8 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>长夜余火（余火·留声）— 让此刻的声音，抵达未来</title>
   <link rel="stylesheet" href="/css/style.css?v=20260806">
+  <style>
+    /* 捐赠通道：默认隐藏（donation-off），后台开启后由 JS 移除该 class 才显示 */
+    body.donation-off .donation-el { display: none !important; }
+  </style>
 </head>
-<body>
+<body class="donation-off">
   <div class="deploy-banner" id="deploy-banner" style="display:none">
     ⚠️ 当前为静态演示站：注册 / 登录 / 创建胶囊等需要服务器的功能暂不可用。完整体验请在本机运行后端，或部署 Node 服务到公网。
   </div>
@@ -64,7 +68,7 @@
         <a href="/intro.html" class="btn btn-outline" style="white-space:nowrap;">查看介绍</a>
       </div>
 
-      <div class="card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+      <div class="card donation-el" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
         <div>
           <div class="card-title" style="margin-bottom:6px;">支持长夜余火 💛</div>
           <p style="font-size:13px;color:var(--text-light);margin:0;max-width:220px;">如果你也被这个念头打动，欢迎自愿赞赏，陪我们走得更远。</p>
@@ -112,7 +116,16 @@
   <script src="/js/i18n.js?v=20260806"></script>
   <script src="/js/share.js"></script>
   <script>
-    // 后端连通则隐藏“静态演示站”横幅（部署后不再误导）
+    // 前台捐赠通道：body 默认带 donation-off（隐藏），后台开启后移除该 class 才显示
+    (function () {
+      try {
+        fetch('/api/settings/public').then(function (r) { return r.json(); }).then(function (d) {
+          if (d && d.donation_enabled) { document.body.classList.remove('donation-off'); }
+        }).catch(function () {});
+      } catch (e) {}
+    })();
+  </script>
+  <script>    // 后端连通则隐藏“静态演示站”横幅（部署后不再误导）
     fetch('/api/health').then(function (r) {
       if (!r.ok) document.getElementById('deploy-banner').style.display = 'block';
     }).catch(function () {

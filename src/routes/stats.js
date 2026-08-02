@@ -6,6 +6,7 @@ const router = express.Router();
 
 // 公开站点设置（供前台判断是否展示捐赠通道，无需登录）
 router.get('/settings/public', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
   const enabled = getSetting('donation_enabled', '0') === '1';
   res.json({ donation_enabled: enabled });
 });

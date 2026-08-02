@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="/css/style.css?v=20260806">
   <link rel="stylesheet" href="/css/nightfire.css?v=20260806">
 </head>
-<body>
+<body class="donation-off">
   <div class="nf-stars" id="stars"></div>
   <div class="nf-aurora" aria-hidden="true">
     <span class="nf-blob b1"></span>
@@ -20,7 +20,7 @@
     <span class="logo"><img class="nf-logo-mark" src="/favicon.svg" alt="">长夜余火<small>余火 · 留声</small></span>
     <nav>
       <a href="/intro.html">返回介绍</a>
-      <a href="/support.html">支持我们</a>
+      <a href="/support.html" class="donation-el">支持我们</a>
     </nav>
   </div>
 
@@ -145,6 +145,8 @@
     .join-ct-ico svg{width:20px;height:20px;}
     .join-ct-t{font-size:12px;color:var(--faint);letter-spacing:1px;}
     .join-ct-v{font-size:14px;color:var(--text);font-weight:600;}
+    /* 捐赠通道：默认隐藏（donation-off），后台开启后由 JS 移除该 class 才显示 */
+    body.donation-off .donation-el { display: none !important; }
   </style>
 
   <script>
@@ -168,5 +170,15 @@
   </script>
   <script src="/js/i18n-data.js?v=20260806"></script>
   <script src="/js/i18n.js?v=20260806"></script>
+  <script>
+    // 前台捐赠通道：body 默认带 donation-off（隐藏），后台开启后移除该 class 才显示
+    (function () {
+      try {
+        fetch('/api/settings/public').then(function (r) { return r.json(); }).then(function (d) {
+          if (d && d.donation_enabled) { document.body.classList.remove('donation-off'); }
+        }).catch(function () {});
+      } catch (e) {}
+    })();
+  </script>
 </body>
 </html>
