@@ -47,6 +47,18 @@
     .badge-delivered { background: #E8F5E9; color: #2E7D32; }
     .badge-cancelled { background: #FDECEA; color: #C62828; }
     .badge-signed { background: #E8F5E9; color: #2E7D32; }
+    /* 操作动态（广播） */
+    .log-summary { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; flex-wrap: wrap; }
+    .log-summary .today-chip { padding: 4px 14px; border-radius: 20px; font-size: 13px; background: #EAF2FF; color: #2F6BD0; border: 1px solid #CFE0FB; }
+    .live-dot { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #2E7D32; }
+    .live-dot::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #2E7D32; box-shadow: 0 0 0 0 rgba(46,125,50,.6); animation: livedot 1.6s infinite; }
+    @keyframes livedot { 0% { box-shadow: 0 0 0 0 rgba(46,125,50,.55); } 70% { box-shadow: 0 0 0 7px rgba(46,125,50,0); } 100% { box-shadow: 0 0 0 0 rgba(46,125,50,0); } }
+    .log-filter { display: inline-flex; gap: 6px; margin-left: auto; }
+    .log-filter button { padding: 4px 12px; border-radius: 8px; border: 1px solid var(--border); background: #fff; font-size: 13px; cursor: pointer; }
+    .log-filter button.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .op-detail { font-size: 12px; max-width: 340px; white-space: normal; line-height: 1.55; color: #333; }
+    .op-detail.ok { color: #1B5E20; }
+    .op-detail.fail { color: #B71C1C; }
   </style>
 </head>
 <body>
@@ -93,7 +105,7 @@
         <button onclick="switchTab('leads')">意向登记</button>
         <button id="tab-donations" onclick="switchTab('donations')">捐赠管理</button>
         <button id="tab-admins" onclick="switchTab('admins')" style="display:none;">账号管理</button>
-        <button id="tab-action-logs" onclick="switchTab('action-logs')" style="display:none;">操作日志</button>
+        <button id="tab-action-logs" onclick="switchTab('action-logs')" style="display:none;">操作动态</button>
       </div>
 
       <div id="tab-content"></div>
@@ -160,11 +172,12 @@
       }
       // 显示退出按钮
       document.getElementById('admin-actions').innerHTML = '<span class="nav-action" onclick="adminLogout()" style="cursor:pointer;">退出</span>';
-      // 主管理员才显示账号管理和操作日志 Tab
+      // 操作动态（广播）：所有管理员可见，便于跟进变化；账号管理：仅主管理员可见
       const tabAdmins = document.getElementById('tab-admins');
       const tabLogs = document.getElementById('tab-action-logs');
-      if (tabAdmins) tabAdmins.style.display = adminInfo && adminInfo.role === 'main' ? '' : 'none';
-      if (tabLogs) tabLogs.style.display = adminInfo && adminInfo.role === 'main' ? '' : 'none';
+      const isSub = adminInfo && adminInfo.role === 'sub';
+      if (tabAdmins) tabAdmins.style.display = isSub ? 'none' : '';
+      if (tabLogs) tabLogs.style.display = ''; // 广播给所有管理员
       loadDashboard();
     }
 
@@ -203,6 +216,8 @@
 
     let currentTab = 'capsules';
     let currentPage = 1;
+    let logTodayOnly = false;     // 操作动态：今日筛选
+    let logRefreshTimer = null;   // 操作动态：实时广播自动刷新
 
     async function loadDashboard() {
       try {
@@ -254,14 +269,29 @@
     window.switchTab = function(tab) {
       currentTab = tab;
       currentPage = 1;
+      // 离开操作动态时停止自动刷新
+      if (logRefreshTimer) { clearInterval(logRefreshTimer); logRefreshTimer = null; }
       document.querySelectorAll('.admin-tabs button').forEach(b => b.classList.remove('active'));
-      event.target.classList.add('active');
+      if (event && event.target) event.target.classList.add('active');
+      loadTab();
+      // 进入操作动态：开启实时广播（每 8 秒刷新一次）
+      if (tab === 'action-logs') {
+        logRefreshTimer = setInterval(() => {
+          if (currentTab === 'action-logs') loadTab(true);
+        }, 8000);
+      }
+    };
+
+    // 操作动态：今日/全部筛选切换
+    window.toggleLogToday = function(on) {
+      logTodayOnly = on;
+      currentPage = 1;
       loadTab();
     };
 
-    async function loadTab() {
+    async function loadTab(silent) {
       const content = document.getElementById('tab-content');
-      content.innerHTML = '<p style="text-align:center;color:var(--text-light);">加载中...</p>';
+      if (!silent) content.innerHTML = '<p style="text-align:center;color:var(--text-light);">加载中...</p>';
 
       try {
         if (currentTab === 'capsules') {
@@ -344,11 +374,12 @@
           html += '</tbody></table></div>';
           content.innerHTML = html;
         } else if (currentTab === 'admins') {
-          // 账号管理（仅主管理员）
+          // 账号管理（主管理员可添加/停用/删除子管理员）
           const data = await adminRequest('/admins');
           let html = '<div style="margin-bottom:16px;">';
           html += '<button class="btn btn-primary" style="padding:8px 18px;font-size:14px;" onclick="showCreateAdminForm()">+ 添加子管理员</button>';
           html += '</div>';
+          html += '<p style="font-size:12px;color:var(--text-light);margin:-4px 0 14px;line-height:1.6;">在此添加子管理员：他们可用账号密码登录后台、查看与管理用户/胶囊，其全部操作会实时记录到「操作动态」供所有管理员跟进。</p>';
           html += '<div class="table-wrapper"><table class="admin-table"><thead><tr><th>ID</th><th>用户名</th><th>显示名</th><th>角色</th><th>状态</th><th>操作数</th><th>最后操作</th><th>创建时间</th><th>操作</th></tr></thead><tbody>';
           for (const a of data.admins) {
             const roleBadge = a.role === 'main'
@@ -416,26 +447,44 @@
             }
           } catch (e) { /* ignore */ }
         } else if (currentTab === 'action-logs') {
-          // 操作日志（仅主管理员）
-          const data = await adminRequest(`/admin-logs?page=${currentPage}`);
+          // 操作动态（广播给所有管理员）：显示谁在何时做了什么、实际后果
+          const data = await adminRequest(`/admin-logs?page=${currentPage}${logTodayOnly ? '&today=1' : ''}`);
           const ACTION_LABELS = {
-            'login': '登录', 'trigger_capsule': '触发胶囊', 'export_csv': '导出CSV',
-            'export_excel': '导出Excel', 'create_admin': '创建管理员', 'delete_admin': '删除管理员',
-            'toggle_admin': '启用/停用',
+            'login': '登录后台', 'trigger_capsule': '触发胶囊', 'export_csv': '导出CSV',
+            'export_excel': '导出Excel', 'create_admin': '新增管理员', 'delete_admin': '删除管理员',
+            'toggle_admin': '启用/停用', 'update_setting': '设置变更', 'reset_public_stats': '重置统计',
           };
-          let html = '<div class="table-wrapper"><table class="admin-table"><thead><tr><th>ID</th><th>操作人</th><th>动作</th><th>对象</th><th>详情</th><th>IP</th><th>时间</th></tr></thead><tbody>';
-          for (const l of data.logs) {
-            html += `<tr>
-              <td>${l.id}</td>
-              <td>${l.admin_name}</td>
-              <td><span class="badge" style="background:#F0F4FF;color:#3B5998;">${ACTION_LABELS[l.action] || l.action}</span></td>
-              <td style="font-size:12px;">${l.target || '-'}</td>
-              <td style="font-size:12px;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${l.detail || ''}">${l.detail || '-'}</td>
-              <td style="font-size:11px;">${l.ip || '-'}</td>
-              <td style="font-size:12px;">${new Date(l.created_at).toLocaleString('zh-CN')}</td>
-            </tr>`;
+          let html = '<div class="log-summary">';
+          html += `<span class="today-chip">今日操作动态 ${data.todayCount} 条</span>`;
+          html += '<span class="live-dot">实时广播中</span>';
+          html += '<span class="log-filter">';
+          html += `<button class="${logTodayOnly ? '' : 'active'}" onclick="toggleLogToday(false)">全部</button>`;
+          html += `<button class="${logTodayOnly ? 'active' : ''}" onclick="toggleLogToday(true)">仅今日</button>`;
+          html += '</span></div>';
+
+          if (!data.logs.length) {
+            html += '<p style="text-align:center;color:var(--text-light);padding:24px;">暂时没有任何操作记录</p>';
+          } else {
+            html += '<div class="table-wrapper"><table class="admin-table"><thead><tr><th>时间</th><th>操作人</th><th>动作</th><th>对象</th><th>操作内容与实际后果</th><th>IP</th></tr></thead><tbody>';
+            for (const l of data.logs) {
+              const label = ACTION_LABELS[l.action] || l.action;
+              // 成败着色：失败/删除/停用等 -> 红；成功/新增/开启/启用 -> 绿
+              let cls = 'op-detail';
+              const d = l.detail || '';
+              if (/失败|删除|停用|错误/.test(d)) cls += ' fail';
+              else if (/成功|新增|开启|启用|已发送/.test(d)) cls += ' ok';
+              const detailText = d.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+              html += `<tr>
+                <td style="font-size:12px;white-space:nowrap;">${new Date(l.created_at).toLocaleString('zh-CN')}</td>
+                <td>${l.admin_name}</td>
+                <td><span class="badge" style="background:#F0F4FF;color:#3B5998;">${label}</span></td>
+                <td style="font-size:12px;">${l.target || '-'}</td>
+                <td class="${cls}">${detailText}</td>
+                <td style="font-size:11px;">${l.ip || '-'}</td>
+              </tr>`;
+            }
+            html += '</tbody></table></div>';
           }
-          html += '</tbody></table></div>';
           html += renderPagination(data.totalPages, data.page);
           content.innerHTML = html;
         }

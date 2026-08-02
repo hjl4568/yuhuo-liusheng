@@ -287,7 +287,15 @@ router.post('/capsules/:id/trigger', adminAuth, async (req, res) => {
   }
 
   const result = await deliverCapsule(capsule, `admin#${req.adminId}`);
-  logAction(req, 'trigger_capsule', `capsule:${capsule.id}`, `后台触发胶囊"${capsule.title}"`);
+  // 记录「操作内容 + 实际后果」，便于所有管理员在广播日志中跟进
+  let detail = `后台触发胶囊《${capsule.title}》`;
+  if (result.success) {
+    detail += `：触发成功，已发送 ${result.emailDelivered} 封邮件`;
+    if (result.reservedCount > 0) detail += `，${result.reservedCount} 项为预留/人工方式待补发`;
+  } else {
+    detail += `：触发失败（${result.error || result.message || '未知原因'}）`;
+  }
+  logAction(req, 'trigger_capsule', `capsule:${capsule.id}`, detail);
   if (result.success) {
     res.json({ message: '后台触发成功', previewUrl: result.previewUrl });
   } else {
@@ -434,28 +442,28 @@ router.put('/admins/:id/toggle', mainAdminAuth, (req, res) => {
   res.json({ message: newState ? '已启用' : '已停用', is_active: newState });
 });
 
-// 管理员操作日志
-router.get('/admin-logs', mainAdminAuth, (req, res) => {
+// 管理员操作日志（广播形式：所有管理员均可查看，便于跟进变化）
+router.get('/admin-logs', adminAuth, (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = 30;
   const offset = (page - 1) * limit;
   const adminFilter = req.query.admin_id || '';
+  const todayOnly = req.query.today === '1';
 
-  let query = 'SELECT * FROM admin_action_logs';
-  let countQuery = 'SELECT COUNT(*) as count FROM admin_action_logs';
+  const conds = [];
   const params = [];
+  if (adminFilter) { conds.push('admin_id = ?'); params.push(adminFilter); }
+  if (todayOnly) { conds.push("created_at >= date('now')"); }
+  const where = conds.length ? ' WHERE ' + conds.join(' AND ') : '';
 
-  if (adminFilter) {
-    query += ' WHERE admin_id = ?';
-    countQuery += ' WHERE admin_id = ?';
-    params.push(adminFilter);
-  }
-
-  query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
+  const query = `SELECT * FROM admin_action_logs${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`;
+  const countQuery = `SELECT COUNT(*) as count FROM admin_action_logs${where}`;
   const logs = db.prepare(query).all(...params, limit, offset);
   const total = db.prepare(countQuery).get(...params).count;
+  // 今日动态数（用于广播摘要）
+  const todayCount = db.prepare("SELECT COUNT(*) as c FROM admin_action_logs WHERE created_at >= date('now')").get().c;
 
-  res.json({ logs, total, page, totalPages: Math.ceil(total / limit) });
+  res.json({ logs, total, page, totalPages: Math.ceil(total / limit), todayCount });
 });
 
 // ==================== 捐赠管理（完整控制：汇总 / 列表 / 导出 / 前台开关） ====================
