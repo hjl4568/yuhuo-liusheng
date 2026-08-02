@@ -21,6 +21,7 @@
     <nav>
       <a href="/intro.html">返回介绍</a>
       <a href="/support.html" class="donation-el">支持我们</a>
+      <a href="/admin.html" class="admin-entry" title="管理员登录（需账号密码）">管理员登录</a>
     </nav>
   </div>
 
@@ -147,6 +148,22 @@
     .join-ct-v{font-size:14px;color:var(--text);font-weight:600;}
     /* 捐赠通道：默认隐藏（donation-off），后台开启后由 JS 移除该 class 才显示 */
     body.donation-off .donation-el { display: none !important; }
+
+    /* 顶部导航「管理员登录」入口：小巧低调，但与普通导航区分 */
+    .nf-topbar nav a.admin-entry {
+      font-size: 12px;
+      color: rgba(255,255,255,.6);
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 10px;
+      padding: 3px 10px;
+      margin-left: 4px;
+      line-height: 1.4;
+    }
+    .nf-topbar nav a.admin-entry:hover {
+      color: #fff;
+      border-color: rgba(255,255,255,.5);
+      background: rgba(255,255,255,.08);
+    }
   </style>
 
   <script>
