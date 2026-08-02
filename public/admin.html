@@ -396,6 +396,7 @@
           html += '</tbody></table></div>';
           html += renderPagination(data.totalPages, data.page);
           content.innerHTML = html;
+        }
       } catch (err) {
         content.innerHTML = `<p style="text-align:center;color:var(--danger);">${err.message}</p>`;
       }
