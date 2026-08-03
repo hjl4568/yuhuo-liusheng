@@ -8,6 +8,17 @@
 
 ---
 
+## 第 0 步（必须，在腾讯云网页操作，不在服务器上）：开放 80 / 443 端口
+
+> certbot 申请免费证书时要从公网访问你服务器的 80 端口做验证。腾讯云默认只放行了 3000，
+> **必须先在腾讯云控制台「防火墙 / 安全组」里放行 TCP 80 和 TCP 443**（来源 0.0.0.0/0）。
+> 这一步在浏览器里点，不用写命令：
+> 1. 登录腾讯云 → 找到这台轻量应用服务器/云服务器 → 「防火墙」或「安全组」
+> 2. 添加规则：协议 TCP，端口 80，允许；再添加一条 443，允许。
+> 3. （可选）之后验证 https 正常了，可把 3000 端口规则删掉，只留 80/443。
+
+---
+
 ## 第 1 步：拉取最新代码（含新标语 + 域名版分享卡片）
 
 ```bash
@@ -41,12 +52,14 @@ sudo systemctl enable nginx && sudo systemctl start nginx
 ## 第 4 步：申请免费 HTTPS 证书（Let's Encrypt，自动改写 Nginx 加 443）
 
 ```bash
+# 先让你输入一个邮箱（证书快到期会邮件提醒续期，免费），直接打字回车即可
+read -p "输入你的邮箱(用于证书续期提醒): " CERT_EMAIL
 sudo certbot --nginx -d emberspeech.com -d www.emberspeech.com \
-  --non-interactive --agree-tos -m 你的邮箱@qq.com --redirect
+  --non-interactive --agree-tos -m "$CERT_EMAIL" --redirect
 ```
 
-> 把 `你的邮箱@qq.com` 换成你真实邮箱（证书快到期会提醒续期，免费）。
-> 成功后会显示 `Congratulations!` 并自动把 http 跳转到 https。
+> 成功会显示 `Congratulations!` 并自动把 http 跳转到 https。
+> 若报错 `Timeout` / `Connection refused`：多半是第 0 步防火墙 80 端口没开，回去开了再重跑本步。
 
 ## 第 5 步：把容器只绑本机、并设好域名环境变量
 
