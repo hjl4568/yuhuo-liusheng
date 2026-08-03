@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://emberspeech.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://emberspeech.com/app.html</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://emberspeech.com/join.html</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://emberspeech.com/support.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://emberspeech.com/capsules.html</loc><changefreq>weekly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://emberspeech.com/create.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://emberspeech.com/view.html</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
-  <url><loc>https://emberspeech.com/contract.html</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
-  <url><loc>https://emberspeech.com/register.html</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://emberspeech.com/login.html</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
-  <url><loc>https://emberspeech.com/profile.html</loc><changefreq>monthly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://emberspeech.com/</loc><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://emberspeech.com/app.html</loc><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://emberspeech.com/join.html</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://emberspeech.com/support.html</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://emberspeech.com/capsules.html</loc><lastmod>2026-08-03</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://emberspeech.com/create.html</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://emberspeech.com/view.html</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://emberspeech.com/contract.html</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://emberspeech.com/register.html</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://emberspeech.com/login.html</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://emberspeech.com/profile.html</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>
 </urlset>

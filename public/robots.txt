@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 
-# 站点地图（拿到正式域名后请把下面的地址换成 https://你的域名/sitemap.xml）
+# 站点地图
 Sitemap: https://emberspeech.com/sitemap.xml
+Host: emberspeech.com
