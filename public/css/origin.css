@@ -1,0 +1,77 @@
+/* 项目缘起阅读页 · 排版与交互样式 */
+.origin-topbar{
+  position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px;background:rgba(8,10,18,.86);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+}
+.origin-back{color:var(--primary-strong);text-decoration:none;font-size:14px;}
+.origin-back:hover{color:var(--primary);}
+.origin-brand{color:var(--text-light);font-size:13px;letter-spacing:1px;}
+
+.origin-wrap{max-width:780px;margin:0 auto;padding:40px 22px 80px;}
+
+.origin-article{
+  background:rgba(20,18,28,.72);backdrop-filter:blur(8px);
+  border:1px solid var(--border);border-radius:16px;
+  padding:52px 48px 58px;box-shadow:0 20px 60px rgba(0,0,0,.40);
+}
+.origin-head{text-align:center;margin-bottom:36px;}
+.origin-h1{font-family:var(--serif);font-size:42px;letter-spacing:8px;color:var(--primary);margin:0 0 14px;text-shadow:0 0 24px rgba(255,150,60,.25);}
+.origin-sub{font-family:var(--serif);font-size:18px;color:var(--text-light);margin:0;letter-spacing:1px;}
+
+.origin-note{
+  border-left:3px solid var(--primary);background:rgba(240,179,90,.07);
+  padding:14px 18px;margin:0 0 32px;color:var(--text-light);
+  font-size:14px;line-height:1.9;border-radius:0 8px 8px 0;
+}
+
+.origin-article h2.ch{
+  font-family:var(--serif);font-size:24px;color:var(--primary-strong);
+  margin:44px 0 18px;padding-bottom:10px;border-bottom:1px solid var(--border);letter-spacing:1px;
+}
+.origin-article h3.sub{
+  font-family:var(--serif);font-size:18px;color:var(--text);margin:28px 0 12px;font-weight:700;
+}
+.origin-article p{
+  font-family:var(--serif);font-size:17px;line-height:2.05;color:var(--text);
+  margin:0 0 18px;text-indent:2em;text-align:justify;
+}
+
+.origin-engage{text-align:center;margin:44px 0 8px;}
+.like-btn{
+  appearance:none;border:1px solid var(--primary);background:transparent;color:var(--primary-strong);
+  font-size:16px;padding:11px 28px;border-radius:30px;cursor:pointer;transition:all .2s;font-family:var(--sans);
+}
+.like-btn:hover{background:rgba(240,179,90,.12);}
+.like-btn.liked{background:var(--primary);color:#1a1206;border-color:var(--primary);}
+.like-btn .like-ico{font-size:18px;}
+.like-count{margin-left:6px;font-variant-numeric:tabular-nums;}
+.engage-tip{color:var(--text-light);font-size:13px;margin-top:12px;}
+
+.origin-comments{margin-top:54px;}
+.cm-title{font-family:var(--serif);font-size:20px;color:var(--primary-strong);margin:0 0 18px;}
+.cm-form{background:rgba(20,18,28,.72);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:26px;}
+.cm-input{width:100%;background:rgba(8,10,18,.8);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-size:14px;margin-bottom:10px;font-family:var(--sans);}
+.cm-text{width:100%;min-height:100px;background:rgba(8,10,18,.8);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-size:15px;line-height:1.7;resize:vertical;font-family:var(--sans);}
+.cm-row{display:flex;align-items:center;justify-content:space-between;margin-top:10px;}
+.cm-count{color:var(--text-light);font-size:12px;}
+.cm-submit{appearance:none;border:0;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#1a1206;font-weight:700;padding:9px 22px;border-radius:20px;cursor:pointer;font-size:14px;}
+.cm-submit:disabled{opacity:.5;cursor:not-allowed;}
+
+.cm-list{display:flex;flex-direction:column;gap:14px;}
+.cm-item{background:rgba(20,18,28,.72);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
+.cm-item-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;gap:10px;}
+.cm-name{color:var(--primary-strong);font-size:14px;font-weight:700;}
+.cm-time{color:var(--text-light);font-size:12px;white-space:nowrap;}
+.cm-body{color:var(--text);font-size:15px;line-height:1.8;white-space:pre-wrap;word-break:break-word;margin:0;}
+.cm-empty{color:var(--text-light);font-size:14px;text-align:center;padding:20px 0;}
+
+.origin-foot{text-align:center;padding:30px 20px 64px;}
+.origin-foot a{color:var(--primary-strong);text-decoration:none;font-size:14px;}
+
+@media (max-width:640px){
+  .origin-article{padding:30px 20px 38px;border-radius:12px;}
+  .origin-h1{font-size:30px;letter-spacing:4px;}
+  .origin-article p{font-size:16px;line-height:1.95;}
+  .origin-wrap{padding:26px 14px 60px;}
+}

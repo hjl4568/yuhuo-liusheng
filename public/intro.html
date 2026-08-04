@@ -75,6 +75,42 @@
       border-color: rgba(255,255,255,.5);
       background: rgba(255,255,255,.08);
     }
+
+    /* 项目缘起 · 首页入口卡片 */
+    .origin-entry {
+      display: flex; align-items: center; gap: 16px;
+      margin-top: 22px; padding: 18px 20px;
+      background: linear-gradient(135deg, rgba(240,179,90,.12), rgba(240,179,90,.04));
+      border: 1px solid rgba(232,178,110,.35); border-radius: 14px;
+      text-decoration: none; color: #f3ead6;
+      transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    .origin-entry:hover {
+      transform: translateY(-2px);
+      border-color: rgba(232,178,110,.7);
+      box-shadow: 0 12px 30px rgba(255,150,60,.12);
+    }
+    .origin-entry .oe-mark {
+      flex: 0 0 auto; width: 48px; height: 48px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--serif, serif); font-size: 24px; color: #1a1206;
+      background: linear-gradient(135deg, var(--primary, #f0b35a), var(--primary-dark, #d98335));
+      box-shadow: 0 4px 14px rgba(255,150,60,.35);
+    }
+    .origin-entry .oe-text { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+    .origin-entry .oe-title { font-size: 16px; font-weight: 700; color: var(--primary-strong, #ffd7a0); }
+    .origin-entry .oe-sub { font-size: 13px; color: var(--text-light, #b3a78d); line-height: 1.5; }
+    .origin-entry .oe-arrow {
+      flex: 0 0 auto; font-size: 14px; color: var(--primary, #f0b35a); font-weight: 600;
+      white-space: nowrap; padding-left: 8px;
+    }
+    @media (max-width: 560px) {
+      .origin-entry { padding: 14px 14px; gap: 12px; }
+      .origin-entry .oe-mark { width: 40px; height: 40px; font-size: 20px; }
+      .origin-entry .oe-title { font-size: 15px; }
+      .origin-entry .oe-sub { font-size: 12px; }
+      .origin-entry .oe-arrow { display: none; }
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
@@ -207,6 +243,23 @@
             <a href="/join.html" class="nf-fd-cta">一起把它做下去 ›</a>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- ============ 项目缘起 ============ -->
+    <section class="nf-section" id="panel-origin">
+      <div class="reveal">
+        <div class="nf-eyebrow">项目缘起 · WHY WE EXIST</div>
+        <h2 class="nf-title">我们为什么做这件事</h2>
+        <p class="nf-lead">一句话、一封信、一段录音，为什么要被交还？它从何而来、逻辑是什么——都写在这一篇长文里。不滑动，点开慢慢读。</p>
+        <a href="/origin.html" class="origin-entry">
+          <span class="oe-mark">缘</span>
+          <span class="oe-text">
+            <span class="oe-title">项目缘起 ·《长夜·余火》</span>
+            <span class="oe-sub">生存者的叙事和表达权的回归 —— 关于"事后表达"的三个逻辑</span>
+          </span>
+          <span class="oe-arrow">阅读全文 ›</span>
+        </a>
       </div>
     </section>
 

@@ -5,7 +5,7 @@
 (function () {
   'use strict';
 
-  var ALLOW = ['/intro.html', '/app.html', '/', '/index.html', '/view.html'];
+  var ALLOW = ['/intro.html', '/app.html', '/', '/index.html', '/view.html', '/origin.html'];
   var path = location.pathname;
   var ok = ALLOW.some(function (p) { return path === p || path.endsWith(p); });
   if (!ok) return;

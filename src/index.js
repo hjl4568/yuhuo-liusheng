@@ -61,6 +61,7 @@ app.use('/api/contracts', require('./routes/contract'));
 app.use('/api/leads', require('./routes/leads'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/features', require('./routes/features'));
+app.use('/api/engagement', require('./routes/engagement'));
 app.use('/api', require('./routes/stats'));
 
 app.get('/api/health', (req, res) => {

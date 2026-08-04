@@ -125,6 +125,24 @@ function init() {
       key TEXT PRIMARY KEY,
       value TEXT DEFAULT ''
     );
+
+    CREATE TABLE IF NOT EXISTS article_likes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      slug TEXT NOT NULL,
+      ip TEXT NOT NULL,
+      created_at TEXT DEFAULT (datetime('now')),
+      UNIQUE(slug, ip)
+    );
+
+    CREATE TABLE IF NOT EXISTS article_comments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      slug TEXT NOT NULL,
+      nickname TEXT DEFAULT '匿名旅人',
+      content TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'published',
+      ip TEXT DEFAULT '',
+      created_at TEXT DEFAULT (datetime('now'))
+    );
   `);
 
   // 收件人查看页所需的安全公开令牌（随机不可猜测）；兼容已存在的库，缺列则补
