@@ -22,7 +22,7 @@ services:
       - key: ADMIN_USERNAME
         value: admin
       - key: ADMIN_PASSWORD
-        value: admin123456
+        sync: false  # 请在 Render 控制台手动填写强密码，切勿写入仓库
       - key: APP_URL
         value: https://yuhuo-liusheng.onrender.com
       # 敏感值：用户首次部署时在 Render 控制台填写

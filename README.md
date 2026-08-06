@@ -2,6 +2,9 @@
 
 > 让此刻的声音，抵达未来
 
+- 在线主页：[https://emberspeech.com](https://emberspeech.com)
+- 项目主页内容导览：[docs/PROJECT-OVERVIEW.md](./docs/PROJECT-OVERVIEW.md)
+
 ## 项目简介
 
 用户上传文字/录音/影像，设定触发时间和收件人，系统在指定时刻将内容通过邮件投递给对方。
@@ -50,10 +53,14 @@ npm start
 
 ## 默认账号
 
+首次启动时，系统会自动创建管理员账号：
+
 | 类型 | 账号 | 密码 |
 |------|------|------|
-| 管理员 | admin | admin123456 |
+| 管理员 | admin | 见环境变量 `ADMIN_PASSWORD`（首次启动后请立即修改） |
 | 测试用户 | 在注册页创建 | - |
+
+> ⚠️ 安全提示：不要修改 `.env.example` / `.env.prod.example` / `render.yaml` 来写入生产密码，请在服务器本地创建 `.env` 或 `.env.prod` 并自行保管。这些环境文件已被 `.gitignore` 排除，不会进入 GitHub。
 
 ## 邮件配置
 
@@ -95,18 +102,11 @@ railway up
 3. Build Command: `npm install && npm rebuild better-sqlite3`
 4. Start Command: `npm start`
 
-### 方案三：腾讯云轻量服务器（需备案）
+### 方案三：腾讯云轻量服务器（香港节点，免备案）
 
-```bash
-# 1. 购买腾讯云轻量服务器（2C2G 约60元/月）
-# 2. 域名解析到服务器IP
-# 3. 提交ICP备案（7-20天）
-# 4. 部署：
-npm install
-npm rebuild better-sqlite3
-npm start
-# 5. 配置 Nginx 反向代理 + SSL
-```
+> 当前线上部署方案。服务器位于中国香港，绑定域名后可直接通过 `https://emberspeech.com` 访问，无需 ICP 备案（注：若后续需开通微信公众号/小程序/微信支付，再考虑迁移大陆服务器并备案）。
+
+详见 [deploy/DEPLOY-HK-now.md](./deploy/DEPLOY-HK-now.md)。
 
 ## H5 → 小程序演进
 
@@ -145,6 +145,12 @@ yuhuo-liusheng/
 │   ├── css/style.css         # 全局样式
 │   ├── js/api.js             # API 客户端
 │   ├── index.html            # 首页
+│   ├── intro.html            # 项目主页（滚动叙事）
+│   ├── origin.html           # 项目缘起《长夜·余火》全文
+│   ├── join.html             # 加入我们
+│   ├── support.html          # 支持我们
+│   ├── compliance.html       # 合规与 e签宝方案
+│   ├── privacy.html          # 隐私政策
 │   ├── login.html            # 登录
 │   ├── register.html         # 注册
 │   ├── create.html           # 创建胶囊
@@ -152,9 +158,17 @@ yuhuo-liusheng/
 │   ├── capsule-detail.html   # 胶囊详情
 │   ├── profile.html          # 个人中心
 │   └── admin.html            # 后台管理
-├── data/                     # 数据库 + 上传文件
-├── docs/PRD.md               # 产品需求文档
-├── .env.example              # 环境变量模板
+├── data/                     # 数据库 + 上传文件（已被 .gitignore 排除）
+├── docs/
+│   ├── PRD.md                # 产品需求文档
+│   ├── PROJECT-OVERVIEW.md   # 项目主页内容导览
+│   └── 合规与e签宝方案.md      # 合规方案
+├── deploy/
+│   ├── DEPLOY-HK-now.md      # 香港免备案部署指南
+│   ├── SEO-GUIDE.md          # 搜索引擎收录指南
+│   └── nginx-emberspeech.conf # Nginx 反向代理配置
+├── .env.example              # 环境变量模板（开发）
+├── .env.prod.example         # 环境变量模板（生产）
 └── package.json
 ```
 
